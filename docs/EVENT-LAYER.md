@@ -171,7 +171,7 @@ Assets**), or use the settings where one exists.
 | **Bats** | `event-halloween-bat-1.svg`, `event-halloween-bat-1-b.svg` (second pose), `event-halloween-bat-2.svg` | none; list in `snippets/event-halloween.liquid` → `flock_sprites` | 1–3 silhouettes, about 200×100 viewBox. `ratio` = width ÷ height. A sprite with `pose2` alternates two poses. Without it, one silhouette gets a squash "flap". To add a third bat, add an entry to `flock_sprites`. For CSS-recolourable silhouettes add `"mode":"mask"` (colour = `--rizo-event-flyer-color`). Masks are fetched with CORS, so the asset must be same-origin; Shopify's `/cdn/shop/...` asset URLs are. |
 | **Fog** | `event-halloween-fog.webp` | Event layer: fog → **Fog texture** | Soft, **horizontally tileable** (left edge continues the right), transparent, pale colour, about 4:1–6:1 (placeholder 1280×224, 43 KB). If the aspect changes, update `fog_ratio` in the preset. Keep it small: the runtime draws it at about 1/3 resolution anyway. |
 
-`shopify/tools/assets/generate-halloween-placeholders.mjs` shows exactly how the placeholders were made.
+`tools/assets/generate-halloween-placeholders.mjs` shows exactly how the placeholders were made.
 
 ---
 
@@ -230,7 +230,7 @@ motion is respected (section 4).
 ## 10. QA tools (not part of the theme upload)
 
 ```
-cd shopify/tools && npm install
+cd tools && npm install
 npm run preview      # local storefront at http://localhost:9292 (mock catalog, cart, checkout)
 npm test             # 37-check browser audit (Playwright, starts its own server)
 npm run check        # Shopify Theme Check

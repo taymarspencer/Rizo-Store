@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 import { Liquid, Tag } from 'liquidjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const THEME = path.resolve(process.env.THEME_DIR || path.join(HERE, '../../theme'));
+const THEME = path.resolve(process.env.THEME_DIR || path.join(HERE, '../..'));
 const PORT = Number(process.env.PORT || 9292);
 
 const read = (file) => fs.readFileSync(path.join(THEME, file), 'utf8');

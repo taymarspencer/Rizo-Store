@@ -1,8 +1,8 @@
 // Generates the TEMPORARY Halloween event-layer placeholder assets.
 //
 // These exist only so the engine can be built and tested before final Rizo
-// artwork arrives. Replace the files in shopify/theme/assets/ with final art
-// using the same file names (see shopify/docs/EVENT-LAYER.md → Assets).
+// artwork arrives. Replace the files in assets/ with final art
+// using the same file names (see docs/EVENT-LAYER.md → Assets).
 //
 //   node assets/generate-halloween-placeholders.mjs
 //
@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(HERE, '../../theme/assets');
+const OUT = path.resolve(HERE, '../../assets');
 const require = createRequire(import.meta.url);
 
 const write = (name, content) => {

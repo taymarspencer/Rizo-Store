@@ -47,13 +47,13 @@ new dependencies, and no framework.
 
 ## Added outside the theme (not uploaded to Shopify)
 
-- `shopify/tools/preview/server.mjs`: local storefront. Renders the real theme
+- `tools/preview/server.mjs`: local storefront. Renders the real theme
   with liquidjs, with a mock catalog, cart AJAX, checkout stub and Section
   Rendering API.
-- `shopify/tools/tests/event-layer.test.mjs`: 37-check Playwright audit.
+- `tools/tests/event-layer.test.mjs`: 37-check Playwright audit.
   `tests/theme-check.mjs`: Shopify Theme Check.
-- `shopify/tools/assets/generate-halloween-placeholders.mjs`: reproducible placeholder art.
-- `shopify/docs/`: this report, the guide and the screenshots.
+- `tools/assets/generate-halloween-placeholders.mjs`: reproducible placeholder art.
+- `docs/`: this report, the guide and the screenshots.
 
 ---
 
@@ -110,7 +110,7 @@ Details, formats and sizes: [`EVENT-LAYER.md` §6](EVENT-LAYER.md#6-replacing-ar
 4. **Structure hooks:** countdown markup `.rizo-event-countdown*` (two
    placements), moon `.rizo-event-moon` / `-glow` / `-body` / `-art`, fog
    `.rizo-event-fog--hero|page.rizo-event-fog--lN`.
-5. **Preview:** `cd shopify/tools && npm install && npm run preview`, then
+5. **Preview:** `cd tools && npm install && npm run preview`, then
    `http://localhost:9292/?rizo_event=on&set.event_moon_size=420` (any setting
    via `?set.<id>=`).
 
