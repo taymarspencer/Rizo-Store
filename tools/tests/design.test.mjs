@@ -171,8 +171,16 @@ try {
     const off = await page.evaluate(() => ({ moon: document.querySelectorAll('[data-rizo-event-moon]').length, mark: getComputedStyle(document.querySelector('.hero-mark')).display }));
     assert(off.moon === 0 && off.mark !== 'none', 'event off should show the mark and no moon', off);
     await page.screenshot({ path: path.join(out, 'hero-event-off.png') });
-    interactions.push('event off: mark instead of moon');
     await page.close();
+    // The mark bleeds off the edge on phones; that must never widen the page.
+    for (const [width, height] of [[320, 568], [390, 844], [430, 932]]) {
+      const phone = await newPage(width, height);
+      await phone.goto(`${base}/?set.event_layer=off`, { waitUntil: 'networkidle' });
+      const wide = await phone.evaluate(() => Math.max(document.documentElement.scrollWidth, innerWidth));
+      assert(wide === width, `event off at ${width}: page wider than the screen`, wide);
+      await phone.close();
+    }
+    interactions.push('event off: mark instead of moon, no sideways scroll on phones');
   }
 
   console.log(`PASS interactions: ${interactions.join('; ')}`);

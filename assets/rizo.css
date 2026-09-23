@@ -427,6 +427,7 @@ html:not(.rizo-event) .foot-sky { min-height: clamp(120px, 14vw, 200px); }
   margin-top: calc(var(--header-h) * -1);
   padding-top: calc(var(--header-h) + 40px);
   padding-bottom: clamp(44px, 9vh, 104px);
+  overflow-x: clip; /* the mark may bleed off the edge; phones must not scroll sideways */
 }
 .hero-copy { position: relative; z-index: 2; width: min(100% - var(--edge) * 2, var(--wide)); margin-inline: auto; }
 .hero-title { font-size: clamp(3rem, 7.2vw, 7rem); line-height: .93; letter-spacing: -.045em; text-wrap: initial; }

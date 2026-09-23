@@ -6,16 +6,21 @@
   file is never requested.
 
   Owns the shared pieces every event uses:
-    loop      one requestAnimationFrame loop; runs only while a task needs it
-    input     passive scroll-velocity and tap observation (never blocks input)
-    state     device tier, motion scale, reduced motion, hero/quiet/overlay flags
-    modules   registry: countdown, moon, hero, quiet (here); flock (rizo-event-flock.js)
-    behaviors registry for event-specific motion (e.g. assets/event-halloween.js)
+    loop        one requestAnimationFrame loop; runs only while a task needs it
+    governor    steps weak devices down (lite, then still), never up
+    input       passive scroll-velocity and tap observation (never blocks input)
+    state       device tier, motion scale, reduced motion, hero/quiet/overlay
+    atmosphere  reads data-fog / data-fog-bias from sections: how much fog
+                collects where, measured on layout changes, not on scroll
+    modules     hero, quiet, countdown, fog, moon (here); flock
+                (rizo-event-flock.js); anything a preset defines
+    behaviors   event-specific motion (e.g. assets/event-halloween.js)
 
   Modules are idempotent: they re-scan on shopify:section:load, dispose on
   shopify:section:unload, and never double-bind an element.
 
   Console / QA:  RizoEventLayer.stats()   RizoEventLayer.deactivate()
+                 RizoEventLayer.moonPhase  RizoEventLayer.module('moon')
 */
 (() => {
   'use strict';

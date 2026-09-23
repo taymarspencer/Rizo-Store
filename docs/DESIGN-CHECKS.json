@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-23T22:32:49.674Z",
+  "checkedAt": "2026-09-23T22:47:22.241Z",
   "environment": "Chromium, local Liquid preview, catalog snapshot, simulated commerce",
   "results": [
     {
@@ -59,6 +59,6 @@
     "first drawing: keyboard open/close",
     "roost: arrive, notice pointer, leave, reduced motion, cleanup",
     "moon: phase mask, tap → bats, World caption \"Tonight’s moon: waxing gibbous, 92% lit.\"",
-    "event off: mark instead of moon"
+    "event off: mark instead of moon, no sideways scroll on phones"
   ]
 }

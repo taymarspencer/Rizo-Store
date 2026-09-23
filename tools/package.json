@@ -1,13 +1,12 @@
 {
   "name": "rizo-theme-tools",
   "private": true,
-  "description": "Local preview harness + automated checks for the Rizo Portal Shopify theme. Not part of the theme upload.",
+  "description": "Local preview harness and automated checks for the Rizo Shopify theme. Not part of the theme upload.",
   "type": "module",
   "scripts": {
     "preview": "node preview/server.mjs",
     "check": "node tests/theme-check.mjs",
     "test": "node tests/event-layer.test.mjs",
-    "placeholders": "node assets/generate-halloween-placeholders.mjs",
     "test:design": "node tests/design.test.mjs",
     "preview:catalog": "RIZO_PREVIEW_CATALOG=snapshot node preview/server.mjs"
   },
