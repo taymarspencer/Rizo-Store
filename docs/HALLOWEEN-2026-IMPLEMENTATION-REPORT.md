@@ -38,7 +38,7 @@ touching code.
 | `sections/rizo-world-gate.liquid` | +3 lines: hero slot and two countdown placements (homepage and world page hero). |
 | `sections/rizo-live-hero.liquid` | +3 lines: same hooks (not on a template today; verified via the harness). |
 | `sections/rizo-header.liquid` | Signal bar can show the event message while live (CSS swap, so it also works for a scheduled event). |
-| `config/settings_schema.json` | 5 new groups (*Event layer*, *moon*, *fog*, *bats*, *countdown*), 41 settings. |
+| `config/settings_schema.json` | 5 new groups (*Event layer*, *moon*, *fog*, *bats*, *countdown*), 39 settings (plus one paragraph and one header). |
 | `config/settings_data.json` | `event_layer: halloween`, `event_activation: scheduled`. |
 | `assets/rizo-theme.js` | **Separate commit, a pre-existing bug fix, not event code** (see *Pre-existing issues*). |
 
