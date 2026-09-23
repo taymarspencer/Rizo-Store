@@ -10,6 +10,25 @@
     assign circle_text = '<p>Rizo is founder-led, but the world has never moved alone. Friends, models, event help, supporters, and people who believed early helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>'
   endif
 %}
+{% if circle_style == 'compact' %}
+<section class="circle-editorial page-width" id="{{ circle_id }}">
+  <div class="circle-editorial-header">
+    <div><p class="eyebrow">{{ circle_eyebrow }}</p><h2>{{ circle_heading }}</h2></div>
+    <div class="circle-editorial-intro rte">{{ circle_text }}</div>
+  </div>
+  <div class="circle-editorial-photos">
+    <figure>
+      <img src="{{ 'rizo-412-underpass.webp' | asset_url }}" width="1152" height="1536" loading="lazy" alt="Two people in black and gold Rizo 412 sets beneath a Pittsburgh underpass">
+      <figcaption>UNDER THE CITY. <span>PITTSBURGH / 412</span></figcaption>
+    </figure>
+    <figure>
+      <img src="{{ 'rizo-circle-night.webp' | asset_url }}" width="1152" height="1536" loading="lazy" alt="Friends wearing their black and gold Rizo pieces at night">
+      <figcaption>WITH OUR PEOPLE. <span>THE RIZO CIRCLE</span></figcaption>
+    </figure>
+  </div>
+  <a class="text-link" href="{{ routes.root_url }}pages/circle">MEET THE CIRCLE {% render 'icon', name: 'arrow' %}</a>
+</section>
+{% else %}
 <section class="rizo-circle rizo-circle--{{ circle_style }} page-width" id="{{ circle_id }}">
   <div class="rizo-circle-copy">
     {% if settings.heritage_mode %}{% render 'rizo-dateline', label: circle_dateline %}{% endif %}
@@ -42,3 +61,4 @@
     </figure>
   </div>
 </section>
+{% endif %}

@@ -4,108 +4,29 @@
       "type": "rizo-world-gate",
       "settings": {
         "show_dateline": true,
-        "dateline_label": "RIZO WORLD / PITTSBURGH 412",
+        "dateline_label": "RIZO APPAREL / PITTSBURGH, PA",
         "eyebrow": "",
         "heading": "THE WORLD IS WEARABLE.",
-        "text": "<p>Built from limits in Pittsburgh. Carried beyond them.</p>",
-        "enter_label": "ENTER THE WORLD",
-        "shop_label": "SHOP WHAT IS LIVE",
-        "shop_link": "#RizoLiveShop"
+        "text": "<p>Clothes from our corner of the world.</p>",
+        "enter_label": "EXPLORE RIZO",
+        "shop_label": "SHOP THE PIECES",
+        "shop_link": "#RizoLiveShop",
+        "enter_link": "/pages/world"
       }
     },
     "live": {
       "type": "rizo-live-products",
       "settings": {
         "collection": "all",
-        "view_all_label": "VIEW ALL PIECES"
-      }
-    },
-    "map": {
-      "type": "rizo-world-map",
-      "blocks": {
-        "shop": {
-          "type": "zone",
-          "settings": {
-            "zone_id": "shop",
-            "kicker": "SHOP",
-            "short_label": "LIVE PIECES",
-            "title": "SHOP WHAT IS LIVE",
-            "text": "Current pieces, honest stock, fit information, and the fastest entrance into the world.",
-            "link_label": "ENTER THE SHOP",
-            "link": "#RizoLiveShop",
-            "art": "face-blue"
-          }
-        },
-        "origin": {
-          "type": "zone",
-          "settings": {
-            "zone_id": "origin",
-            "kicker": "ORIGIN",
-            "short_label": "FIRST FILE",
-            "title": "READ THE ORIGIN",
-            "text": "The limitations, first sketch, founder-built process, and reason the world exists.",
-            "link_label": "OPEN ORIGIN FILE",
-            "link": "/pages/about#RizoOriginFile",
-            "art": "logo"
-          }
-        },
-        "circle": {
-          "type": "zone",
-          "settings": {
-            "zone_id": "circle",
-            "kicker": "CIRCLE",
-            "short_label": "REAL PEOPLE",
-            "title": "FIND THE CIRCLE",
-            "text": "Friends, models, event help, supporters, and people who carried the signal before formal titles existed.",
-            "link_label": "MEET THE CIRCLE",
-            "link": "#RizoCircle",
-            "art": "face-white"
-          }
-        },
-        "signal": {
-          "type": "zone",
-          "settings": {
-            "zone_id": "signal",
-            "kicker": "SIGNAL",
-            "short_label": "MAKE YOURS",
-            "title": "FORGE A SIGNAL",
-            "text": "Choose an idea and an energy, then create a Rizo signal you can wear, copy, or share.",
-            "link_label": "OPEN SIGNAL FORGE",
-            "link": "#RizoSignalForge",
-            "art": "412"
-          }
-        }
-      },
-      "block_order": [
-        "shop",
-        "origin",
-        "signal",
-        "circle"
-      ],
-      "settings": {
-        "show_dateline": true,
-        "dateline_label": "RIZO WORLD MAP / FOUR ACTIVE ZONES",
-        "eyebrow": "",
-        "heading": "EVERY SIGNAL OPENS ANOTHER DOOR.",
-        "text": "Choose a zone. The map opens its path and remembers where you have been.",
-        "show_passport_reward": true,
-        "reward_heading": "WORLD RECOVERED",
-        "reward_text": "The full passport unlocks a Rizo camo phone wallpaper to carry outside.",
-        "reward_label": "OPEN WALLPAPER"
-      }
-    },
-    "forge": {
-      "type": "rizo-signal-forge",
-      "settings": {
-        "show_dateline": true,
-        "dateline_label": "SIGNAL FORGE / BUILT IN YOUR BROWSER",
-        "eyebrow": "",
-        "heading": "FORGE A SIGNAL. CARRY IT OUT.",
-        "text": "Choose what you carry. Choose how it moves. Rizo turns both into a signal.",
-        "copy_label": "COPY SIGNAL",
-        "share_label": "SHARE THE SIGNAL",
-        "shop_label": "WEAR THE SIGNAL",
-        "shop_link": "#RizoLiveShop"
+        "view_all_label": "ALL PIECES",
+        "eyebrow": "THE CURRENT ROTATION",
+        "heading": "MADE TO GO OUT.",
+        "text": "",
+        "products_to_show": 4,
+        "mobile_layout": "grid",
+        "show_size_preview": false,
+        "show_artifact_link": false,
+        "show_quick_add": true
       }
     },
     "founder": {
@@ -113,37 +34,23 @@
       "settings": {
         "built_in_portrait": "founder_full_fit",
         "link": "/pages/about#RizoOriginFile",
-        "link_label": "READ THE FULL ORIGIN",
-        "show_origin_marks": true,
+        "link_label": "HOW IT STARTED",
+        "show_origin_marks": false,
         "portrait_alt": "Taymar Spencer wearing a full black Rizo outfit",
-        "portrait_caption": "TAYMAR SPENCER / FOUNDER & BRAND OWNER",
-        "eyebrow": "ORIGIN FILE",
-        "heading": "THE WORLD STARTED WITH LIMITATIONS.",
+        "portrait_caption": "TAYMAR SPENCER / RIZO FOUNDER",
+        "eyebrow": "FROM HERE.",
+        "heading": "PITTSBURGH\u2019S PERSONAL FLAME.",
         "show_dateline": false,
-        "bio": "<p>Rizo began without a blueprint, deep resources, or a clear path. Taymar Spencer learned through the work\u2014designing and making the clothes himself, accepting help, and turning every limitation into part of the language.</p><p>What began as one person\u2019s outlet became a way to give other people room to express themselves. Rizo exists to give creativity somewhere to live\u2014and to prove that being placed in a box does not mean staying there.</p>"
+        "bio": "<p>Started by Taymar Spencer. Drawn, pressed, and figured out along the way in Pittsburgh.</p><p>The clothes came first. A whole world followed.</p>",
+        "founder_name": "",
+        "location_line": ""
       },
-      "blocks": {
-        "quote": {
-          "type": "quote",
-          "settings": {
-            "quote": "Rizo started through limitations. I was in a box, and I broke out.",
-            "attribution": "TAYMAR SPENCER / FOUNDER & BRAND OWNER"
-          }
-        }
-      },
-      "block_order": [
-        "quote"
-      ]
+      "blocks": {},
+      "block_order": []
     },
-    "signup": {
-      "type": "rizo-signal-signup",
-      "settings": {
-        "eyebrow": "GET THE SIGNAL",
-        "heading": "KNOW WHAT ENTERS THE WORLD NEXT.",
-        "value": "Drop dates, Pittsburgh event locations, and restock notices\u2014only when there is something real to send.",
-        "shop_label": "SHOP WHAT IS LIVE",
-        "shop_link": "#RizoLiveShop"
-      }
+    "door": {
+      "type": "rizo-after-hours",
+      "settings": {}
     },
     "circle": {
       "type": "rizo-team",
@@ -151,20 +58,29 @@
         "mode": "circle",
         "display_style": "compact",
         "dateline_label": "RIZO PEOPLE / THE CIRCLE",
-        "eyebrow": "THE RIZO CIRCLE",
-        "heading": "THE WORLD NEVER MOVED ALONE.",
-        "text": "<p>Rizo is founder-led, but friends, models, event help, supporters, and people who believed early helped carry it outside.</p><p>No fake corporate titles. Just real people showing up while the world takes shape.</p>",
-        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+        "eyebrow": "THE CIRCLE",
+        "heading": "OUT IN THE WORLD.",
+        "text": "<p>Friends, late nights, familiar faces.<br>The people who make the clothes their own.</p>",
+        "shoutout": ""
+      }
+    },
+    "signup": {
+      "type": "rizo-signal-signup",
+      "settings": {
+        "eyebrow": "STAY CLOSE",
+        "heading": "WHEN SOMETHING\u2019S NEXT.",
+        "value": "New pieces. Restocks. Where to find us in Pittsburgh.",
+        "shop_label": "",
+        "shop_link": "#RizoLiveShop"
       }
     }
   },
   "order": [
     "gate",
     "live",
-    "map",
     "founder",
+    "door",
     "circle",
-    "forge",
     "signup"
   ]
 }

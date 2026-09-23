@@ -272,7 +272,7 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "A seasonal layer that sits on top of normal Rizo. Choose Off to return to normal Rizo instantly — nothing is deleted. Halloween is October mode."
+        "content": "A seasonal layer that sits on top of normal Rizo. Choose Off to return to normal Rizo instantly \u2014 nothing is deleted. Halloween is October mode."
       },
       {
         "type": "select",
@@ -282,7 +282,7 @@
         "options": [
           {
             "value": "off",
-            "label": "Off — normal Rizo"
+            "label": "Off \u2014 normal Rizo"
           },
           {
             "value": "halloween",
@@ -298,11 +298,11 @@
         "options": [
           {
             "value": "scheduled",
-            "label": "Scheduled — between start and end"
+            "label": "Scheduled \u2014 between start and end"
           },
           {
             "value": "always",
-            "label": "Always on — manual override"
+            "label": "Always on \u2014 manual override"
           }
         ]
       },
@@ -310,7 +310,7 @@
         "type": "text",
         "id": "event_start",
         "label": "Start",
-        "placeholder": "2026-10-01T00:00:00-04:00",
+        "placeholder": "2026-09-23T00:00:00-04:00",
         "info": "ISO date/time. Without an offset it is read in the event's timezone (New York for Halloween). Blank uses the event's own window."
       },
       {
@@ -318,7 +318,7 @@
         "id": "event_end",
         "label": "End",
         "placeholder": "2026-11-01T06:00:00-05:00",
-        "info": "Halloween's own window: Oct 1 12:00 AM to Nov 1 6:00 AM, New York time."
+        "info": "Halloween's own window: Sep 23 12:00 AM to Nov 1 6:00 AM, New York time."
       },
       {
         "type": "checkbox",
@@ -396,7 +396,7 @@
         "type": "image_picker",
         "id": "event_moon_image",
         "label": "Moon artwork",
-        "info": "Transparent PNG, WebP or SVG. Blank uses the event's placeholder moon."
+        "info": "Transparent PNG, WebP or SVG. Blank uses the event\u2019s Rizo moon artwork."
       },
       {
         "type": "range",
@@ -623,7 +623,7 @@
         "id": "event_countdown_target",
         "label": "Target date/time",
         "placeholder": "2026-10-31T00:00:00-04:00",
-        "info": "ISO date/time. Blank uses the event's moment — Halloween: Oct 31 2026, 12:00 AM New York time, whatever the visitor's timezone."
+        "info": "ISO date/time. Blank uses the event's moment \u2014 Halloween: Oct 31 2026, 12:00 AM New York time, whatever the visitor's timezone."
       },
       {
         "type": "text",

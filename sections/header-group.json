@@ -4,8 +4,12 @@
   "sections": {
     "header": {
       "type": "rizo-header",
-      "settings": {}
+      "settings": {
+        "show_announcement": false
+      }
     }
   },
-  "order": ["header"]
+  "order": [
+    "header"
+  ]
 }

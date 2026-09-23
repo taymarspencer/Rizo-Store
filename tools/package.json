@@ -7,11 +7,13 @@
     "preview": "node preview/server.mjs",
     "check": "node tests/theme-check.mjs",
     "test": "node tests/event-layer.test.mjs",
-    "placeholders": "node assets/generate-halloween-placeholders.mjs"
+    "placeholders": "node assets/generate-halloween-placeholders.mjs",
+    "test:design": "node tests/design.test.mjs",
+    "preview:catalog": "RIZO_PREVIEW_CATALOG=snapshot node preview/server.mjs"
   },
   "devDependencies": {
     "@shopify/theme-check-node": "^3.29.0",
     "liquidjs": "^10.29.0",
-    "playwright": "^1.56.0"
+    "playwright": "1.56.0"
   }
 }

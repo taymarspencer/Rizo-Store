@@ -4,8 +4,16 @@
   "sections": {
     "footer": {
       "type": "rizo-footer",
-      "settings": {}
+      "settings": {
+        "heading": "RIZO.",
+        "tagline": "Pittsburgh. Wherever you take it.",
+        "dateline_label": "RIZO APPAREL",
+        "bottom_note": "",
+        "instagram_url": "https://www.instagram.com/rizoapparel/"
+      }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

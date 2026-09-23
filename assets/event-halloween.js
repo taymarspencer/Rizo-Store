@@ -216,4 +216,67 @@
       return true;
     }
   });
+
+  /* One resting bat makes the world aware of the visitor. It shares the
+     engine's input/lifecycle; no additional animation loop or click target.
+     Ambient → nearby pointer → flight → quiet return. */
+  layer.define('halloween-perch', ({ state, config, input, on }) => {
+    const perches = new Map();
+    let lastPointer = 0;
+    const enabled = () => config.features.flock && config.flock.density > 0 && !state.reduced && state.motionScale > 0 && state.degrade < 2;
+    const paused = () => !enabled() || state.overlayOpen || document.hidden || !state.heroVisible;
+    const reset = (node, record) => {
+      clearTimeout(record.timer);
+      record.animation?.cancel();
+      record.animation = null;
+      record.busy = false;
+      node.toggleAttribute('data-ready', enabled());
+    };
+    const fly = (node, record) => {
+      if (record.busy || paused()) return;
+      record.busy = true;
+      record.animation = node.animate([
+        { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+        { transform: 'translate(-28px, -22px) rotate(-18deg)', opacity: 1, offset: .12 },
+        { transform: 'translate(-110px, -90px) rotate(14deg)', opacity: .8, offset: .5 },
+        { transform: 'translate(-230px, -210px) rotate(-10deg)', opacity: 0 }
+      ], { duration: 1000, easing: 'cubic-bezier(.2,.65,.4,1)', fill: 'forwards' });
+      record.timer = setTimeout(() => reset(node, record), 9000);
+    };
+    const approach = (x, y) => {
+      if (paused()) return;
+      perches.forEach((record, node) => {
+        if (record.busy) return;
+        const rect = node.getBoundingClientRect();
+        if (Math.hypot(x - rect.x - rect.width / 2, y - rect.y - rect.height / 2) < 90) fly(node, record);
+      });
+    };
+    const pointer = (event) => {
+      if (event.pointerType !== 'mouse' || performance.now() - lastPointer < 120) return;
+      lastPointer = performance.now();
+      approach(event.clientX, event.clientY);
+    };
+    document.addEventListener('pointermove', pointer, { passive: true });
+    const cleanups = [
+      input.onTap(tap => { if (config.flock.tap && tap.kind === 'down' && !tap.interactive && !tap.overlay) approach(tap.x, tap.y); }),
+      input.onScroll(velocity => { if (config.flock.scroll && Math.abs(velocity) > 260) perches.forEach((record, node) => fly(node, record)); }),
+      on('motion', () => perches.forEach((record, node) => reset(node, record))),
+      on('degrade', () => perches.forEach((record, node) => reset(node, record))),
+      on('overlay', open => perches.forEach(record => open ? record.animation?.pause() : record.animation?.play())),
+      on('visibility', visible => perches.forEach(record => visible && !state.overlayOpen ? record.animation?.play() : record.animation?.pause()))
+    ];
+    const remove = (node, record) => { clearTimeout(record.timer); record.animation?.cancel(); node.removeAttribute('data-ready'); perches.delete(node); };
+    return {
+      mount(container) {
+        container.querySelectorAll('[data-rizo-perch]').forEach(node => {
+          if (perches.has(node)) return;
+          const record = { busy: false, animation: null, timer: 0 };
+          perches.set(node, record); reset(node, record);
+        });
+      },
+      unmount(container) { perches.forEach((record, node) => { if (container.contains(node)) remove(node, record); }); },
+      destroy() { cleanups.forEach(off => off()); document.removeEventListener('pointermove', pointer); perches.forEach((record, node) => remove(node, record)); },
+      stats() { return { perchedBats: perches.size }; }
+    };
+  });
 })();

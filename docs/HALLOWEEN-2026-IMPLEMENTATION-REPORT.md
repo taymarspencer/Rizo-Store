@@ -38,7 +38,7 @@ touching code.
 | `sections/rizo-world-gate.liquid` | +3 lines: hero slot and two countdown placements (homepage and world page hero). |
 | `sections/rizo-live-hero.liquid` | +3 lines: same hooks (not on a template today; verified via the harness). |
 | `sections/rizo-header.liquid` | Signal bar can show the event message while live (CSS swap, so it also works for a scheduled event). |
-| `config/settings_schema.json` | 5 new groups (*Event layer*, *moon*, *fog*, *bats*, *countdown*), 41 settings. |
+| `config/settings_schema.json` | 5 new groups (*Event layer*, *moon*, *fog*, *bats*, *countdown*), 39 settings (plus one paragraph and one header). |
 | `config/settings_data.json` | `event_layer: halloween`, `event_activation: scheduled`. |
 | `assets/rizo-theme.js` | **Separate commit, a pre-existing bug fix, not event code** (see *Pre-existing issues*). |
 
@@ -75,10 +75,10 @@ new dependencies, and no framework.
 
 - **Off (normal Rizo):** Theme settings → Event layer → **Active event → Off**.
 - **On, scheduled (as delivered):** Active event → Halloween, Activation →
-  Scheduled. Live Oct 1 2026 00:00 ET until Nov 1 2026 06:00 ET. It switches
+  Scheduled. Live Sep 23 2026 00:00 ET until Nov 1 2026 06:00 ET. It switches
   on and off by itself, even on pages already open.
 - **On now (manual):** Activation → **Always on**.
-- **Preview before Oct 1:** the theme editor shows it automatically. In a browser tab, add `?rizo_event=on` (`?rizo_event=clear` to stop).
+- **Preview before Sep 23:** the theme editor shows it automatically. In a browser tab, add `?rizo_event=on` (`?rizo_event=clear` to stop).
 - **Per module:** separate switches for night treatment, moon, hero fog, page fog, bats, and countdown.
 
 ## Replacing artwork

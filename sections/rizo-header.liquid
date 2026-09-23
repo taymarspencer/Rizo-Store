@@ -85,7 +85,7 @@
 
 {% if settings.enable_mobile_shop_utility %}
   <nav class="mobile-dock" aria-label="Quick navigation">
-    <a href="{{ routes.root_url }}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>{% render 'icon', name: 'home' %}<span>World</span></a>
+    <a href="{{ routes.root_url }}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>{% render 'icon', name: 'home' %}<span>Home</span></a>
     <a href="{{ section.settings.mobile_shop_link | default: routes.all_products_collection_url }}"{% if request.page_type == 'collection' or request.page_type == 'product' %} aria-current="page"{% endif %}>{% render 'icon', name: 'shop' %}<span>{{ section.settings.mobile_shop_label }}</span></a>
     <a href="{{ routes.search_url }}" data-overlay-open="search" aria-label="Search" aria-controls="RizoSearch" aria-expanded="false"{% if request.page_type == 'search' %} aria-current="page"{% endif %}>{% render 'icon', name: 'search' %}<span>Search</span></a>
     <a href="{{ routes.cart_url }}" data-overlay-open="cart" aria-label="Open cart with {{ cart.item_count }} items" aria-controls="RizoCart" aria-expanded="false"{% if request.page_type == 'cart' %} aria-current="page"{% endif %}><span class="dock-icon-wrap">{% render 'icon', name: 'bag' %}<span class="dock-count" data-cart-count>{{ cart.item_count }}</span></span><span>Cart</span></a>
@@ -107,7 +107,7 @@
     </nav>
     <div class="menu-world-shortcuts">
       <a href="{{ routes.root_url }}#RizoCircle">THE CIRCLE {% render 'icon', name: 'arrow' %}</a>
-      <a href="{{ routes.root_url }}#RizoSignalForge">SIGNAL FORGE {% render 'icon', name: 'arrow' %}</a>
+      <a href="{{ routes.root_url }}pages/world#RizoSignalForge">SIGNAL FORGE {% render 'icon', name: 'arrow' %}</a>
     </div>
     <div class="menu-world-note"><span>{{ state_label }}</span>{% if section.settings.menu_note != blank %}<p>{{ section.settings.menu_note }}</p>{% endif %}</div>
     {% render 'rizo-character', variant: 'shadow', size: 220, alt: '', interaction: 'menu-rizo', message: section.settings.rizo_menu_message %}

@@ -37,6 +37,8 @@
     </style>
     <meta name="format-detection" content="telephone=no">
     {{ 'rizo-theme.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'rizo-display.ttf' | asset_url | preload_tag: as: 'font', type: 'font/ttf', crossorigin: 'anonymous' }}
+    {{ 'rizo-design.css' | asset_url | stylesheet_tag }}
     {% render 'rizo-event-head' %}
     <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
     <script src="{{ 'rizo-theme.js' | asset_url }}" defer></script>

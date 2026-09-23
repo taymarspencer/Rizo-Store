@@ -19,7 +19,9 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(HERE, '../../assets');
+// Historical engineering fixtures must never overwrite approved artwork.
+const OUT = path.resolve(HERE, '../test-results/placeholders');
+fs.mkdirSync(OUT, { recursive: true });
 const require = createRequire(import.meta.url);
 
 const write = (name, content) => {
