@@ -6303,6 +6303,16 @@ body.template-index .founder-signal-copy h2 {
   }
 }
 
+@media (max-width: 520px) and (max-height: 620px) {
+  body.template-index .world-gate-copy {
+    padding-top: var(--header-stack-height);
+  }
+
+  body.template-index .world-gate-actions {
+    margin-top: 1.5rem;
+  }
+}
+
 
 /* v1.8 — functional contact channel + secondary face mark */
 .contact-page {
