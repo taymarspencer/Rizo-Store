@@ -3749,6 +3749,19 @@ body.rizo-celebrating .cart-rizo-signal img { animation: rizoBagCelebrate .75s v
   .filter-actions { padding-bottom: env(safe-area-inset-bottom); background: #0b0b0b; }
 }
 
+@media (max-width: 620px) {
+  .product-gallery-shell {
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 340px) {
+  .collection-toolbar-actions,
+  .collection-toolbar select {
+    min-width: 0;
+  }
+}
+
 @media (max-width: 520px) {
   .announcement-state { display: none; }
   .announcement { grid-template-columns: 1fr; }
@@ -5367,7 +5380,6 @@ body[data-heritage="on"] {
 .world-gate-copy {
   position: relative;
   z-index: 3;
-  width: 100%;
   padding-top: clamp(5rem, 9vw, 8rem);
   padding-bottom: clamp(6rem, 10vw, 9rem);
 }
@@ -6288,6 +6300,16 @@ body.template-index .founder-signal-copy h2 {
     width: 100%;
     max-width: 100%;
     white-space: normal;
+  }
+}
+
+@media (max-width: 520px) and (max-height: 620px) {
+  body.template-index .world-gate-copy {
+    padding-top: var(--header-stack-height);
+  }
+
+  body.template-index .world-gate-actions {
+    margin-top: 1.5rem;
   }
 }
 
