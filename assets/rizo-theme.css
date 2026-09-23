@@ -3755,6 +3755,13 @@ body.rizo-celebrating .cart-rizo-signal img { animation: rizoBagCelebrate .75s v
   }
 }
 
+@media (max-width: 340px) {
+  .collection-toolbar-actions,
+  .collection-toolbar select {
+    min-width: 0;
+  }
+}
+
 @media (max-width: 520px) {
   .announcement-state { display: none; }
   .announcement { grid-template-columns: 1fr; }
