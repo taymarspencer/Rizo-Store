@@ -509,7 +509,8 @@
     window.location.assign(url.toString());
   });
 
-  /* v0.3 analytics-ready event layer */
+  /* Analytics: every tracked click and commerce step becomes a rizo:* DOM
+     event (and a dataLayer push when one exists). */
   const emitRizoEvent = (name, detail = {}) => {
     const payload = { event: `rizo_${name}`, ...detail };
     doc.dispatchEvent(new CustomEvent(`rizo:${name}`, { detail: payload }));
@@ -699,7 +700,7 @@
   };
 
 
-  /* v0.4 intuitive commerce and Rizo-world controllers */
+  /* Product page, recommendations, recently viewed, predictive search */
   const parseJSONScript = (selector, container) => {
     const script = $(selector, container);
     if (!script) return null;

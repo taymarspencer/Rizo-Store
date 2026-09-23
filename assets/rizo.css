@@ -368,6 +368,7 @@ html.rizo-event [data-rizo-event-default] { display: none; }
 
 .foot { position: relative; z-index: 1; }
 .foot-sky { position: relative; min-height: clamp(220px, 34vw, 460px); }
+html:not(.rizo-event) .foot-sky { min-height: clamp(120px, 14vw, 200px); }
 .foot-flame { position: absolute; left: clamp(20px, 22vw, 360px); bottom: 0; width: clamp(26px, 2.4vw, 36px); color: var(--blue); transform-origin: 50% 100%; }
 .foot-flame .rizo-mark { width: 100%; height: auto; }
 .foot-flame .mk-eyes, .foot-flame .mk-mouth { fill: var(--bone); }
@@ -443,8 +444,12 @@ html.rizo-event--moon .hero-mark { display: none; }
   .hero-sub { font-size: 1rem; }
   .hero-actions .btn { min-height: 50px; }
 }
-@media (max-width: 749px) and (max-height: 640px) {
-  .hero { min-height: 560px; }
+@media (max-width: 749px) and (max-height: 700px) {
+  .hero { padding-bottom: 22px; }
+  .hero-sub { margin-top: 12px; }
+  .hero-actions { margin-top: 18px; }
+  .hero .rizo-event-countdown { margin-top: 16px; }
+  body[data-route='index'] { --moon-size: 56vw; --moon-y: 22%; }
 }
 
 /* 11 · Product grid and cards ------------------------------------------- */

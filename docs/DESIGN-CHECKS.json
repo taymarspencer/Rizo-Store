@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-09-23T22:32:49.674Z",
+  "environment": "Chromium, local Liquid preview, catalog snapshot, simulated commerce",
+  "results": [
+    {
+      "size": "320x568",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "375x667",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "390x844",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "430x932",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "768x1024",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "1024x768",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "1440x900",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "1920x1080",
+      "check": "hero",
+      "status": "pass"
+    },
+    {
+      "size": "320",
+      "check": "routes",
+      "status": "pass",
+      "routes": 11
+    },
+    {
+      "size": "1440",
+      "check": "routes",
+      "status": "pass",
+      "routes": 11
+    }
+  ],
+  "interactions": [
+    "first drawing: keyboard open/close",
+    "roost: arrive, notice pointer, leave, reduced motion, cleanup",
+    "moon: phase mask, tap → bats, World caption \"Tonight’s moon: waxing gibbous, 92% lit.\"",
+    "event off: mark instead of moon"
+  ]
+}

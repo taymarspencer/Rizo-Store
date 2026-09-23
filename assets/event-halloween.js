@@ -396,7 +396,9 @@
 
     const arrive = () => {
       if (bat || !enabled()) { schedule(12000); return; }
-      const options = spots().filter((spot) => spot.key !== lastSpot);
+      const all = spots();
+      const fresh = all.filter((spot) => spot.key !== lastSpot);
+      const options = fresh.length ? fresh : all;
       if (!options.length) { schedule(15000); return; }
       const total = options.reduce((sum, spot) => sum + spot.weight, 0);
       let roll = random() * total;
@@ -444,15 +446,23 @@
       const rect = bat.node.getBoundingClientRect();
       return Math.hypot(x - (rect.left + rect.width / 2), y - (rect.top + rect.height / 2));
     };
+    /* Throttled, but never drops the last position: a pointer that comes to
+       rest on the bat still startles it. */
+    let pending = null;
+    let trailing = 0;
+    const check = (x, y) => {
+      lastPointer = performance.now();
+      const d = near(x, y);
+      if (d < 70) leave('pointer');
+      else if (d < 170) { if (bat && bat.node.dataset.frame !== '1') setFrame(1); }
+      else if (bat && bat.node.dataset.frame === '1') setFrame(0);
+    };
     const onPointer = (event) => {
       if (event.pointerType !== 'mouse' || !bat) return;
-      const now = performance.now();
-      if (now - lastPointer < 90) return;
-      lastPointer = now;
-      const d = near(event.clientX, event.clientY);
-      if (d < 70) leave('pointer');
-      else if (d < 170) { if (bat.node.dataset.frame !== '1') setFrame(1); }
-      else if (bat.node.dataset.frame === '1') setFrame(0);
+      pending = { x: event.clientX, y: event.clientY };
+      const wait = 90 - (performance.now() - lastPointer);
+      if (wait <= 0) { window.clearTimeout(trailing); trailing = 0; check(pending.x, pending.y); return; }
+      if (!trailing) trailing = window.setTimeout(() => { trailing = 0; if (pending) check(pending.x, pending.y); }, wait);
     };
     const onScroll = (velocity) => {
       if (!bat || bat.leaving) return;
@@ -479,6 +489,7 @@
       destroy() {
         window.clearTimeout(timer);
         window.clearTimeout(idleTimer);
+        window.clearTimeout(trailing);
         document.removeEventListener('pointermove', onPointer);
         cleanups.forEach((off) => off());
         bat?.node.remove();
