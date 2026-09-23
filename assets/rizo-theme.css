@@ -5373,7 +5373,6 @@ body[data-heritage="on"] {
 .world-gate-copy {
   position: relative;
   z-index: 3;
-  width: 100%;
   padding-top: clamp(5rem, 9vw, 8rem);
   padding-bottom: clamp(6rem, 10vw, 9rem);
 }
