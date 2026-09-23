@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-09-23T10:22:54.268Z",
+  "environment": "Chromium local Liquid preview; catalog snapshot, simulated commerce",
+  "results": [
+    {
+      "size": "320x568",
+      "status": "pass",
+      "viewport": 320,
+      "documentWidth": 320,
+      "textLeft": 18,
+      "textRight": 287.03125,
+      "insetLeft": 18,
+      "insetRight": 302,
+      "shopBottom": 388.515625,
+      "shopHit": true,
+      "dockTop": 486,
+      "titleFont": "\"Rizo Display\", Impact, \"Arial Narrow\", sans-serif"
+    },
+    {
+      "size": "375x667",
+      "status": "pass",
+      "viewport": 375,
+      "documentWidth": 375,
+      "textLeft": 18,
+      "textRight": 337.453125,
+      "insetLeft": 18,
+      "insetRight": 357,
+      "shopBottom": 399.5,
+      "shopHit": true,
+      "dockTop": 585,
+      "titleFont": "\"Rizo Display\", Impact, \"Arial Narrow\", sans-serif"
+    },
+    {
+      "size": "390x844",
+      "status": "pass",
+      "viewport": 390,
+      "documentWidth": 390,
+      "textLeft": 18,
+      "textRight": 348.75,
+      "insetLeft": 18,
+      "insetRight": 372,
+      "shopBottom": 506.71875,
+      "shopHit": true,
+      "dockTop": 762,
+      "titleFont": "\"Rizo Display\", Impact, \"Arial Narrow\", sans-serif"
+    },
+    {
+      "size": "430x932",
+      "status": "pass",
+      "viewport": 430,
+      "documentWidth": 430,
+      "textLeft": 18,
+      "textRight": 382.890625,
+      "insetLeft": 18,
+      "insetRight": 412,
+      "shopBottom": 514.25,
+      "shopHit": true,
+      "dockTop": 850,
+      "titleFont": "\"Rizo Display\", Impact, \"Arial Narrow\", sans-serif"
+    },
+    {
+      "size": "1440x900",
+      "status": "pass",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "textLeft": 100,
+      "textRight": 753.71875,
+      "insetLeft": 100,
+      "insetRight": 1340,
+      "shopBottom": 622.390625,
+      "shopHit": true,
+      "dockTop": 0,
+      "titleFont": "\"Rizo Display\", Impact, \"Arial Narrow\", sans-serif"
+    }
+  ],
+  "interactions": [
+    "archive keyboard open/close",
+    "320px collection and product",
+    "perched bat proximity reaction",
+    "live reduced-motion change",
+    "event cleanup",
+    "event off"
+  ]
+}

@@ -122,7 +122,7 @@ const makeProduct = (index, { title, handle, price, options = [], variants: vari
 };
 
 const SIZES = { name: 'Size', values: ['S', 'M', 'L', 'XL'] };
-const PRODUCTS = [
+let PRODUCTS = [
   makeProduct(0, { title: 'Night Signal Hoodie', handle: 'night-signal-hoodie', price: 6800, options: [SIZES], variants: { M: { available: false }, XL: { qty: 3 } } }),
   makeProduct(1, { title: 'Rizo Camo Tee', handle: 'rizo-camo-tee', price: 3400, options: [SIZES, { name: 'Color', values: ['Black', 'Bone'] }], variants: { 'S / Bone': { available: false } } }),
   makeProduct(2, { title: 'Flame Cap', handle: 'flame-cap', price: 2800 }),
@@ -130,6 +130,17 @@ const PRODUCTS = [
   makeProduct(4, { title: 'Origin File Tee', handle: 'origin-file-tee', price: 3600, options: [SIZES] }),
   makeProduct(5, { title: 'Circle Longsleeve', handle: 'circle-longsleeve', price: 4200, options: [SIZES] })
 ];
+// Opt-in visual fixture from the public Rizo catalog. Tests retain the mock
+// catalog above. Shopify never reads this fixture or these local image paths.
+if (process.env.RIZO_PREVIEW_CATALOG === 'snapshot') {
+  const snapshot = JSON.parse(fs.readFileSync(path.join(HERE, 'catalog-snapshot.json'), 'utf8'));
+  PRODUCTS = snapshot.products.map((source, index) => {
+    const product = makeProduct(index, { title: source.title, handle: source.handle, price: Math.round(Number(source.variants[0].price) * 100), options: source.options.filter(option => option.name !== 'Title') });
+    const images = source.images.map(photo => ({ ...image(photo.file, photo.width, photo.height, source.title), src: `/preview-catalog/${photo.file}`, url: `/preview-catalog/${photo.file}` }));
+    const variants = source.variants.map(variant => ({ ...variant, price: Math.round(Number(variant.price) * 100), options: [variant.option1, variant.option2, variant.option3].filter(Boolean), inventory_management: null, inventory_quantity: null, inventory_policy: 'deny', url: `/products/${source.handle}?variant=${variant.id}`, featured_image: null }));
+    return { ...product, id: source.id, description: source.body_html, images, featured_image: images[0], media: images.map((photo, i) => ({ id: `${source.id}${i}`, media_type: 'image', alt: photo.alt, preview_image: photo, position: i + 1 })), variants, available: variants.some(v => v.available), selected_or_first_available_variant: variants.find(v => v.available) || variants[0], first_available_variant: variants.find(v => v.available) || variants[0] };
+  });
+}
 const productByHandle = (handle) => PRODUCTS.find((product) => product.handle === handle);
 const variantById = (id) => {
   for (const product of PRODUCTS) {
@@ -293,6 +304,7 @@ const escapeAttr = (value) => String(value ?? '').replace(/&/g, '&amp;').replace
 const imageSrc = (value) => (value && typeof value === 'object' ? value.src || value.url || imageSrc(value.preview_image || value.featured_image || value.image) : value) || '';
 
 engine.registerFilter('asset_url', (file) => `/cdn/assets/${file}`);
+engine.registerFilter('preload_tag', (url, ...pairs) => `<link rel="preload" href="${url}" ${pairs.map(([key, value]) => `${key}="${value}"`).join(' ')}>`);
 engine.registerFilter('asset_img_url', (file) => `/cdn/assets/${file}`);
 engine.registerFilter('file_url', (file) => `/cdn/files/${file}`);
 engine.registerFilter('stylesheet_tag', (url) => `<link href="${url}" rel="stylesheet" type="text/css" media="all">`);
@@ -478,7 +490,12 @@ class RequestContext {
       const blockSchema = (schema.blocks || []).find((item) => item.type === block.type) || {};
       return { id: blockId, type: block.type, settings: withDefaults(blockSchema.settings, block.settings), shopify_attributes: `data-shopify-editor-block="${blockId}"` };
     });
-    const section = { id, settings: withDefaults(schema.settings, data.settings), blocks, index: 1 };
+    const values = { ...data.settings };
+    for (const [key, value] of this.url.searchParams) {
+      const prefix = `section.${type}.`;
+      if (key.startsWith(prefix)) values[key.slice(prefix.length)] = value;
+    }
+    const section = { id, settings: withDefaults(schema.settings, values), blocks, index: 1 };
     const html = await engine.parseAndRender(read(`sections/${type}.liquid`), { section }, { globals: { ...this.globals, __request: this } });
     const tag = schema.tag || 'div';
     return `<${tag} id="shopify-section-${id}" class="shopify-section${schema.class ? ` ${schema.class}` : ''}">${html}</${tag}>`;
@@ -563,6 +580,11 @@ const server = http.createServer(async (req, res) => {
     const sid = sessionId(req, res);
     const lines = cartFor(sid);
 
+    if (pathname.startsWith('/preview-catalog/')) {
+      const file = path.join(HERE, 'catalog-images', path.basename(pathname));
+      if (!fs.existsSync(file)) return send(res, 404, 'Not found');
+      return send(res, 200, fs.readFileSync(file), TYPES[path.extname(file)] || 'application/octet-stream');
+    }
     if (pathname.startsWith('/cdn/assets/')) {
       const file = path.join(THEME, 'assets', path.basename(pathname));
       if (!fs.existsSync(file)) return send(res, 404, 'missing asset', 'text/plain');

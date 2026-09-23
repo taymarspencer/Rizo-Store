@@ -1,5 +1,27 @@
 # rizo-store
 
+**Design branch: `design/halloween-2026`.** Based on the complete
+`fix/final-responsive-cleanup` branch at `ceb1103f157f98738f56afb9a6952d1ac78380b2`.
+The homepage now uses the September 2026 Rizo art direction. Start with
+[`docs/HALLOWEEN-2026-DESIGN-HANDOFF.md`](docs/HALLOWEEN-2026-DESIGN-HANDOFF.md)
+for design decisions, validation, asset provenance, and production caveats.
+
+For the visual preview with a dated snapshot of actual Rizo products:
+
+```sh
+cd tools
+npm ci
+npx playwright install chromium
+npm run preview:catalog
+# Open http://localhost:9292/?rizo_event=on
+```
+
+`npm run test:design` checks the four requested mobile sizes and desktop,
+and saves screenshots. `npm test` uses the controlled mock catalog for the
+commerce and Event Layer regression suite. Preview cart/checkout are simulated.
+Production continues to use Shopify's live product, variant, inventory and cart
+objects. Halloween remains scheduled for October 1, 2026 in New York time.
+
 The Rizo Apparel Shopify theme (rizo.store): Rizo Portal with the seasonal
 **Event Layer** (Halloween 2026 is the first preset).
 

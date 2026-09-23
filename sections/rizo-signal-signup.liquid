@@ -11,7 +11,7 @@
     <div class="newsletter-field">
       <label class="visually-hidden" for="FooterSignal-{{ section.id }}">Email address</label>
       <input id="FooterSignal-{{ section.id }}" type="email" name="contact[email]" autocomplete="email" required placeholder="YOUR EMAIL"{% if form.errors %} aria-invalid="true" aria-describedby="{{ signal_error_id }}"{% endif %}>
-      <button class="button button-hot" type="submit">JOIN THE WORLD</button>
+      <button class="button button-hot" type="submit">KEEP ME POSTED</button>
     </div>
     {% if form.posted_successfully? %}<p class="form-message" role="status" tabindex="-1" data-form-feedback>You have the signal.</p>{% endif %}
     {% if form.errors %}<div id="{{ signal_error_id }}" class="form-message form-message--error" role="alert" tabindex="-1" data-form-feedback>{{ form.errors | default_errors }}</div>{% endif %}

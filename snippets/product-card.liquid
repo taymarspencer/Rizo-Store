@@ -77,7 +77,7 @@
       <button class="quick-add" type="button" data-quick-add-open="{{ card_product.handle }}" data-product-url="{{ card_product.url }}.js">{% if size_option != blank %}CHOOSE SIZE{% else %}CHOOSE OPTIONS{% endif %} {% render 'icon', name: 'plus' %}</button>
     {% endif %}
   {% elsif card_product.available == false %}
-    <span class="quick-add quick-add--disabled">SIGNAL ENDED</span>
+    <span class="quick-add quick-add--disabled">SOLD OUT</span>
   {% endif %}
   {% if show_artifact_link %}<a class="artifact-link" href="{{ card_product.url }}">FIT · STORY · DETAILS</a>{% endif %}
 </article>

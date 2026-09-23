@@ -6,10 +6,10 @@ A reversible seasonal layer for the Rizo Portal theme.
 DEFAULT RIZO SITE  +  ONE ACTIVE EVENT PRESET  (Halloween 2026 is the first)
 ```
 
-The normal site is never edited to "become" an event. An event is a preset
+The current Rizo design does not depend on an active event. An event is a preset
 that configures a small set of shared modules (night treatment, moon, fog,
-ambient flyers, countdown). With the layer off, the theme renders and loads
-exactly what v2.3 did.
+ambient flyers, countdown). With the layer off, the current homepage renders without seasonal atmosphere.
+The September 2026 composition is documented in HALLOWEEN-2026-DESIGN-HANDOFF.md.
 
 ---
 
@@ -25,7 +25,7 @@ exactly what v2.3 did.
 | **Always preview in the theme editor** | On by default. The editor shows the event even outside its window. Customers still follow the schedule. |
 | **Signal bar message during the event** | Optional. Swaps the header signal bar text only while the event is live. |
 
-Current `settings_data.json`: **Halloween, Scheduled**. The live store shows
+Current `settings_data.json`: **Halloween, Scheduled**, restrained fog/bat density, countdown seconds off. The live store shows
 normal Rizo until **Oct 1 2026 00:00 ET**, switches on by itself (including
 for anyone with a page already open), and switches off by itself at the end.
 
@@ -62,9 +62,9 @@ flat, so the naming convention replaces sub-folders: **`event-<preset>-<role>.<e
 | `assets/rizo-event-layer.js` | Engine runtime: loop, input, state, and the modules `hero`, `quiet`, `countdown`, `fog`, `moon`. |
 | `assets/rizo-event-flock.js` | Generic ambient-flyer module: pool, limits, scheduling, recycling. |
 | `snippets/event-halloween.liquid` | **Halloween preset**: name, window, copy, modules, asset names. |
-| `assets/event-halloween.css` | Halloween art-direction tokens. **Astra's main file.** |
+| `assets/event-halloween.css` | Halloween art-direction tokens. Seasonal palette and composition. |
 | `assets/event-halloween.js` | Halloween-only behaviour: how bats fly. |
-| `assets/event-halloween-*.svg/webp` | Replaceable artwork (moon, bats, fog). **Temporary placeholders.** |
+| `assets/event-halloween-*.svg/webp` | Replaceable artwork (moon, bats, fog). Final moon and bat artwork; retained tileable fog. |
 
 Integration points in existing theme files (the whole footprint):
 
@@ -162,16 +162,16 @@ setting. It's art direction, tuned once in the preset CSS.
 
 ## 6. Replacing artwork
 
-Keep the file names and upload over the placeholders (**Edit code →
+Keep the file names and upload replacement artwork (**Edit code →
 Assets**), or use the settings where one exists.
 
 | Art | File(s) | Setting override | Guidance |
 |---|---|---|---|
-| **Moon** | `event-halloween-moon.svg` | Event layer: moon → **Moon artwork** | Transparent PNG, WebP or SVG, any aspect ratio (height follows the image). About 1000–1600 px wide is plenty. The glow is CSS, so don't bake a big glow into the file. |
+| **Moon** | `event-halloween-moon.webp` | Event layer: moon → **Moon artwork** | Transparent PNG, WebP or SVG, any aspect ratio (height follows the image). About 1000–1600 px wide is plenty. The glow is CSS, so don't bake a big glow into the file. |
 | **Bats** | `event-halloween-bat-1.svg`, `event-halloween-bat-1-b.svg` (second pose), `event-halloween-bat-2.svg` | none; list in `snippets/event-halloween.liquid` → `flock_sprites` | 1–3 silhouettes, about 200×100 viewBox. `ratio` = width ÷ height. A sprite with `pose2` alternates two poses. Without it, one silhouette gets a squash "flap". To add a third bat, add an entry to `flock_sprites`. For CSS-recolourable silhouettes add `"mode":"mask"` (colour = `--rizo-event-flyer-color`). Masks are fetched with CORS, so the asset must be same-origin; Shopify's `/cdn/shop/...` asset URLs are. |
 | **Fog** | `event-halloween-fog.webp` | Event layer: fog → **Fog texture** | Soft, **horizontally tileable** (left edge continues the right), transparent, pale colour, about 4:1–6:1 (placeholder 1280×224, 43 KB). If the aspect changes, update `fog_ratio` in the preset. Keep it small: the runtime draws it at about 1/3 resolution anyway. |
 
-`tools/assets/generate-halloween-placeholders.mjs` shows exactly how the placeholders were made.
+`tools/assets/generate-halloween-placeholders.mjs` preserves the historical fixture generator. Its output goes to ignored `tools/test-results/placeholders/`, so it cannot overwrite the approved artwork.
 
 ---
 
@@ -207,8 +207,8 @@ No engine, snippet or section changes are needed. Only one event is active at a 
 - **Selected but outside the window:** about 6.5 KB inline (dials, config and boot) plus
   `rizo-event-layer.css` and the preset CSS (about 22 KB uncompressed, cached).
   The runtime is **not** requested.
-- **Live (Halloween):** about 120 KB uncompressed in total (JS 51 KB, CSS 22 KB,
-  fog 43 KB, SVGs about 4 KB). Scripts are async and never block rendering.
+- **Live (Halloween):** about 405 KB uncompressed in total after final artwork;
+  the 281 KB transparent moon is the largest asset. Scripts are async and never block rendering.
   Flock scripts are skipped for reduced motion.
 - One `requestAnimationFrame` loop for the whole layer. It **sleeps** when no
   bat is flying and nothing is scrolling. Scroll handlers only set a flag;
@@ -220,6 +220,10 @@ No engine, snippet or section changes are needed. Only one event is active at a 
   and reused, never removed and re-added.
 
 ## 9. Accessibility
+
+One additional bounded resting bat uses the same engine input and lifecycle,
+reacts through a short Web Animation, and returns after nine seconds. It stops
+under overlays, reduced motion, disabled motion, and event deactivation.
 
 Every layer is `aria-hidden`, `pointer-events: none`, and has no focusable
 elements; the keyboard focus order is identical with the event on or off. The

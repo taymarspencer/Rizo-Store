@@ -216,10 +216,10 @@ test('Each module can be switched off on its own', async () => {
 test('Signal bar shows the event message only while the event is live', async () => {
   const message = 'OCTOBER SIGNAL / RIZO AFTER DARK';
   const read = (page) => page.evaluate(() => [...document.querySelectorAll('.announcement-copy')].filter((node) => getComputedStyle(node).display !== 'none').map((node) => node.textContent.trim()));
-  const live = await open(`/?rizo_event=on&set.event_announcement=${encodeURIComponent(message)}`);
+  const live = await open(`/?rizo_event=on&section.rizo-header.show_announcement=true&set.event_announcement=${encodeURIComponent(message)}`);
   assert(JSON.stringify(await read(live.page)) === JSON.stringify([message]), 'event message not shown', await read(live.page));
   await live.close();
-  const idle = await open(`/?set.event_announcement=${encodeURIComponent(message)}`, { clock: { fixed: new Date('2026-09-22T12:00:00-04:00') } });
+  const idle = await open(`/?section.rizo-header.show_announcement=true&set.event_announcement=${encodeURIComponent(message)}`, { clock: { fixed: new Date('2026-09-22T12:00:00-04:00') } });
   const visible = await read(idle.page);
   assert(visible.length === 1 && visible[0] !== message, 'default message should show outside the window', visible);
   await idle.close();
@@ -239,7 +239,7 @@ test('Countdown targets Oct 31 12:00 AM New York regardless of visitor timezone'
   const now = new Date('2026-10-01T12:34:56Z'); // → 29d 15h 25m 04s before 2026-10-31T04:00:00Z
   const seen = [];
   for (const timezoneId of ['America/New_York', 'America/Los_Angeles', 'Europe/London', 'Asia/Tokyo', 'Pacific/Auckland']) {
-    const t = await open('/', { timezoneId, clock: { fixed: now } });
+    const t = await open('/?set.event_countdown_seconds=true', { timezoneId, clock: { fixed: now } });
     await waitFor(t.page, () => document.querySelector('[data-rizo-event-countdown]')?.dataset.ready === 'true');
     const value = await readCountdown(t.page);
     seen.push(`${timezoneId}: ${value.days}d ${value.hours}h ${value.minutes}m ${value.seconds}s`);
@@ -259,7 +259,7 @@ test('Countdown target without an offset is read in New York time, not the visit
 });
 
 test('Countdown ticks each second, rewrites only changed digits and never shifts layout', async () => {
-  const t = await open('/?rizo_event=on', PHONE);
+  const t = await open('/?rizo_event=on&set.event_countdown_seconds=true', PHONE);
   await waitFor(t.page, () => document.querySelector('[data-rizo-event-countdown]')?.dataset.ready === 'true');
   const result = await t.page.evaluate(() => new Promise((resolve) => {
     const root = document.querySelector('[data-rizo-event-countdown]');
@@ -706,6 +706,8 @@ test('Quick add (variant + single-variant), cart drawer, cart page and checkout 
 test('Product page: variant picker, sold-out state, add to cart and sticky bar with the event live', async () => {
   const t = await open('/products/night-signal-hoodie?rizo_event=on', PHONE);
   await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
+  // IntersectionObserver publishes the initial quiet-zone result after mount.
+  await waitFor(t.page, () => window.RizoEventLayer.state.quiet);
   const quiet = await t.page.evaluate(() => window.RizoEventLayer.state.quiet);
   const soldOut = await t.page.locator('[data-option-button][data-value="M"]').evaluate((node) => node.disabled || node.getAttribute('aria-disabled') === 'true' || node.classList.contains('is-unavailable'));
   await press(t.page, t.page.locator('[data-option-button][data-value="XL"]'), true);
