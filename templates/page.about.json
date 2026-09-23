@@ -1,77 +1,123 @@
 {
   "sections": {
-    "about": {
-      "type": "rizo-about",
+    "head": {
+      "type": "rizo-page-head",
+      "settings": {
+        "label": "Origin",
+        "title": "No blueprint.",
+        "voice": "say",
+        "lead": "",
+        "align": "offset",
+        "crumbs": false,
+        "fog": 45
+      }
+    },
+    "story": {
+      "type": "rizo-story",
+      "settings": {
+        "builtin_image": "founder_mural",
+        "image_alt": "Taymar Spencer in front of a Pittsburgh mural, wearing Rizo",
+        "caption": "Taymar Spencer",
+        "label": "",
+        "heading": "",
+        "body": "<p>Rizo didn’t start with money, connections or a plan. It started with Taymar Spencer wanting a real way to express himself, and not letting what he didn’t have decide what he could make.</p><p>He learned by making: trying things, rebuilding them, and taking help from people who believed in it. He still draws the designs and makes the clothes himself.</p><p>The part that stuck was the people. Seeing someone get a piece, put it on and feel something is still the point.</p>",
+        "link_label": "",
+        "flip": true,
+        "show_pocket": false,
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "quote": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "quote",
+        "label": "",
+        "body": "<p>Rizo started through limitations. I was in a box, and I broke out.</p>",
+        "cite": "Taymar Spencer",
+        "align": "offset",
+        "surface": "open",
+        "space": "l",
+        "fog": 70
+      }
+    },
+    "marks": {
+      "type": "rizo-artifacts",
       "blocks": {
-        "limits": {
-          "type": "point",
+        "sketch": {
+          "type": "object",
           "settings": {
-            "title": "LIMITATIONS WERE THE FIRST MATERIAL",
-            "text": "The lack of a perfect setup forced Rizo to invent its own process, language and way forward."
+            "builtin_image": "sketch",
+            "alt": "Pencil sketch of the first flame face",
+            "material": "paper",
+            "span": 4,
+            "place": "left",
+            "offset": "none",
+            "tilt": -2,
+            "title": "First drawing"
           }
         },
-        "craft": {
-          "type": "point",
+        "face": {
+          "type": "object",
           "settings": {
-            "title": "FOUNDER-LED FROM IDEA TO GARMENT",
-            "text": "Taymar develops the designs and makes the clothes himself, keeping the work close to the original intent."
+            "builtin_image": "face_white",
+            "alt": "Two dot eyes over a row of five hand-drawn Xs",
+            "material": "object",
+            "span": 3,
+            "place": "center",
+            "offset": "down",
+            "tilt": 0,
+            "title": "The face"
           }
         },
-        "outlet": {
-          "type": "point",
+        "flame": {
+          "type": "object",
           "settings": {
-            "title": "CREATIVITY NEEDS AN OUTLET",
-            "text": "Rizo exists to help people show more of who they are, not disappear into what everyone else is wearing."
-          }
-        },
-        "help": {
-          "type": "point",
-          "settings": {
-            "title": "HELP MATTERED ALONG THE WAY",
-            "text": "Friends, supporters and people who showed up helped the world move forward before there were formal titles."
-          }
-        },
-        "becoming": {
-          "type": "point",
-          "settings": {
-            "title": "STILL BECOMING",
-            "text": "Growth is not hidden behind a polished story. Learning, rebuilding and getting better are part of the design."
+            "builtin_image": "mark_blue",
+            "alt": "The blue Rizo flame with the face",
+            "material": "object",
+            "span": 3,
+            "place": "right",
+            "offset": "up",
+            "tilt": 4,
+            "title": "The flame"
           }
         }
       },
       "block_order": [
-        "limits",
-        "craft",
-        "outlet",
-        "help",
-        "becoming"
+        "sketch",
+        "face",
+        "flame"
       ],
       "settings": {
-        "dateline_label": "RIZO STORY / ORIGIN FILE",
-        "eyebrow": "ORIGIN FILE / TAYMAR SPENCER",
-        "heading": "BUILT WITHOUT A BLUEPRINT.",
-        "body": "<p>Rizo did not begin with unlimited resources, industry connections, or a perfect plan. It began with Taymar Spencer wanting a real way to express himself—and refusing to let limitations decide what he could create.</p><p>Taymar learned by making, experimenting, rebuilding, and accepting help from people who believed in the vision. He continues to develop the designs and make the clothes himself.</p><p>At first, the goal was simply to become great and keep improving. Clothing became the passion through people: seeing someone receive a piece, put it on, and feel confidence, excitement or recognition.</p><p>What began as one person’s outlet became a mission to give other people room to express themselves. The goal is bigger than garments. It is to create something that moves people and use that energy to change the world around it.</p>",
-        "quote": "Rizo started through limitations. I was in a box, and I broke out.",
-        "quote_attribution": "TAYMAR SPENCER / FOUNDER & BRAND OWNER",
-        "show_origin_art": true,
-        "link_label": "",
-        "theme": "paper"
+        "heading": "",
+        "surface": "solid",
+        "space": "l",
+        "fog": 0
       }
     },
-    "team": {
-      "type": "rizo-team",
+    "circle": {
+      "type": "rizo-text",
       "settings": {
-        "mode": "circle",
-        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
-        "eyebrow": "THE RIZO CIRCLE",
-        "heading": "ONE VISION. MANY HANDS ALONG THE WAY.",
-        "text": "<p>Rizo is founder-led. Taymar designs and makes the pieces, but the world has never moved alone. Friends, models, event help, supporters and people who believed early have helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>",
-        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+        "style": "body",
+        "label": "The Circle",
+        "heading": "Never just one person.",
+        "body": "<p>Friends, models, people who helped at a table, carried pieces, took a photo, or showed up before there was a title for it.</p>",
+        "link_label": "Meet the Circle",
+        "link": "/pages/circle",
+        "align": "left",
+        "surface": "raised",
+        "space": "m",
+        "fog": 0
       }
     }
   },
   "order": [
-    "about",
-    "team"
+    "head",
+    "story",
+    "quote",
+    "marks",
+    "circle"
   ]
 }

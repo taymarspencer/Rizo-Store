@@ -1,0 +1,26 @@
+{%- comment -%}
+  Open sky and not much else. The empty space is the point: it is where
+  the page lets the night show through between everything else.
+  Collapses to a short pause when no event is live.
+{%- endcomment -%}
+<section class="s interlude" data-surface="open" data-fog="{{ section.settings.fog | divided_by: 100.0 }}" data-fog-bias="{{ section.settings.fog_bias }}" data-align="{{ section.settings.align }}" style="min-height: {{ section.settings.height }}vh">
+  {%- if section.settings.line != blank -%}
+    <div class="interlude-line"><p>{{ section.settings.line | escape }}</p></div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Open sky",
+  "tag": "div",
+  "class": "section-interlude",
+  "settings": [
+    { "type": "text", "id": "line", "label": "One line (optional)" },
+    { "type": "select", "id": "align", "label": "Line position", "default": "left", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" }] },
+    { "type": "range", "id": "height", "label": "Height", "min": 30, "max": 100, "step": 5, "unit": "vh", "default": 70 },
+    { "type": "range", "id": "fog", "label": "Fog", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 95 },
+    { "type": "select", "id": "fog_bias", "label": "Where fog collects", "default": "ground", "options": [{ "value": "ground", "label": "Low" }, { "value": "even", "label": "Everywhere" }, { "value": "ceiling", "label": "High" }] }
+  ],
+  "presets": [{ "name": "Open sky" }]
+}
+{% endschema %}

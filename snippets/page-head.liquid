@@ -1,0 +1,20 @@
+{%- comment -%}
+  The route header every page shares: open sky, a title, maybe a line.
+  Used by sections/rizo-page-head.liquid and the main-* templates, so a new
+  Shopify page gets it without anyone designing it.
+
+    {% render 'page-head', title: page.title, lead: '…', label: '…', voice: 'say', align: 'left', crumbs: true %}
+{%- endcomment -%}
+{%- assign head_voice = voice | default: 'say' -%}
+<header class="s page-head" data-surface="open" data-fog="{{ fog | default: 0.45 }}" data-fog-bias="ground" data-align="{{ align | default: 'left' }}">
+  <div class="wrap wrap--wide page-head-inner">
+    {%- if crumbs -%}
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">Rizo</a><span aria-hidden="true">/</span>{% if crumb_parent_url != blank %}<a href="{{ crumb_parent_url }}">{{ crumb_parent }}</a><span aria-hidden="true">/</span>{% endif %}<span aria-current="page">{{ title }}</span></nav>
+    {%- elsif label != blank -%}
+      <p class="v-label muted">{{ label }}</p>
+    {%- endif -%}
+    <h1 class="page-head-title{% if head_voice == 'sign' %} v-sign{% endif %}">{{ title }}</h1>
+    {%- if lead != blank -%}<div class="page-head-lead">{{ lead }}</div>{%- endif -%}
+    {%- if moon_phase -%}<p class="v-note" data-rizo-moon-phase hidden></p>{%- endif -%}
+  </div>
+</header>

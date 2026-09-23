@@ -1,30 +1,42 @@
 {
   "sections": {
-    "circle": {
-      "type": "rizo-team",
+    "head": {
+      "type": "rizo-page-head",
       "settings": {
-        "mode": "circle",
-        "display_style": "full",
-        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
-        "eyebrow": "THE RIZO CIRCLE",
-        "heading": "ONE VISION. MANY HANDS ALONG THE WAY.",
-        "text": "<p>Rizo is founder-led, but the world has never moved alone. Friends, models, event help, supporters, and people who believed early helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>",
-        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+        "label": "",
+        "title": "The Circle",
+        "voice": "say",
+        "lead": "<p>Friends, models, people who helped at a table, carried pieces, took a photo, or showed up before there was a title for it.</p>",
+        "align": "left",
+        "crumbs": false,
+        "fog": 45
       }
     },
+    "photos": {
+      "type": "rizo-gallery",
+      "blocks": {
+        "underpass": { "type": "photo", "settings": { "builtin_image": "underpass", "alt": "Two friends in black Rizo 412 sets under a concrete overpass", "caption": "Pittsburgh" } },
+        "night": { "type": "photo", "settings": { "builtin_image": "circle_night", "alt": "Friends in Rizo hoodies at night" } },
+        "gym": { "type": "photo", "settings": { "builtin_image": "circle_gym", "alt": "Two friends flexing in Rizo shirts" } },
+        "making": { "type": "photo", "settings": { "builtin_image": "making", "alt": "Rizo at an outdoor event table" } }
+      },
+      "block_order": ["underpass", "night", "gym", "making"],
+      "settings": { "label": "", "heading": "", "layout": "spread", "surface": "solid", "space": "m", "fog": 0 }
+    },
+    "more": {
+      "type": "rizo-gallery",
+      "blocks": {
+        "pink": { "type": "photo", "settings": { "builtin_image": "circle_pink", "alt": "A friend in a pink Rizo hoodie at sunset" } },
+        "stadium": { "type": "photo", "settings": { "builtin_image": "stadium", "alt": "Friends holding up Rizo 412 hoodies at night" } },
+        "table": { "type": "photo", "settings": { "builtin_image": "table", "alt": "Kids and parents at a Rizo craft table" } }
+      },
+      "block_order": ["pink", "stadium", "table"],
+      "settings": { "label": "", "heading": "", "layout": "strip", "surface": "open", "space": "m", "fog": 35 }
+    },
     "signup": {
-      "type": "rizo-signal-signup",
-      "settings": {
-        "eyebrow": "STAY IN THE CIRCLE",
-        "heading": "GET THE NEXT SIGNAL.",
-        "shop_label": "SHOP WHAT IS LIVE",
-        "shop_link": "shopify://collections/all",
-        "value": "Pieces, events, restocks, and where Rizo moves next."
-      }
+      "type": "rizo-signup",
+      "settings": { "heading": "Come find us.", "text": "Pop-ups, restocks and new pieces. Not much else.", "button": "Sign up", "surface": "solid", "space": "m", "fog": 0 }
     }
   },
-  "order": [
-    "circle",
-    "signup"
-  ]
+  "order": ["head", "photos", "more", "signup"]
 }

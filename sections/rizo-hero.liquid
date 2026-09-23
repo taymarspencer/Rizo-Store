@@ -1,0 +1,63 @@
+{%- comment -%}
+  Home hero. Open sky: the moon (or, with no event live, the mark) sits
+  in the sky layer behind it. The headline is set line by line; a final
+  full stop is kept as its own element because something may hang off it.
+{%- endcomment -%}
+{%- liquid
+  assign lines = section.settings.heading | strip | newline_to_br | split: '<br />'
+  assign line_count = lines.size
+-%}
+<section class="hero s" data-surface="open" data-fog="{{ section.settings.fog | divided_by: 100.0 }}" data-fog-bias="ground">
+  <span data-rizo-event-hero hidden></span>
+  <div class="hero-mark" aria-hidden="true">{% render 'rizo-mark' %}</div>
+
+  <div class="hero-copy">
+    {% render 'rizo-event-countdown', placement: 'before_heading', id: section.id %}
+    {%- if line_count > 0 -%}
+      <h1 class="hero-title">
+        {%- for line in lines -%}
+          {%- assign text = line | strip -%}
+          {%- if forloop.last -%}
+            {%- assign last_char = text | slice: -1 -%}
+            {%- if last_char == '.' -%}
+              {%- assign keep = text.size | minus: 1 -%}
+              <span>{{ text | slice: 0, keep | escape }}<span class="hero-stop" data-roost="hang">.</span></span>
+            {%- else -%}
+              <span>{{ text | escape }}</span>
+            {%- endif -%}
+          {%- else -%}
+            <span>{{ text | escape }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </h1>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}<p class="hero-sub">{{ section.settings.text | escape }}</p>{%- endif -%}
+    <div class="hero-actions cluster">
+      {%- if section.settings.shop_label != blank -%}
+        <a class="btn btn--solid" href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}">{{ section.settings.shop_label | escape }}{% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+      {%- if section.settings.second_label != blank -%}
+        <a class="link" href="{{ section.settings.second_link | default: '/pages/about' }}"><span>{{ section.settings.second_label | escape }}</span>{% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+    {% render 'rizo-event-countdown', placement: 'after_actions', id: section.id %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "div",
+  "class": "section-hero",
+  "settings": [
+    { "type": "textarea", "id": "heading", "label": "Headline", "default": "Pittsburgh’s\npersonal flame.", "info": "One line per row. A full stop at the end is kept." },
+    { "type": "text", "id": "text", "label": "Line under the headline", "default": "Clothes made in Pittsburgh." },
+    { "type": "text", "id": "shop_label", "label": "Button", "default": "Shop" },
+    { "type": "url", "id": "shop_link", "label": "Button link" },
+    { "type": "text", "id": "second_label", "label": "Second link", "default": "How it started" },
+    { "type": "url", "id": "second_link", "label": "Second link destination" },
+    { "type": "range", "id": "fog", "label": "Fog in this section", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 85, "info": "Only while an event with fog is live." }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

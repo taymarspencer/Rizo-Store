@@ -1,27 +1,19 @@
-<section class="lost-page lost-page--world page-width">
-  <div class="lost-copy">
-    {% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'SIGNAL LOST / 404' %}{% endif %}
-    <p class="eyebrow">SIGNAL LOST · 404</p>
-    <h1>That page fell out of the world.</h1>
-    <p>The link is gone, the page moved, or the file never made it through the portal. The world is still live—just not here.</p>
-    <div class="lost-actions">
-      <a class="button button-hot" href="{{ routes.all_products_collection_url }}">SHOP WHAT IS LIVE {% render 'icon', name: 'arrow' %}</a>
-      <a class="button button-ghost" href="{{ routes.root_url }}#RizoWorldMap">ENTER THE WORLD</a>
-      <a class="button button-ghost" href="{{ routes.root_url }}">BACK HOME</a>
+<section class="s lost" data-surface="open" data-fog="0.9" data-fog-bias="ground">
+  <div class="wrap wrap--wide">
+    <h1>{{ section.settings.heading | escape }}</h1>
+    {%- if section.settings.text != blank -%}<p>{{ section.settings.text | escape }}</p>{%- endif -%}
+    <div class="cluster">
+      <a class="btn btn--solid" href="{{ routes.all_products_collection_url }}">Shop{% render 'icon', name: 'arrow' %}</a>
+      <a class="link" href="{{ routes.root_url }}"><span>Home</span></a>
     </div>
-    <p class="lost-note">Try the world map, Signal Forge, or the live pieces instead of another dead end.</p>
   </div>
-
-  <button class="lost-scene" type="button" data-lost-rizo aria-label="Recover signal art">
-    <span class="lost-scene-camo" aria-hidden="true"></span>
-    <span class="lost-scene-card">
-      <img class="lost-scene-mark lost-scene-mark--logo" src="{{ 'rizo-logo.png' | asset_url }}" width="497" height="650" alt="" aria-hidden="true" loading="lazy">
-      <img class="lost-scene-mark lost-scene-mark--412" src="{{ 'rizo-412-mark.webp' | asset_url }}" width="768" height="768" alt="" aria-hidden="true" loading="lazy">
-      <strong>WORLD FRAGMENT</strong>
-      <small>Tap to recover the signal.</small>
-    </span>
-  </button>
 </section>
 {% schema %}
-{"name":"404","settings":[]}
+{
+  "name": "Not found",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "It used to be here." },
+    { "type": "text", "id": "text", "label": "Text", "default": "The link is old or the page moved." }
+  ]
+}
 {% endschema %}

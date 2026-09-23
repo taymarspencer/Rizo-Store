@@ -1,0 +1,57 @@
+{%- comment -%}
+  Products from one collection. Solid ground and no fog: this is where
+  people shop, so the atmosphere steps back.
+{%- endcomment -%}
+{%- liquid
+  assign source = section.settings.collection
+  if source == blank
+    assign source = collections.all
+  endif
+  assign limit = section.settings.products_to_show
+  assign shown = source.products.size | at_most: limit
+-%}
+<section class="s products" data-surface="{{ section.settings.surface }}" data-space="{{ section.settings.space }}" data-fog="0" data-rizo-event-quiet id="Shop-{{ section.id }}">
+  <div class="wrap wrap--wide">
+    <div class="s-head">
+      <div>
+        {%- if section.settings.label != blank -%}<p class="v-label">{{ section.settings.label | escape }}{% if section.settings.show_count and source.products_count > 0 %} · {{ source.products_count }} {% if source.products_count == 1 %}piece{% else %}pieces{% endif %}{% endif %}</p>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2 class="s-title t-2">{{ section.settings.heading | escape }}</h2>{%- endif -%}
+      </div>
+      {%- if section.settings.link_label != blank -%}
+        <a class="link" href="{{ source.url | default: routes.all_products_collection_url }}"><span>{{ section.settings.link_label | escape }}</span>{% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+
+    {%- if source.products.size > 0 -%}
+      <div class="{% if section.settings.layout == 'shelf' %}shelf-track{% else %}grid-products{% endif %}" data-count="{{ shown }}">
+        {%- for product in source.products limit: limit -%}
+          {% render 'product-card', product: product, show_quick_add: section.settings.show_quick_add, show_size_preview: section.settings.show_sizes %}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="muted">Nothing here right now. New pieces show up here first.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Products",
+  "tag": "div",
+  "class": "section-products",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty to show everything." },
+    { "type": "range", "id": "products_to_show", "label": "Products", "min": 2, "max": 16, "step": 1, "default": 4 },
+    { "type": "select", "id": "layout", "label": "Layout", "default": "grid", "options": [{ "value": "grid", "label": "Grid" }, { "value": "shelf", "label": "Shelf (scrolls sideways)" }] },
+    { "type": "text", "id": "label", "label": "Small label", "default": "Shop" },
+    { "type": "checkbox", "id": "show_count", "label": "Show how many pieces", "default": true },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "text", "id": "link_label", "label": "Link", "default": "All pieces" },
+    { "type": "checkbox", "id": "show_quick_add", "label": "Quick add", "default": true },
+    { "type": "checkbox", "id": "show_sizes", "label": "Sizes in stock", "default": false },
+    { "type": "select", "id": "surface", "label": "Surface", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "raised", "label": "Raised" }, { "value": "open", "label": "Open sky" }] },
+    { "type": "select", "id": "space", "label": "Space", "default": "m", "options": [{ "value": "s", "label": "Tight" }, { "value": "m", "label": "Normal" }, { "value": "l", "label": "Loose" }] }
+  ],
+  "presets": [{ "name": "Products" }]
+}
+{% endschema %}

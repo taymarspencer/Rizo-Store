@@ -1,10 +1,33 @@
 <!doctype html>
-<html class="no-js" lang="{{ request.locale.iso_code }}" data-motion="{{ settings.motion_level }}">
+{%- liquid
+  assign route = template.name
+  if template.suffix != blank
+    assign route = template.name | append: '.' | append: template.suffix
+  endif
+
+  comment
+    A stable per-page number (0-6). Routes use it to vary the sky a little
+    so pages feel related without looking copied.
+  endcomment
+  assign page_seed = 0
+  case template.name
+    when 'page'
+      assign page_seed = page.id | modulo: 7
+    when 'product'
+      assign page_seed = product.id | modulo: 7
+    when 'collection'
+      assign page_seed = collection.id | modulo: 7
+    when 'article', 'blog'
+      assign page_seed = blog.id | modulo: 7
+  endcase
+-%}
+<html class="no-js" lang="{{ request.locale.iso_code }}" data-motion="{{ settings.motion_level | default: 'balanced' }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="{{ settings.color_ink }}">
-    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#07090c">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no">
     <link rel="canonical" href="{{ canonical_url }}">
 
     {% if settings.favicon != blank %}
@@ -24,44 +47,44 @@
 
     {{ content_for_header }}
 
+    {{ 'rizo-grotesque.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    {{ 'rizo-display.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
     <style>
+      @font-face { font-family: 'Rizo Grotesque'; src: url('{{ 'rizo-grotesque.woff2' | asset_url }}') format('woff2'); font-weight: 200 800; font-stretch: 75% 100%; font-display: swap; }
+      @font-face { font-family: 'Rizo Display'; src: url('{{ 'rizo-display.woff2' | asset_url }}') format('woff2'); font-weight: 400; font-display: swap; }
       :root {
-        --ink: {{ settings.color_ink }};
-        --paper: {{ settings.color_paper }};
-        --accent: {{ settings.color_accent }};
-        --heat: {{ settings.color_accent_2 }};
-        --muted: {{ settings.color_muted }};
-        --radius: {{ settings.radius }}px;
-        --page-width: {{ settings.page_width }}px;
+        --night: {{ settings.color_ink }};
+        --bone: {{ settings.color_paper }};
+        --blue: {{ settings.color_accent }};
+        --blue-2: {{ settings.color_accent_2 }};
+        --radius: {{ settings.radius | at_most: 12 }}px;
+        --page: {{ settings.page_width }}px;
       }
     </style>
-    <meta name="format-detection" content="telephone=no">
-    {{ 'rizo-theme.css' | asset_url | stylesheet_tag: preload: true }}
-    {{ 'rizo-display.ttf' | asset_url | preload_tag: as: 'font', type: 'font/ttf', crossorigin: 'anonymous' }}
-    {{ 'rizo-design.css' | asset_url | stylesheet_tag }}
+    {{ 'rizo.css' | asset_url | stylesheet_tag: preload: true }}
     {% render 'rizo-event-head' %}
-    <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
-    <script src="{{ 'rizo-theme.js' | asset_url }}" defer></script>
+    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script src="{{ 'rizo.js' | asset_url }}" defer></script>
   </head>
 
-  <body class="template-{{ template.name | handle }}{% if template.suffix != blank %} template-{{ template.name | handle }}--{{ template.suffix | handle }}{% endif %}{% if customer %} customer-logged-in{% endif %}" data-world-state="{{ settings.world_state | default: 'quiet' }}" data-texture="{{ settings.texture_level | default: 'balanced' }}" data-heritage="{% if settings.heritage_mode %}on{% else %}off{% endif %}" style="--header-stack-height:{% if settings.heritage_mode %}150px{% else %}78px{% endif %}">
+  <body class="route-{{ template.name | handle }}{% if template.suffix != blank %} route-{{ template.name | handle }}--{{ template.suffix | handle }}{% endif %}" data-route="{{ route }}" style="--seed: {{ page_seed }}">
     <a class="skip-link" href="#MainContent">Skip to content</a>
-    {% render 'rizo-event-stage' %}
+    {% render 'rizo-sky' %}
 
     {% sections 'header-group' %}
 
-    <main id="MainContent" tabindex="-1">
+    <main id="MainContent" class="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
     {% sections 'footer-group' %}
 
+    {% render 'rizo-event-stage', layer: 'front' %}
     {% render 'cart-drawer' %}
     {% render 'search-dialog' %}
     {% render 'quick-add-dialog' %}
-    {% render 'install-guide' %}
-    <div class="rizo-toast" id="RizoToast" role="status" aria-live="polite" aria-atomic="true"></div>
-    <div class="rizo-live-region visually-hidden" data-rizo-live-region aria-live="polite" aria-atomic="true"></div>
+    <div class="toast" id="RizoToast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div class="visually-hidden" data-rizo-live-region aria-live="polite" aria-atomic="true"></div>
     <div class="visually-hidden" data-cart-count-live aria-live="polite" aria-atomic="true"></div>
     <div class="visually-hidden" data-rizo-alert-region role="alert" aria-live="assertive" aria-atomic="true"></div>
   </body>

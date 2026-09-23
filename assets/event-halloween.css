@@ -1,82 +1,23 @@
 /* ==========================================================================
-   HALLOWEEN 2026 — art direction for the Rizo Event Layer ("October mode")
+   HALLOWEEN 2026 — art direction for the Rizo Event Layer
    --------------------------------------------------------------------------
-   Rizo at night. This file sets engine tokens and seasonal composition rules;
-   the shared homepage composition lives in assets/rizo-design.css.
+   Rizo at night in late October. Tokens only: the engine owns behaviour,
+   routes own where the moon hangs (assets/rizo.css → "Sky positions").
    Loaded only while the Halloween preset is selected.
-
-   Size, position, opacity and intensity of moon/fog/bats are theme settings
-   (Theme settings → Event layer …); this file owns palette, layering and
-   per-fog-layer character.
    ========================================================================== */
 
 html.rizo-event.rizo-event--halloween {
-  /* Palette: blue-black night, moonlit bone, Rizo blue stays the accent. */
-  --rizo-event-bg: #05060a;
-  --rizo-event-surface: #0c0e14;
-  --rizo-event-text: #ebe5d8;
-  --rizo-event-paper: #e5e8e7;
-  --rizo-event-accent: var(--accent);
-  --rizo-event-glow-rgb: 176 200 255;
+  /* Blue-black, with the city still faintly in the low sky. */
+  --rizo-event-sky-top: #04060a;
+  --rizo-event-sky-low: #10131a;
+  --rizo-event-halo-rgb: 186 204 220;
 
-  --rizo-event-overlay-opacity: .62;
-  --rizo-event-atmosphere-opacity: 1;
+  /* River fog: cool, slightly blue in moonlight. */
+  --rizo-event-fog-rgb: 170 183 197;
+  --rizo-event-fog-back-rgb: 92 105 120;
+  --rizo-event-fog-back: .95;
+  --rizo-event-fog-front: .66;
 
-  /* Moon sits behind the Rizo flame so the mark reads as a silhouette. */
-  --rizo-event-moon-glow-rgb: 190 213 226;
-  --rizo-event-moon-drift: 52s;
-
-  /* Hero fog: 1 = low bank behind the art, 2 = front roll behind the copy,
-     3 = thin high wisps that cross the moon. Phones use 1 and 2. */
-  --rizo-event-fog-1-opacity: .52; --rizo-event-fog-1-duration: 120s; --rizo-event-fog-1-direction: normal;  --rizo-event-fog-1-scale: 1.3; --rizo-event-fog-1-bottom: 14%;  --rizo-event-fog-1-height: 46%; --rizo-event-fog-1-z: -1;
-  --rizo-event-fog-2-opacity: .44; --rizo-event-fog-2-duration: 76s;  --rizo-event-fog-2-direction: reverse; --rizo-event-fog-2-scale: 1;   --rizo-event-fog-2-bottom: -8%;  --rizo-event-fog-2-height: 38%; --rizo-event-fog-2-z: 2;
-  --rizo-event-fog-3-opacity: .26; --rizo-event-fog-3-duration: 170s; --rizo-event-fog-3-direction: normal;  --rizo-event-fog-3-scale: 1.9; --rizo-event-fog-3-bottom: 52%;  --rizo-event-fog-3-height: 26%; --rizo-event-fog-3-z: -1;
-
-  /* Low page fog after the hero: a thin drift along the bottom edge. */
-  --rizo-event-page-fog-height: 22svh;
-  --rizo-event-page-fog-opacity: .24;
-  --rizo-event-page-fog-quiet: .35;
-  --rizo-event-page-fog-1-opacity: .42; --rizo-event-page-fog-1-bottom: -14%;
-  --rizo-event-page-fog-2-opacity: .24; --rizo-event-page-fog-2-bottom: 6%;
-
-  /* Bats. */
-  --rizo-event-flyer-opacity: .94;
-  --rizo-event-flyer-color: #1a1d26;
-
-  /* Countdown. */
-  --rizo-event-countdown-label-color: var(--accent);
-  --rizo-event-countdown-digit-font: var(--display-font);
-  --rizo-event-fog-1-opacity: .3;
-  --rizo-event-fog-2-opacity: .22;
-  --rizo-event-fog-3-opacity: .1;
-}
-
-/* The moon replaces the large hero mark during the event. The original
-   primary mark stays in the header; Halloween never changes that identity. */
-html.rizo-event--halloween .world-gate-mark--logo { visibility: hidden; }
-html.rizo-event--halloween .world-gate-night { background: radial-gradient(ellipse at 76% 37%, #17212a 0%, #080b10 61%); }
-html.rizo-event--halloween .world-gate { background: #080b10; }
-html.rizo-event--halloween .rizo-event-moon { max-width: 45vw; }
-html.rizo-event--halloween .rizo-event-moon-art { filter: brightness(.84); }
-.rizo-perch { display: none; position: absolute; left: 86%; top: 67%; z-index: 2; width: 58px; pointer-events: none; }
-html.rizo-event--halloween .rizo-perch[data-ready] { display: block; }
-.rizo-perch img { width: 100%; transform: rotate(-12deg); }
-html.rizo-event--reduced .rizo-perch,
-html.rizo-event--motion-off .rizo-perch { display: none; }
-html.rizo-event--halloween .rizo-event-countdown { margin-top: 32px; padding-top: 16px; border-top: 1px solid rgb(240 238 232 / .2); width: max-content; max-width: 100%; display: flex; gap: 26px; align-items: center; }
-html.rizo-event--halloween .rizo-event-countdown-label { max-width: 9ch; font-size: .55rem; line-height: 1.7; letter-spacing: .1em; margin: 0; color: #c5d5de; }
-html.rizo-event--halloween .rizo-event-countdown-units { gap: 20px; }
-html.rizo-event--halloween .rizo-event-countdown-unit b { font-size: 2rem; }
-html.rizo-event--halloween .rizo-event-countdown-unit small { font-size: .48rem; color: #b5c0c8; }
-html.rizo-event--halloween .rizo-event-countdown--before-heading { margin-top: 0; margin-bottom: 22px; }
-@media (max-width: 749px) {
-  .rizo-perch { top: 41%; left: 88%; width: 36px; }
-  html.rizo-event--halloween .rizo-event-moon { max-width: 53vw; }
-  html.rizo-event--halloween .rizo-event-countdown { margin-top: 25px; padding-top: 14px; gap: 20px; }
-  html.rizo-event--halloween .rizo-event-countdown-unit b { font-size: 1.7rem; }
-  html.rizo-event--halloween .rizo-event-countdown-units { gap: 16px; }
-}
-@media (max-width: 520px) and (max-height: 680px) {
-  html.rizo-event--halloween .rizo-event-moon { max-width: 42vw; top: 24%; }
-  html.rizo-event--halloween .rizo-event-countdown { margin-top: 17px; padding-top: 10px; }
+  /* Near the horizon the moon goes the colour of a sodium streetlight. */
+  --rizo-event-moon-warm: sepia(.42) saturate(1.5) hue-rotate(-10deg) brightness(.93);
 }

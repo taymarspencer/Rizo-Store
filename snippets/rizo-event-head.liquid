@@ -4,7 +4,7 @@
   Active event = Off  → renders nothing. Normal Rizo pays no CSS/JS cost.
   Otherwise:
     1. event stylesheets (engine + preset art direction)
-    2. "dial" CSS variables driven by theme settings
+    2. a few CSS dials driven by theme settings
     3. #RizoEventConfig — JSON the runtime reads
     4. an inline boot script that decides, before first paint, whether the
        event is live (schedule / manual / editor preview / ?rizo_event=) and
@@ -19,19 +19,16 @@
   {%- capture ev_end -%}{% render 'rizo-event-value', key: 'end' %}{%- endcapture -%}
   {%- capture ev_stylesheet -%}{% render 'rizo-event-value', key: 'stylesheet' %}{%- endcapture -%}
   {%- capture ev_behavior_script -%}{% render 'rizo-event-value', key: 'behavior_script' %}{%- endcapture -%}
-  {%- capture ev_fog_src -%}{% render 'rizo-event-value', key: 'fog_src' %}{%- endcapture -%}
-  {%- capture ev_fog_ratio -%}{% render 'rizo-event-value', key: 'fog_ratio' %}{%- endcapture -%}
   {%- capture ev_flock_behavior -%}{% render 'rizo-event-value', key: 'flock_behavior' %}{%- endcapture -%}
   {%- capture ev_flock_sprites -%}{% render 'rizo-event-value', key: 'flock_sprites' %}{%- endcapture -%}
+  {%- capture ev_roost_sprite -%}{% render 'rizo-event-value', key: 'roost_sprite' %}{%- endcapture -%}
   {%- capture ev_night -%}{% render 'rizo-event-value', key: 'feature', feature: 'night' %}{%- endcapture -%}
   {%- capture ev_moon -%}{% render 'rizo-event-value', key: 'feature', feature: 'moon' %}{%- endcapture -%}
   {%- capture ev_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'fog' %}{%- endcapture -%}
-  {%- capture ev_page_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'page_fog' %}{%- endcapture -%}
   {%- capture ev_flock -%}{% render 'rizo-event-value', key: 'feature', feature: 'flock' %}{%- endcapture -%}
   {%- capture ev_countdown -%}{% render 'rizo-event-value', key: 'feature', feature: 'countdown' %}{%- endcapture -%}
   {%- liquid
     assign ev_flock_sprites = ev_flock_sprites | strip | default: '[]'
-    assign ev_fog_ratio = ev_fog_ratio | strip | default: 4
     assign ev_flock_on = false
     if ev_flock == 'true' and ev_flock_behavior != blank and ev_behavior_script != blank
       assign ev_flock_on = true
@@ -45,30 +42,20 @@
   {%- endif %}
   <style>
     html.rizo-event {
-      --rizo-base-ink: {{ settings.color_ink }};
-      --rizo-base-paper: {{ settings.color_paper }};
       --rizo-event-night: {{ settings.event_night_intensity | divided_by: 100.0 }};
-      --rizo-event-night-mix: {{ settings.event_night_intensity }}%;
       --rizo-event-motion: {{ settings.event_motion | divided_by: 100.0 }};
-      --rizo-event-moon-size: {{ settings.event_moon_size }}px;
-      --rizo-event-moon-size-mobile: {{ settings.event_moon_size_mobile }}px;
-      --rizo-event-moon-x: {{ settings.event_moon_x }}%;
-      --rizo-event-moon-y: {{ settings.event_moon_y }}%;
-      --rizo-event-moon-x-mobile: {{ settings.event_moon_x_mobile }}%;
-      --rizo-event-moon-y-mobile: {{ settings.event_moon_y_mobile }}%;
-      --rizo-event-moon-opacity: {{ settings.event_moon_opacity | divided_by: 100.0 }};
-      --rizo-event-moon-glow: {{ settings.event_moon_glow | divided_by: 100.0 }};
-      --rizo-event-fog-strength: {{ settings.event_fog_intensity | divided_by: 100.0 }};
-      --rizo-event-fog-speed: {{ settings.event_fog_speed | divided_by: 100.0 }};
-      --rizo-event-fog-ratio: {{ ev_fog_ratio }};
-      {%- if ev_fog_src != blank %}
-      --rizo-event-fog-texture: url("{{ ev_fog_src }}");
+      {%- if ev_flock_on and ev_flock_sprites != '[]' %}
+      --rizo-flyer-sheet: url("{{ 'event-halloween-bat-a.svg' | asset_url }}");
+      {%- endif %}
+      {%- assign ev_roost_sprite = ev_roost_sprite | strip -%}
+      {%- if ev_roost_sprite != blank %}
+      --rizo-roost-sheet: url("{{ ev_roost_sprite }}");
       {%- endif %}
     }
   </style>
   <script type="application/json" id="RizoEventConfig">
     {
-      "version": 1,
+      "version": 2,
       "id": {{ ev_id | strip | json }},
       "name": {{ ev_name | strip | json }},
       "themeClass": {{ ev_theme_class | strip | json }},
@@ -82,7 +69,6 @@
         "night": {% if ev_night == 'true' %}true{% else %}false{% endif %},
         "moon": {% if ev_moon == 'true' %}true{% else %}false{% endif %},
         "fog": {% if ev_fog == 'true' %}true{% else %}false{% endif %},
-        "pageFog": {% if ev_page_fog == 'true' %}true{% else %}false{% endif %},
         "flock": {% if ev_flock_on %}true{% else %}false{% endif %},
         "countdown": {% if ev_countdown == 'true' %}true{% else %}false{% endif %}
       },
@@ -90,17 +76,26 @@
         "intensity": {{ settings.event_motion | divided_by: 100.0 }},
         "reduced": {{ settings.event_reduced_motion | default: 'still' | json }}
       },
-      "moon": { "motion": {% if settings.event_moon_motion %}true{% else %}false{% endif %} },
-      "fog": { "src": {{ ev_fog_src | strip | json }} },
+      "moon": {
+        "motion": {% if settings.event_moon_motion %}true{% else %}false{% endif %},
+        "phase": {{ settings.event_moon_phase | default: 'real' | json }}
+      },
+      "fog": {
+        "intensity": {{ settings.event_fog_intensity | divided_by: 100.0 }},
+        "speed": {{ settings.event_fog_speed | divided_by: 100.0 }},
+        "clock": {% if settings.event_fog_clock %}true{% else %}false{% endif %}
+      },
       "flock": {
         "behavior": {{ ev_flock_behavior | strip | json }},
         "density": {{ settings.event_flock_density | divided_by: 100.0 }},
         "activity": {{ settings.event_flock_activity | divided_by: 100.0 }},
         "scroll": {% if settings.event_flock_scroll %}true{% else %}false{% endif %},
         "tap": {% if settings.event_flock_tap %}true{% else %}false{% endif %},
-        "sprites": {{ ev_flock_sprites }}
+        "roost": {% if settings.event_flock_roost and ev_roost_sprite != blank %}true{% else %}false{% endif %},
+        "sprites": {{ ev_flock_sprites }},
+        "roostSprite": {{ ev_roost_sprite | json }}
       },
-      "quietSelectors": ".product-grid, .product-page-shell, .cart-page, .recently-viewed, [data-rizo-event-quiet]",
+      "quietSelectors": "[data-rizo-event-quiet], .pdp, .cart-page",
       "scripts": {
         "engine": {{ 'rizo-event-layer.js' | asset_url | json }},
         "flock": [{{ 'rizo-event-flock.js' | asset_url | json }}{% if ev_behavior_script != blank %}, {{ ev_behavior_script | strip | asset_url | json }}{% endif %}]
@@ -171,6 +166,7 @@
         root.classList.add('rizo-event', 'rizo-event--' + config.id);
         if (config.themeClass) root.classList.add(config.themeClass);
         if (config.features.night) root.classList.add('rizo-event--night');
+        if (config.features.moon) root.classList.add('rizo-event--moon');
         if (config.motion.reduced === 'minimal') root.classList.add('rizo-event--rm-minimal');
         if (!(config.motion.intensity > 0)) root.classList.add('rizo-event--motion-off');
         root.setAttribute('data-rizo-event', config.id);

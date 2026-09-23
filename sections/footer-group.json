@@ -5,11 +5,9 @@
     "footer": {
       "type": "rizo-footer",
       "settings": {
-        "heading": "RIZO.",
-        "tagline": "Pittsburgh. Wherever you take it.",
-        "dateline_label": "RIZO APPAREL",
-        "bottom_note": "",
-        "instagram_url": "https://www.instagram.com/rizoapparel/"
+        "tagline": "Clothes made in Pittsburgh.",
+        "instagram_url": "https://www.instagram.com/rizoapparel/",
+        "bottom_note": "I don’t know what I’m doing."
       }
     }
   },

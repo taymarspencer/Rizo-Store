@@ -42,11 +42,11 @@
   assign badge_label = badge | strip | upcase
   assign badge_class = ''
   if badge_label == 'SALE' or badge_label == 'LOW STOCK'
-    assign badge_class = ' product-badge--heat'
+    assign badge_class = ' badge--heat'
   elsif badge_label == 'NEW DROP' or badge_label == 'RESTOCKED'
-    assign badge_class = ' product-badge--signal'
+    assign badge_class = ' badge--signal'
   elsif badge_label == 'SOLD OUT'
-    assign badge_class = ' product-badge--muted'
+    assign badge_class = ' badge--quiet'
   endif
 %}
-{% if badge_label != blank %}<span class="product-badge{{ badge_class }}">{{ badge_label }}</span>{% endif %}
+{%- if badge_label != blank -%}<span class="badge{{ badge_class }}">{{ badge_label }}</span>{%- endif -%}

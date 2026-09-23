@@ -1,15 +1,16 @@
-<section class="collection-page page-width">
-  {% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'RIZO ARCHIVE / COLLECTION INDEX' %}{% endif %}
-  <header class="section-heading"><div><p class="eyebrow">RIZO ARCHIVE</p><h1>Collections</h1><p class="section-intro">Different doors into the same world.</p></div></header>
-  <div class="world-grid collection-list-grid">
-    {% for collection in collections %}
-      <a class="world-card world-card--blue collection-card" href="{{ collection.url }}">
-        <div class="world-card-copy"><span>COLLECTION</span><h3>{{ collection.title }}</h3><p>{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p><b>Enter {% render 'icon', name: 'arrow' %}</b></div>
-        {% if collection.featured_image %}<div class="world-card-art">{{ collection.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360,540,720,900', sizes: '(min-width: 900px) 33vw, 90vw', alt: collection.featured_image.alt | default: collection.title }}</div>{% endif %}
+{% render 'page-head', title: 'Collections', crumbs: true, fog: 0.4 %}
+<section class="s" data-surface="solid" data-space="s" data-fog="0" data-rizo-event-quiet>
+  <div class="wrap wrap--wide coll-list">
+    {%- for collection in collections -%}
+      <a class="coll-tile" href="{{ collection.url }}">
+        <span class="coll-tile-media">
+          {%- assign tile_image = collection.featured_image | default: collection.products.first.featured_image -%}
+          {%- if tile_image -%}{{ tile_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360,540,720,900', sizes: '(min-width: 750px) 33vw, 100vw', alt: '' }}{%- else -%}<span class="placeholder-media">{% render 'rizo-mark' %}</span>{%- endif -%}
+        </span>
+        <strong>{{ collection.title }}</strong>
+        <span>{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</span>
       </a>
-    {% else %}
-      <div class="empty-state"><h2>No collections yet.</h2><p>Create a collection in Shopify Admin to open this part of the world.</p></div>
-    {% endfor %}
+    {%- endfor -%}
   </div>
 </section>
-{% schema %}{"name":"Collection list","settings":[]}{% endschema %}
+{% schema %}{ "name": "Collections list", "settings": [] }{% endschema %}

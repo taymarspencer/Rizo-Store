@@ -1,18 +1,21 @@
-{% if page.handle == 'contact' or page.handle == 'contact-us' %}
-  {% assign contact_form_id = 'RizoContactForm-' | append: section.id %}
-  <section class="contact-page page-width">
-    {% render 'rizo-contact-form', form_id: contact_form_id %}
+{%- comment -%}
+  Any page made in Shopify admin (FAQ, shipping, sizing, a new story…)
+  gets the route header and a readable column automatically.
+{%- endcomment -%}
+{% render 'page-head', title: page.title, label: section.settings.label, align: section.settings.align, fog: 0.5 %}
+{%- if page.content != blank -%}
+  <section class="s" data-surface="solid" data-space="m" data-fog="0">
+    <div class="page-body">
+      <div class="rte t-lead">{{ page.content }}</div>
+    </div>
   </section>
-{% elsif page.handle == 'circle' or page.handle == 'crew' or page.handle == 'team' or page.handle == 'rizo-circle' %}
-  {% render 'rizo-circle-content', id: 'RizoCircle', style: 'full' %}
-{% else %}
-  <section class="standard-page standard-page--{{ section.settings.width }} page-width">
-    {% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'RIZO PAGE / STORY FILE' %}{% endif %}
-    <div class="section-mark-line">{% render 'rizo-brand-stamp', variant: 'face', class: 'section-secondary-mark standard-page-secondary-mark' %}<p class="eyebrow">{{ section.settings.eyebrow }}</p></div>
-    <h1>{{ page.title }}</h1>
-    <div class="rte page-content">{{ page.content }}</div>
-  </section>
-{% endif %}
+{%- endif -%}
 {% schema %}
-{"name":"Main page","settings":[{"type":"text","id":"eyebrow","label":"Eyebrow","default":"RIZO WORLD"},{"type":"select","id":"width","label":"Content width","default":"narrow","options":[{"value":"narrow","label":"Narrow"},{"value":"wide","label":"Wide"}]}]}
+{
+  "name": "Page",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Small label above the title" },
+    { "type": "select", "id": "align", "label": "Title position", "default": "left", "options": [{ "value": "left", "label": "Left" }, { "value": "offset", "label": "Pushed in" }, { "value": "right", "label": "Right" }] }
+  ]
+}
 {% endschema %}

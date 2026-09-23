@@ -1,110 +1,118 @@
 {
   "sections": {
-    "gate": {
-      "type": "rizo-world-gate",
+    "head": {
+      "type": "rizo-page-head",
       "settings": {
-        "show_dateline": true,
-        "dateline_label": "WORLD GATE / PITTSBURGH 412",
-        "eyebrow": "",
-        "heading": "THE WORLD IS WEARABLE.",
-        "text": "<p>Built from limits in Pittsburgh. Carried beyond them.</p>",
-        "enter_label": "ENTER THE WORLD",
-        "shop_label": "SHOP WHAT IS LIVE",
-        "shop_link": "shopify://collections/all"
+        "label": "",
+        "title": "World",
+        "voice": "sign",
+        "lead": "<p>Things that don’t fit on a shirt.</p>",
+        "align": "left",
+        "crumbs": false,
+        "moon_phase": true,
+        "fog": 55
       }
     },
-    "map": {
-      "type": "rizo-world-map",
+    "objects": {
+      "type": "rizo-artifacts",
       "blocks": {
-        "shop": {
-          "type": "zone",
+        "sketch": {
+          "type": "object",
           "settings": {
-            "zone_id": "shop",
-            "kicker": "SHOP",
-            "short_label": "LIVE PIECES",
-            "title": "SHOP WHAT IS LIVE",
-            "text": "Current pieces, honest stock, fit information, and the fastest entrance into the world.",
-            "link_label": "ENTER THE SHOP",
-            "link": "shopify://collections/all",
-            "art": "face-blue"
+            "builtin_image": "sketch",
+            "alt": "Pencil sketch of the first Rizo flame face",
+            "material": "paper",
+            "span": 5,
+            "place": "left",
+            "offset": "none",
+            "tilt": -2.5,
+            "title": "First drawing"
           }
         },
-        "origin": {
-          "type": "zone",
+        "camo": {
+          "type": "object",
           "settings": {
-            "zone_id": "origin",
-            "kicker": "ORIGIN",
-            "short_label": "FIRST FILE",
-            "title": "READ THE ORIGIN",
-            "text": "The limitations, first sketch, founder-built process, and reason the world exists.",
-            "link_label": "OPEN ORIGIN FILE",
-            "link": "/pages/about#RizoOriginFile",
-            "art": "logo"
+            "builtin_image": "camo",
+            "alt": "Red and black camouflage made of Rizo faces",
+            "material": "scan",
+            "span": 8,
+            "place": "right",
+            "offset": "up",
+            "tilt": 0,
+            "title": "Camo",
+            "lens": true
           }
         },
-        "circle": {
-          "type": "zone",
+        "mark412": {
+          "type": "object",
           "settings": {
-            "zone_id": "circle",
-            "kicker": "CIRCLE",
-            "short_label": "REAL PEOPLE",
-            "title": "FIND THE CIRCLE",
-            "text": "Friends, models, event help, supporters, and people who carried the signal before formal titles existed.",
-            "link_label": "MEET THE CIRCLE",
-            "link": "/#RizoCircle",
-            "art": "face-white"
+            "builtin_image": "mark_412",
+            "alt": "412 in flame lettering",
+            "material": "object",
+            "span": 4,
+            "place": "left",
+            "offset": "none",
+            "tilt": -3,
+            "title": "412"
           }
         },
-        "signal": {
-          "type": "zone",
+        "stadium": {
+          "type": "object",
           "settings": {
-            "zone_id": "signal",
-            "kicker": "SIGNAL",
-            "short_label": "MAKE YOURS",
-            "title": "FORGE A SIGNAL",
-            "text": "Choose an idea and an energy, then create a Rizo signal you can wear, copy, or share.",
-            "link_label": "OPEN SIGNAL FORGE",
-            "link": "#RizoSignalForge",
-            "art": "412"
+            "builtin_image": "stadium",
+            "alt": "Friends holding up Rizo 412 hoodies outside the stadium at night",
+            "material": "print",
+            "span": 4,
+            "place": "right",
+            "offset": "down",
+            "tilt": 2,
+            "title": "",
+            "caption": ""
+          }
+        },
+        "wallpaper": {
+          "type": "object",
+          "settings": {
+            "builtin_image": "wallpaper",
+            "alt": "Rizo camo phone wallpaper",
+            "material": "photo",
+            "span": 3,
+            "place": "center",
+            "offset": "none",
+            "tilt": 3,
+            "title": "For your phone",
+            "download_label": "Save it"
           }
         }
       },
       "block_order": [
-        "shop",
-        "origin",
-        "signal",
-        "circle"
+        "sketch",
+        "camo",
+        "mark412",
+        "stadium",
+        "wallpaper"
       ],
       "settings": {
-        "show_dateline": true,
-        "dateline_label": "WORLD MAP / FOUR ACTIVE ZONES",
-        "eyebrow": "",
-        "heading": "EVERY SIGNAL OPENS ANOTHER DOOR.",
-        "text": "Choose a zone. The map opens its path and remembers where you have been.",
-        "show_passport_reward": true,
-        "reward_heading": "WORLD RECOVERED",
-        "reward_text": "The full passport unlocks a Rizo camo phone wallpaper to carry outside.",
-        "reward_label": "OPEN WALLPAPER"
+        "heading": "",
+        "surface": "open",
+        "space": "m",
+        "fog": 45
       }
     },
-    "forge": {
-      "type": "rizo-signal-forge",
+    "night": {
+      "type": "rizo-interlude",
       "settings": {
-        "show_dateline": true,
-        "dateline_label": "SIGNAL FORGE / LOCAL GENERATOR",
-        "eyebrow": "",
-        "heading": "FORGE A SIGNAL. CARRY IT OUT.",
-        "text": "Choose what you carry. Choose how it moves. Rizo turns both into a signal.",
-        "copy_label": "COPY SIGNAL",
-        "share_label": "SHARE THE SIGNAL",
-        "shop_label": "WEAR THE SIGNAL",
-        "shop_link": "shopify://collections/all"
+        "line": "",
+        "align": "right",
+        "height": 60,
+        "fog": 100,
+        "fog_bias": "ground"
       }
     }
   },
   "order": [
-    "gate",
-    "map",
-    "forge"
+    "head",
+    "objects",
+    "night"
   ]
 }

@@ -1,49 +1,88 @@
-<section class="collection-page page-width" data-collection-root>
-  <nav class="product-breadcrumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">World</a><span aria-hidden="true">/</span><span aria-current="page">{{ collection.title }}</span></nav>
-  {% if settings.heritage_mode %}{% capture collection_file_label %}COLLECTION FILE / {{ collection.handle | upcase }}{% endcapture %}<div class="collection-fileline">{% render 'rizo-dateline', label: collection_file_label %}<span>{{ collection.products_count }} PIECES</span></div>{% endif %}
-  <header class="collection-hero">
-    <div><div class="section-mark-line">{% render 'rizo-brand-stamp', variant: 'face', class: 'section-secondary-mark collection-secondary-mark' %}<p class="eyebrow">RIZO WORLD FILE</p></div><h1>{{ collection.title }}</h1>{% if collection.description != blank %}<details class="collection-description-toggle"><summary>ABOUT THIS WORLD <span>+</span></summary><div class="rte collection-description">{{ collection.description }}</div></details>{% endif %}</div>
-    {% if collection.featured_image %}<div class="collection-hero-image">{{ collection.featured_image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '480,720,1000,1400', sizes: '(min-width: 900px) 38vw, 100vw', alt: collection.featured_image.alt | default: collection.title }}<span>COLLECTION / {{ collection.products_count }} PIECES</span></div>{% endif %}
-  </header>
-
-  {% paginate collection.products by section.settings.products_per_page %}
-    <div class="collection-toolbar">
-      <div><strong>{{ collection.products_count }}</strong><span>{% if collection.products_count == 1 %}piece exists here{% else %}pieces exist here{% endif %}</span></div>
-      <div class="collection-toolbar-actions">
-        {% if collection.filters != empty %}<button class="filter-toggle" type="button" data-filter-toggle aria-expanded="false" aria-controls="CollectionFilters">FILTER{% assign active_total = 0 %}{% for filter in collection.filters %}{% assign active_total = active_total | plus: filter.active_values.size %}{% if filter.min_value.value or filter.max_value.value %}{% assign active_total = active_total | plus: 1 %}{% endif %}{% endfor %}{% if active_total > 0 %}<b>{{ active_total }}</b>{% endif %}</button>{% endif %}
-        <label for="SortBy-{{ section.id }}">SORT</label><select id="SortBy-{{ section.id }}" data-sort-select>{% assign sort_by = collection.sort_by | default: collection.default_sort_by %}{% for option in collection.sort_options %}<option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>{% endfor %}</select>
+{%- liquid
+  assign head_lead = blank
+  if collection.description != blank
+    assign head_lead = collection.description
+  endif
+-%}
+{% render 'page-head', title: collection.title, lead: head_lead, crumbs: true, fog: 0.4 %}
+<section class="s" data-surface="solid" data-space="s" data-fog="0" data-rizo-event-quiet data-collection-root>
+  <div class="wrap wrap--wide">
+    {%- paginate collection.products by section.settings.products_per_page -%}
+      {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+      <div class="coll-bar">
+        <p class="coll-count">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
+        <div class="coll-tools">
+          {%- if collection.filters != empty -%}
+            {%- assign active_total = 0 -%}
+            {%- for filter in collection.filters -%}{%- assign active_total = active_total | plus: filter.active_values.size -%}{%- if filter.min_value.value or filter.max_value.value %}{% assign active_total = active_total | plus: 1 %}{% endif -%}{%- endfor -%}
+            <button class="filter-toggle" type="button" data-filter-toggle aria-expanded="false" aria-controls="CollectionFilters">Filter{% if active_total > 0 %}<b>{{ active_total }}</b>{% endif %}</button>
+          {%- endif -%}
+          <label for="SortBy-{{ section.id }}">Sort</label>
+          <select class="select" id="SortBy-{{ section.id }}" data-sort-select>
+            {%- for option in collection.sort_options -%}<option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>{%- endfor -%}
+          </select>
+        </div>
       </div>
-    </div>
 
-    {% assign has_active_filters = false %}{% for filter in collection.filters %}{% if filter.active_values.size > 0 or filter.min_value.value or filter.max_value.value %}{% assign has_active_filters = true %}{% endif %}{% endfor %}
-    {% if has_active_filters %}<nav class="active-filters" aria-label="Active filters"><span>SHOWING</span>{% for filter in collection.filters %}{% for value in filter.active_values %}<a href="{{ value.url_to_remove }}">{{ filter.label }}: {{ value.label }} <b aria-hidden="true">×</b></a>{% endfor %}{% if filter.min_value.value or filter.max_value.value %}<a href="{{ filter.url_to_remove }}">{{ filter.label }}: {{ filter.min_value.value | default: 0 | money }}–{{ filter.max_value.value | default: filter.range_max | money }} <b aria-hidden="true">×</b></a>{% endif %}{% endfor %}<a class="active-filters-clear" href="{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}">CLEAR ALL</a></nav>{% endif %}
+      {%- assign has_active_filters = false -%}
+      {%- for filter in collection.filters -%}{%- if filter.active_values.size > 0 or filter.min_value.value or filter.max_value.value %}{% assign has_active_filters = true %}{% endif -%}{%- endfor -%}
+      {%- if has_active_filters -%}
+        <nav class="active-filters" aria-label="Active filters">
+          {%- for filter in collection.filters -%}
+            {%- for value in filter.active_values -%}<a href="{{ value.url_to_remove }}">{{ value.label }} <span aria-hidden="true">×</span><span class="visually-hidden">Remove</span></a>{%- endfor -%}
+            {%- if filter.min_value.value or filter.max_value.value -%}<a href="{{ filter.url_to_remove }}">{{ filter.min_value.value | default: 0 | money }}–{{ filter.max_value.value | default: filter.range_max | money }} <span aria-hidden="true">×</span></a>{%- endif -%}
+          {%- endfor -%}
+          <a class="clear" href="{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}">Clear all</a>
+        </nav>
+      {%- endif -%}
 
-    <div class="collection-layout{% if collection.filters == empty %} collection-layout--full{% endif %}">
-      {% if collection.filters != empty %}
-        <button class="collection-filter-backdrop" type="button" data-filter-close tabindex="-1" aria-hidden="true" aria-label="Close filters" hidden></button>
-        <form class="collection-filters" id="CollectionFilters" data-filter-form>
-          <div class="filter-heading"><div><small>REFINE THE WORLD</small><strong>Filter pieces</strong></div><button type="button" class="filter-close" data-filter-close aria-label="Close filters">{% render 'icon', name: 'close' %}</button></div>
-          <input type="hidden" name="sort_by" value="{{ sort_by }}">
-          {% for filter in collection.filters %}
-            <details class="filter-group"{% if filter.active_values.size > 0 %} open{% endif %}>
-              <summary>{{ filter.label }}{% if filter.active_values.size > 0 %}<span>{{ filter.active_values.size }}</span>{% else %}<span>+</span>{% endif %}</summary>
-              <div class="filter-values">
-                {% case filter.type %}
-                  {% when 'boolean', 'list' %}{% for value in filter.values %}<label class="filter-option{% if value.count == 0 and value.active == false %} is-disabled{% endif %}"><input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}><span>{{ value.label }}</span><small>{{ value.count }}</small></label>{% endfor %}
-                  {% when 'price_range' %}<div class="price-filter"><label>FROM<input name="{{ filter.min_value.param_name }}" type="number" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" placeholder="0"></label><label>TO<input name="{{ filter.max_value.param_name }}" type="number" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" placeholder="{{ filter.range_max | money_without_currency }}"></label></div>
-                {% endcase %}
-              </div>
-            </details>
-          {% endfor %}
-          <div class="filter-actions"><button class="button button-hot button-full" type="submit">SHOW MATCHING PIECES</button>{% if has_active_filters %}<a class="button button-ghost button-full" href="{{ collection.url }}">CLEAR FILTERS</a>{% endif %}</div>
-        </form>
-      {% endif %}
+      <div class="coll-layout">
+        {%- if collection.filters != empty -%}
+          <button class="collection-filter-backdrop" type="button" data-filter-close tabindex="-1" aria-hidden="true" aria-label="Close filters" hidden></button>
+          <form class="collection-filters" id="CollectionFilters" data-filter-form>
+            <div class="filter-head"><strong>Filter</strong><button type="button" class="icon-btn" data-filter-close aria-label="Close filters">{% render 'icon', name: 'close' %}</button></div>
+            <input type="hidden" name="sort_by" value="{{ sort_by }}">
+            {%- for filter in collection.filters -%}
+              <details class="filter-group"{% if filter.active_values.size > 0 %} open{% endif %}>
+                <summary>{{ filter.label }}<span>{% if filter.active_values.size > 0 %}{{ filter.active_values.size }}{% else %}+{% endif %}</span></summary>
+                <div class="filter-values">
+                  {%- case filter.type -%}
+                    {%- when 'boolean', 'list' -%}
+                      {%- for value in filter.values -%}<label class="filter-option{% if value.count == 0 and value.active == false %} is-disabled{% endif %}"><input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}><span>{{ value.label }}</span><small>{{ value.count }}</small></label>{%- endfor -%}
+                    {%- when 'price_range' -%}
+                      <div class="price-filter"><label>From<input class="input" name="{{ filter.min_value.param_name }}" type="number" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" placeholder="0"></label><label>To<input class="input" name="{{ filter.max_value.param_name }}" type="number" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" placeholder="{{ filter.range_max | money_without_currency }}"></label></div>
+                  {%- endcase -%}
+                </div>
+              </details>
+            {%- endfor -%}
+            <div class="filter-actions"><button class="btn btn--solid btn--full" type="submit">Show pieces</button>{%- if has_active_filters -%}<a class="btn btn--line btn--full" href="{{ collection.url }}">Clear</a>{%- endif -%}</div>
+          </form>
+        {%- endif -%}
 
-      <div class="collection-results" data-collection-results>
-        {% if collection.products.size > 0 %}<div class="product-grid">{% for product in collection.products %}{% render 'product-card', product: product, show_quick_add: section.settings.show_quick_add, show_vendor: section.settings.show_vendor, show_size_preview: section.settings.show_size_preview %}{% endfor %}</div>{% elsif has_active_filters %}<div class="empty-state"><img src="{{ 'rizo-face-variant-blue.png' | asset_url }}" width="533" height="680" alt="" loading="lazy"><h2>Nothing answered those filters.</h2><p>Clear one choice and the available pieces return.</p><a class="button button-hot" href="{{ collection.url }}">RESET FILTERS</a></div>{% else %}<div class="empty-state"><img src="{{ 'rizo-face-white.png' | asset_url }}" width="317" height="360" alt="" loading="lazy"><h2>This signal is sold through.</h2><p>That release has ended. Open the live shop or join the signal for restocks.</p><div class="empty-state-actions"><a class="button button-hot" href="{{ routes.all_products_collection_url }}">SHOP WHAT IS LIVE</a><a class="button button-ghost" href="{{ routes.root_url }}#RizoSignal">GET RESTOCK SIGNALS</a></div></div>{% endif %}
-        {% if paginate.pages > 1 %}<nav class="pagination" aria-label="Pagination">{{ paginate | default_pagination }}</nav>{% endif %}
+        <div data-collection-results>
+          {%- if collection.products.size > 0 -%}
+            <div class="grid-products">
+              {%- for product in collection.products -%}{% render 'product-card', product: product, show_quick_add: section.settings.show_quick_add, show_vendor: section.settings.show_vendor, show_size_preview: section.settings.show_size_preview %}{%- endfor -%}
+            </div>
+          {%- elsif has_active_filters -%}
+            <div class="empty"><h2>Nothing matches that.</h2><p>Take a filter off and they come back.</p><a class="btn btn--line" href="{{ collection.url }}">Clear filters</a></div>
+          {%- else -%}
+            <div class="empty"><h2>Sold through.</h2><p>Everything in here is gone for now.</p><div class="cluster"><a class="btn btn--solid" href="{{ routes.all_products_collection_url }}">See what’s left</a><a class="link" href="{{ routes.root_url }}#signup"><span>Hear about restocks</span></a></div></div>
+          {%- endif -%}
+          {%- if paginate.pages > 1 -%}<nav class="pagination" aria-label="Pages">{{ paginate | default_pagination }}</nav>{%- endif -%}
+        </div>
       </div>
-    </div>
-  {% endpaginate %}
+    {%- endpaginate -%}
+  </div>
 </section>
-{% schema %}{"name":"Main collection","settings":[{"type":"range","id":"products_per_page","label":"Products per page","min":8,"max":36,"step":4,"default":24},{"type":"checkbox","id":"show_quick_add","label":"Show quick add","default":true},{"type":"checkbox","id":"show_size_preview","label":"Show available size preview","default":true},{"type":"checkbox","id":"show_vendor","label":"Show vendor","default":false}]}{% endschema %}
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 36, "step": 4, "default": 24 },
+    { "type": "checkbox", "id": "show_quick_add", "label": "Quick add", "default": true },
+    { "type": "checkbox", "id": "show_size_preview", "label": "Sizes in stock", "default": true },
+    { "type": "checkbox", "id": "show_vendor", "label": "Vendor", "default": false }
+  ]
+}
+{% endschema %}

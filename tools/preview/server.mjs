@@ -25,6 +25,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { Liquid, Tag } from 'liquidjs';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const THEME = path.resolve(process.env.THEME_DIR || path.join(HERE, '../..'));
@@ -169,15 +170,32 @@ const COLLECTION_ALL = {
   ]
 };
 
-const MENU = {
-  handle: 'main-menu',
-  links: [
-    { title: 'Shop', url: '/collections/all', current: false, child_active: false, links: [] },
-    { title: 'World', url: '/pages/world', current: false, child_active: false, links: [] },
-    { title: 'Origin', url: '/pages/about', current: false, child_active: false, links: [] },
-    { title: 'Contact', url: '/pages/contact', current: false, child_active: false, links: [] }
+// Menus are resolved per request so `link.current` matches the page, as in Shopify.
+const requestStore = new AsyncLocalStorage();
+const MENUS = {
+  'main-menu': [
+    { title: 'Shop', url: '/collections/all' },
+    { title: 'World', url: '/pages/world' },
+    { title: 'Origin', url: '/pages/about' },
+    { title: 'Contact', url: '/pages/contact' }
+  ],
+  footer: [
+    { title: 'FAQ', url: '/pages/faq' },
+    { title: 'Shipping', url: '/pages/shipping' },
+    { title: 'Refund policy', url: '/policies/refund-policy' },
+    { title: 'Privacy policy', url: '/policies/privacy-policy' }
   ]
 };
+const menu = (handle) => {
+  const links = MENUS[handle];
+  if (!links) return null;
+  const path = requestStore.getStore()?.path || '/';
+  return {
+    handle,
+    links: links.map((link) => ({ ...link, links: [], current: path === link.url, child_active: link.url === '/collections/all' && path.startsWith('/products/') }))
+  };
+};
+const MENU = { handle: 'main-menu', get links() { return menu('main-menu').links; } };
 
 /* ------------------------------------------------------------------ */
 /* Mock cart (per browser, keyed by cookie)                             */
@@ -257,7 +275,7 @@ const coerce = (definition, raw) => {
     case 'range':
     case 'number': return Number(raw);
     case 'image_picker': return raw ? image(String(raw), 800, 800, '') : null;
-    case 'link_list': return MENU;
+    case 'link_list': return menu(String(raw)) || null;
     case 'collection': return raw ? COLLECTION_ALL : null;
     case 'product': return raw ? productByHandle(raw) || null : null;
     case 'url': return typeof raw === 'string' ? raw.replace('shopify://collections/', '/collections/').replace('shopify://products/', '/products/') : raw;
@@ -529,6 +547,15 @@ class RequestContext {
 
 const TYPES = { '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.json': 'application/json', '.woff2': 'font/woff2' };
 
+const PAGES = {
+  about: { title: 'Origin', content: '' },
+  world: { title: 'World', content: '' },
+  circle: { title: 'The Circle', content: '' },
+  contact: { title: 'Contact', content: '' },
+  faq: { title: 'FAQ', content: '<h2>Orders</h2><p>Most pieces ship from Pittsburgh within a few business days. You get tracking as soon as the carrier has it.</p><h3>Can I change my size after ordering?</h3><p>Email us the same day and we will do what we can.</p><h2>Care</h2><ul><li>Wash cold, inside out.</li><li>Hang dry. The print lasts longer.</li></ul><p>Still stuck? <a href="/pages/contact">Send a message</a>.</p>' },
+  shipping: { title: 'Shipping', content: '<p>Orders ship from Pittsburgh, PA. Shipping cost is calculated at checkout.</p><table><thead><tr><th>Where</th><th>How long</th></tr></thead><tbody><tr><td>United States</td><td>3–7 business days</td></tr><tr><td>Local pickup</td><td>Arranged by email</td></tr></tbody></table><blockquote>Made-to-order pieces take longer. The product page says so when it applies.</blockquote>' }
+};
+
 const resolveRoute = (pathname) => {
   if (pathname === '/') return { pageType: 'index', template: 'index' };
   let match = pathname.match(/^\/products\/([^/.]+)$/);
@@ -541,8 +568,11 @@ const resolveRoute = (pathname) => {
   match = pathname.match(/^\/pages\/([^/.]+)$/);
   if (match) {
     const suffix = exists(`templates/page.${match[1]}.json`) ? match[1] : null;
-    return { pageType: 'page', template: suffix ? `page.${suffix}` : 'page', page: { title: match[1], handle: match[1], content: '<p>Mock page content.</p>' } };
+    const page = PAGES[match[1]] || { title: match[1].replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()), content: '<p>Mock page content.</p>' };
+    return { pageType: 'page', template: suffix ? `page.${suffix}` : 'page', page: { id: 90 + match[1].length, handle: match[1], ...page } };
   }
+  match = pathname.match(/^\/policies\/([^/.]+)$/);
+  if (match) return { pageType: 'page', template: 'page', page: { id: 80 + match[1].length, handle: match[1], title: match[1].replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()), content: PAGES.shipping.content } };
   return { pageType: '404', template: '404', status: 404 };
 };
 
@@ -626,6 +656,7 @@ const server = http.createServer(async (req, res) => {
 
     // Storefront pages
     const route = resolveRoute(pathname);
+    return requestStore.run({ path: pathname }, async () => {
     const overrides = {};
     for (const [key, value] of url.searchParams) if (key.startsWith('set.')) overrides[key.slice(4)] = value;
     const designMode = url.searchParams.get('design_mode') === '1';
@@ -643,12 +674,12 @@ const server = http.createServer(async (req, res) => {
       collection: route.collection || null,
       collections: { all: COLLECTION_ALL },
       all_products: Object.fromEntries(PRODUCTS.map((product) => [product.handle, product])),
-      linklists: { 'main-menu': MENU },
+      linklists: { 'main-menu': menu('main-menu'), footer: menu('footer') },
       page: route.page || null,
-      search: { performed: false, results: [], results_count: 0, terms: '' },
+      search: (() => { const terms = (url.searchParams.get('q') || '').trim(); if (pathname !== '/search' || !terms) return { performed: false, results: [], results_count: 0, terms: '' }; const results = PRODUCTS.filter((product) => product.title.toLowerCase().includes(terms.toLowerCase()) || terms.toLowerCase().split(/\s+/).some((word) => word.length > 2 && product.title.toLowerCase().includes(word))).map((product) => ({ ...product, object_type: 'product' })); return { performed: true, results, results_count: results.length, terms }; })(),
       recommendations: { performed: false, products: [], products_count: 0 },
       canonical_url: `http://localhost:${PORT}${pathname}`,
-      page_title: route.product?.title || route.page?.title || 'Rizo World',
+      page_title: route.product?.title || route.page?.title || (route.pageType === 'collection' ? 'Shop' : 'Rizo Apparel'),
       page_description: '',
       current_tags: null,
       current_page: 1
@@ -666,6 +697,7 @@ const server = http.createServer(async (req, res) => {
       content_for_layout: contentForLayout
     }, { globals: { ...globals, __request: request } });
     return send(res, route.status || 200, html);
+    });
   } catch (error) {
     console.error(error);
     send(res, 500, `<pre>${escapeAttr(error.stack || error.message)}</pre>`);

@@ -1,0 +1,24 @@
+<section class="s" data-surface="solid" data-space="m" data-fog="0">
+  <div class="wrap contact-grid">
+    <div class="contact-aside">
+      {%- if section.settings.text != blank -%}<div class="rte t-lead">{{ section.settings.text }}</div>{%- endif -%}
+      {%- if section.settings.email != blank -%}<p>Or write to <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>.</p>{%- endif -%}
+      {%- if section.settings.instagram_url != blank -%}<p><a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener">Instagram<span class="visually-hidden"> (opens in a new tab)</span></a> works too.</p>{%- endif -%}
+    </div>
+    {% render 'rizo-contact-form', form_id: 'ContactForm' %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "tag": "div",
+  "class": "section-contact",
+  "settings": [
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Orders, sizing, working together, or anything else. It goes straight to the Rizo inbox.</p>" },
+    { "type": "text", "id": "email", "label": "Email address to show" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram" }
+  ],
+  "presets": [{ "name": "Contact form" }]
+}
+{% endschema %}

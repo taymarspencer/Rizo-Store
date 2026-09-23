@@ -3,9 +3,14 @@
 
   A bounded pool of decorative flyers (Halloween: bats). This file owns
   everything that is not specific to one event:
-    - hard limits per device tier, scaled by the "Bat count" setting
+    - hard limits per device tier, scaled by the "How many at once" setting
     - a reusable DOM pool (created lazily, never more than the tier limit)
-    - idle / scroll / tap scheduling with quiet periods and cooldowns
+    - two depths: "back" flyers live in the sky and disappear behind solid
+      sections, "front" flyers cross over the page; a flyer can change depth
+      mid-flight (a bat leaving the moon comes toward you)
+    - sprite sheets: each flyer shows one frame of an N-frame strip and the
+      wing beat steps through them (CSS, compositor only)
+    - idle / scroll / tap / moon scheduling with quiet stretches, cooldowns
     - bounds checks and recycling, transform-only rendering
     - pausing under drawers, on hidden tabs, and for reduced motion
 
@@ -13,16 +18,20 @@
   preset, e.g. assets/event-halloween.js:
 
     RizoEventLayer.defineBehavior('bats', {
-      idle(env) → [spec…]            a flight crossing the screen
-      wake(env, velocity, count) → [spec…]   flyers stirred by fast scrolling
-      startle(env, tap) → [spec…]    flyers flushed out by a tap in open space
-      init(flyer, spec)              copy the spec's motion state onto the flyer
-      step(flyer, dt, env)           advance x, y, rotation, scale
-      scroll(flyer, velocity, dt, env)   loose response to scrolling
-      scatter(flyer, tap, env)       react to a nearby tap
+      idle(env) → [spec…]                   something crossing on its own
+      wake(env, velocity, count) → [spec…]  stirred by fast scrolling
+      startle(env, tap) → [spec…]           flushed out by a tap in open space
+      moon(env, moon) → [spec…]             leaving from behind the moon
+      init(flyer, spec)                     copy motion state onto the flyer
+      step(flyer, dt, env)                  advance x, y, rotation, scale
+      scroll(flyer, velocity, dt, env)      loose response to scrolling
+      scatter(flyer, tap, env)              react to a nearby tap
     });
 
-  The layer is pointer-events: none. Taps are observed passively in the
+  Spec fields the flock reads: x, y, delay, depth, scale, flap (s per wing
+  cycle), layer ('back' | 'front'), sprite (index), maxAge.
+
+  The layers are pointer-events: none. Taps are observed passively in the
   capture phase and never prevented, so every click reaches the page.
 */
 (() => {
@@ -31,52 +40,53 @@
   const layer = window.RizoEventLayer;
   if (!layer || !layer.config.features.flock) return;
 
-  const LIMITS = { desktop: 16, mobile: 8, lite: 5 };
-  const SIZES = { desktop: 46, mobile: 34, lite: 34 };
+  const LIMITS = { desktop: 10, mobile: 6, lite: 4 };
+  const SIZES = { desktop: 50, mobile: 38, lite: 36 };
   const SCATTER_RADIUS = { desktop: 240, mobile: 170, lite: 170 };
-  const MARGIN = 120;
+  const MARGIN = 160;
 
   layer.define('flock', (api) => {
     const { config, state, loop, input, random, on } = api;
     const settings = config.flock || {};
-    const host = document.querySelector('[data-rizo-event-flock]');
+    const hosts = {
+      back: document.querySelector('[data-rizo-event-flock="back"]'),
+      front: document.querySelector('[data-rizo-event-flock="front"]')
+    };
+    if (!hosts.back && !hosts.front) return {};
+    if (!hosts.back) hosts.back = hosts.front;
+    if (!hosts.front) hosts.front = hosts.back;
     const sprites = (Array.isArray(settings.sprites) ? settings.sprites : []).filter((sprite) => sprite && sprite.src);
-    if (!host || !sprites.length) return {};
+    if (!sprites.length) return {};
 
     const pool = [];
     const pending = [];
     const cleanups = [];
-    const counters = { spawned: 0, recycled: 0, scattered: 0, peak: 0 };
+    const counters = { spawned: 0, recycled: 0, scattered: 0, peak: 0, fromMoon: 0 };
     let behavior = api.behaviors.get(settings.behavior) || null;
     let active = 0;
     let idleTimer = 0;
-    // Cooldown clocks start "long ago" so the first fling or tap after load counts.
     let lastWake = -Infinity;
     let lastStir = -Infinity;
     let lastStartle = -Infinity;
     let destroyed = false;
 
-    const env = {
-      width: state.viewport.width,
-      height: state.viewport.height,
-      tier: state.tier,
-      size: SIZES[state.tier] || 40,
-      scatterRadius: SCATTER_RADIUS[state.tier] || 200,
-      quiet: state.quiet,
-      heroVisible: state.heroVisible,
-      motion: state.motionScale,
-      random
-    };
+    const env = {};
     const syncEnv = () => {
-      env.width = state.viewport.width;
-      env.height = state.viewport.height;
-      env.tier = state.tier;
-      env.size = SIZES[state.tier] || 40;
-      env.scatterRadius = SCATTER_RADIUS[state.tier] || 200;
-      env.quiet = state.quiet;
-      env.heroVisible = state.heroVisible;
-      env.motion = state.motionScale;
+      Object.assign(env, {
+        width: state.viewport.width,
+        height: state.viewport.height,
+        tier: state.tier,
+        size: SIZES[state.tier] || 44,
+        scatterRadius: SCATTER_RADIUS[state.tier] || 200,
+        quiet: state.quiet,
+        heroVisible: state.heroVisible,
+        motion: state.motionScale,
+        sprites: sprites.length,
+        moon: api.module?.('moon')?.rect?.() || null,
+        random
+      });
     };
+    syncEnv();
 
     const density = () => Math.max(0, Math.min(1, Number(settings.density) || 0));
     const limit = () => {
@@ -89,38 +99,34 @@
     /* Pool ---------------------------------------------------------------- */
 
     const createFlyer = () => {
-      const sprite = sprites[pool.length % sprites.length];
       const element = document.createElement('span');
       element.className = 'rizo-event-flyer';
       element.setAttribute('aria-hidden', 'true');
-      const width = SIZES[state.tier] || 40;
-      element.style.setProperty('--rizo-flyer-w', `${width}px`);
-      element.style.setProperty('--rizo-flyer-h', `${Math.round(width / (Number(sprite.ratio) || 2))}px`);
-      const addSprite = (src, extra) => {
-        let node;
-        if (sprite.mode === 'mask') {
-          node = document.createElement('span');
-          node.style.setProperty('--rizo-flyer-mask', `url("${src}")`);
-          node.className = `rizo-event-flyer-sprite rizo-event-flyer-sprite--mask${extra}`;
-        } else {
-          node = document.createElement('img');
-          node.src = src;
-          node.alt = '';
-          node.decoding = 'async';
-          node.draggable = false;
-          node.className = `rizo-event-flyer-sprite${extra}`;
-        }
-        element.append(node);
-      };
-      addSprite(sprite.src, '');
-      if (sprite.pose2) {
-        addSprite(sprite.pose2, ' rizo-event-flyer-sprite--b');
-        element.classList.add('rizo-event-flyer--poses');
-      }
-      host.append(element);
-      const flyer = { element, sprite, active: false, x: 0, y: 0, vx: 0, vy: 0, rotation: 0, scale: 1, depth: 1, age: 0, maxAge: 16, entered: false, motion: null, rendered: '' };
+      const sheet = document.createElement('span');
+      sheet.className = 'rizo-event-flyer-sheet';
+      element.append(sheet);
+      hosts.back.append(element);
+      const flyer = { element, sheet, host: 'back', sprite: -1, active: false, x: 0, y: 0, vx: 0, vy: 0, rotation: 0, scale: 1, depth: 1, age: 0, maxAge: 16, entered: false, motion: null, rendered: '' };
       pool.push(flyer);
       return flyer;
+    };
+
+    const dress = (flyer, index) => {
+      const safe = ((index % sprites.length) + sprites.length) % sprites.length;
+      if (flyer.sprite === safe) return;
+      flyer.sprite = safe;
+      const sprite = sprites[safe];
+      const width = SIZES[state.tier] || 44;
+      flyer.element.style.setProperty('--rizo-flyer-w', `${width}px`);
+      flyer.element.style.setProperty('--rizo-flyer-h', `${Math.round(width / (Number(sprite.ratio) || 1.43))}px`);
+      flyer.element.style.setProperty('--rizo-flyer-frames', String(Number(sprite.frames) || 4));
+      flyer.sheet.style.setProperty('--rizo-flyer-sheet', `url("${sprite.src}")`);
+    };
+
+    const moveTo = (flyer, where) => {
+      const target = hosts[where] || hosts.back;
+      if (flyer.element.parentNode !== target) target.append(flyer.element);
+      flyer.host = where;
     };
 
     const acquire = () => {
@@ -135,7 +141,7 @@
       if (!flyer.active) return;
       flyer.active = false;
       flyer.motion = null;
-      flyer.element.classList.remove('is-active');
+      flyer.element.classList.remove('is-active', 'is-gliding');
       active -= 1;
       counters.recycled += 1;
     };
@@ -146,6 +152,11 @@
         flyer.element.style.transform = transform;
         flyer.rendered = transform;
       }
+      if (flyer.glide !== flyer.renderedGlide) {
+        flyer.element.classList.toggle('is-gliding', Boolean(flyer.glide));
+        flyer.renderedGlide = flyer.glide;
+      }
+      if (flyer.layer && flyer.layer !== flyer.host) moveTo(flyer, flyer.layer);
     };
 
     const activate = (flyer, spec) => {
@@ -155,16 +166,19 @@
       flyer.vx = 0;
       flyer.vy = 0;
       flyer.rotation = 0;
+      flyer.glide = false;
       flyer.depth = spec.depth || 1;
       flyer.scale = spec.scale ?? flyer.depth;
       flyer.age = 0;
-      flyer.maxAge = spec.maxAge || 16;
+      flyer.maxAge = spec.maxAge || 18;
       flyer.entered = false;
+      flyer.layer = spec.layer === 'front' ? 'front' : 'back';
+      dress(flyer, spec.sprite ?? Math.floor(random() * sprites.length));
+      moveTo(flyer, flyer.layer);
       behavior.init(flyer, spec, env);
       const element = flyer.element;
-      element.style.setProperty('--rizo-flyer-depth', (.55 + .45 * Math.min(1, flyer.depth)).toFixed(2));
-      element.style.setProperty('--rizo-flyer-flap', `${(spec.flap || .22).toFixed(3)}s`);
-      element.style.setProperty('--rizo-flyer-flap-delay', `${(-random() * .4).toFixed(3)}s`);
+      element.style.setProperty('--rizo-flyer-flap', `${(spec.flap || .14).toFixed(3)}s`);
+      element.style.setProperty('--rizo-flyer-flap-delay', `${(-random() * .3).toFixed(3)}s`);
       render(flyer);
       element.classList.add('is-active');
       active += 1;
@@ -219,15 +233,16 @@
 
     const activity = () => Math.max(0, Math.min(1, Number(settings.activity) || 0));
 
+    /* Long quiet stretches: roughly 20–75 s apart, much less often over
+       products. The first one comes early so the world is seen to be alive. */
     const scheduleIdle = (first) => {
       window.clearTimeout(idleTimer);
       idleTimer = 0;
       if (paused() || activity() <= 0) return;
-      // Quiet periods: roughly 6–22s apart depending on "Idle activity", with jitter.
-      const gap = first ? 1400 + random() * 1600 : (22000 - 16000 * activity()) * (.7 + random() * .7);
+      const gap = first ? 3200 + random() * 3800 : (78000 - 56000 * activity()) * (.65 + random() * .7);
       idleTimer = window.setTimeout(() => {
         idleTimer = 0;
-        if (!document.hidden && !paused() && !(state.quiet && random() < .6)) {
+        if (!document.hidden && !paused() && !(state.quiet && random() < .75)) {
           syncEnv();
           spawn(behavior.idle(env));
         }
@@ -240,13 +255,13 @@
       if (active) for (const flyer of pool) if (flyer.active) behavior.scroll?.(flyer, velocity, dt, env);
       const speed = Math.abs(velocity);
       const now = performance.now();
-      if (speed > 1100 && now - lastWake > 2600) {
+      if (speed > 1400 && now - lastWake > 4000) {
         lastWake = now;
         syncEnv();
         spawn(behavior.wake(env, velocity));
-      } else if (speed > 420 && now - lastStir > 5200 && now - lastWake > 1500) {
+      } else if (speed > 600 && now - lastStir > 9000 && now - lastWake > 2500) {
         lastStir = now;
-        if (random() < .45) { syncEnv(); spawn(behavior.wake(env, velocity, 1)); }
+        if (random() < .35) { syncEnv(); spawn(behavior.wake(env, velocity, 1)); }
       }
     };
 
@@ -254,17 +269,25 @@
       if (!settings.tap || paused() || tap.overlay) return;
       if (tap.kind === 'down') {
         let scattered = 0;
-        for (const flyer of pool) if (flyer.active && behavior.scatter(flyer, tap, env)) scattered += 1;
+        for (const flyer of pool) if (flyer.active && flyer.age > .25 && behavior.scatter(flyer, tap, env)) scattered += 1;
         if (scattered) { counters.scattered += scattered; loop.add(task); }
         return;
       }
-      // A deliberate tap in open space flushes a bat or two out of hiding.
-      // Never around links, buttons, fields or product cards.
-      if (tap.kind === 'click' && !tap.interactive && tap.time - lastStartle > 900) {
+      if (tap.kind === 'click' && !tap.interactive && tap.time - lastStartle > 1400 && tap.time - lastMoon > 900) {
         lastStartle = tap.time;
         syncEnv();
         spawn(behavior.startle(env, tap));
       }
+    };
+
+    let lastMoon = -Infinity;
+    const onMoon = (moon) => {
+      if (paused() || !behavior.moon) return;
+      const now = performance.now();
+      if (now - lastMoon < 1600) return;
+      lastMoon = now;
+      syncEnv();
+      counters.fromMoon += spawn(behavior.moon(env, moon));
     };
 
     /* Lifecycle ----------------------------------------------------------- */
@@ -284,11 +307,11 @@
     };
 
     const begin = () => {
-      // Warm the image cache with one flyer per sprite; the rest are made on demand.
-      while (pool.length < Math.min(sprites.length, LIMITS[state.tier] || LIMITS.mobile)) createFlyer();
+      while (pool.length < Math.min(sprites.length, LIMITS[state.tier] || LIMITS.mobile)) dress(createFlyer(), pool.length);
       cleanups.push(
         input.onScroll(onScroll),
         input.onTap(onTap),
+        on('moon-tap', onMoon),
         on('resize', syncEnv),
         on('hero', syncEnv),
         on('quiet', syncEnv),
@@ -298,7 +321,6 @@
           for (const flyer of pool) if (active > limit() && flyer.active) release(flyer);
         }),
         on('motion', resume),
-        // Under an open drawer/menu the layer fades out and flight freezes (no frames run).
         on('overlay', (open) => {
           if (open) { loop.remove(task); return; }
           if (active || pending.length) loop.add(task);
@@ -320,6 +342,8 @@
     }
 
     return {
+      spawn: (specs) => { syncEnv(); return spawn(specs); },
+      env: () => { syncEnv(); return env; },
       destroy() {
         destroyed = true;
         hush();
@@ -333,12 +357,14 @@
         flockActive: active,
         flockPending: pending.length,
         flockPool: pool.length,
-        flockElements: host.childElementCount,
+        flockElements: (hosts.back.childElementCount + (hosts.front !== hosts.back ? hosts.front.childElementCount : 0)),
         flockSpawned: counters.spawned,
         flockRecycled: counters.recycled,
         flockScattered: counters.scattered,
+        flockFromMoon: counters.fromMoon,
         flockPeak: counters.peak,
-        flockIdleScheduled: idleTimer !== 0
+        flockIdleScheduled: Boolean(idleTimer),
+        flockFront: pool.filter((flyer) => flyer.active && flyer.host === 'front').length
       })
     };
   });

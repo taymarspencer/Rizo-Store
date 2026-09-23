@@ -5,518 +5,157 @@
    Every rule is inert until the boot script adds html.rizo-event, so an event
    that is selected but outside its schedule leaves normal Rizo untouched.
 
-   Three kinds of custom properties:
-     ART DIRECTION  --rizo-event-bg, -fog-1-opacity …  defaults here, tuned per
-                    event in assets/event-<id>.css. This is where Astra works.
-     DIALS          --rizo-event-night, -motion, -moon-size, -fog-strength …
-                    written from theme settings by snippets/rizo-event-head.liquid.
-     RUNTIME        --rizo-event-moon-parallax, --rizo-flyer-* … set by the runtime.
+   The layer lives in the sky (snippets/rizo-sky.liquid):
+     back stage   inside the fixed sky, behind every section
+     front stage  fixed above sections, below header, dock and drawers
+   Sections decide what shows through (data-surface) and how much fog
+   collects over them (data-fog). See docs/EVENT-LAYER.md.
 
-   Layers never take pointer input and never enter the accessibility tree.
+   Custom properties:
+     ART DIRECTION  --rizo-event-*          defaults here, tuned per event in
+                                            assets/event-<id>.css
+     DIALS          --rizo-event-night …    written from theme settings by
+                                            snippets/rizo-event-head.liquid
+     RUNTIME        --rizo-moon-set …       set by the runtime, don't set these
    ========================================================================== */
 
-/* 1. Inert unless an event is live ------------------------------------- */
+/* 1 · Inert unless an event is live -------------------------------------- */
 
-html:not(.rizo-event) :is(.rizo-event-stage, .rizo-event-hero, .rizo-event-countdown, .rizo-event-only) {
-  display: none;
-}
+html:not(.rizo-event) :is(.rizo-event-stage, .rizo-event-countdown, .rizo-roost) { display: none; }
 
-html.rizo-event [data-rizo-event-default] {
-  display: none;
-}
-
-/* 2. Tokens -------------------------------------------------------------- */
+/* 2 · Tokens -------------------------------------------------------------- */
 
 html.rizo-event {
-  /* Palette */
-  --rizo-event-bg: #06070b;
-  --rizo-event-surface: #0d0f15;
-  --rizo-event-text: #ece6da;
-  --rizo-event-paper: #e2dbcd;
-  --rizo-event-accent: var(--accent);
-  --rizo-event-glow-rgb: 196 214 255;
+  --rizo-event-sky-top: #05070a;
+  --rizo-event-sky-low: #0d1116;
+  --rizo-event-halo-rgb: 190 208 222;
+  --rizo-event-fog-rgb: 176 188 200;        /* mist in front of the page */
+  --rizo-event-fog-back-rgb: 96 108 122;    /* cloud behind it: lighter than the sky, darker than the moon */
+  --rizo-event-fog-back: .7;        /* share of the fog field drawn behind the page */
+  --rizo-event-fog-front: .55;      /* share drawn in front of open sections */
+  --rizo-event-moon-warm: sepia(.4) saturate(1.45) hue-rotate(-8deg) brightness(.94);
+  --rizo-event-flyer-opacity: 1;
+  --rizo-event-front-z: 30;         /* above sections (1), below sticky buy (50), dock (55), header (60), drawers (90) */
 
-  /* Atmosphere */
-  --rizo-event-overlay-opacity: .42;      /* how far night dims hero texture art (not photography) */
-  --rizo-event-atmosphere-opacity: 1;     /* strength of the night backdrop glow */
-
-  /* Moon (position, size, opacity and glow amount are dials) */
-  --rizo-event-moon-glow-rgb: 232 226 210;
-  --rizo-event-moon-z: -2;                /* "Behind the hero artwork" */
-  --rizo-event-moon-z-front: 2;           /* "In front of the artwork, behind the text" */
-  --rizo-event-moon-drift: 48s;
-
-  /* Hero fog layers: opacity, drift duration, direction, scale, vertical position, height, blur, z */
-  --rizo-event-fog-1-opacity: .5;  --rizo-event-fog-1-duration: 110s; --rizo-event-fog-1-direction: normal;  --rizo-event-fog-1-scale: 1.3; --rizo-event-fog-1-bottom: 16%;  --rizo-event-fog-1-height: 44%; --rizo-event-fog-1-filter: none; --rizo-event-fog-1-z: -1;
-  --rizo-event-fog-2-opacity: .42; --rizo-event-fog-2-duration: 72s;  --rizo-event-fog-2-direction: reverse; --rizo-event-fog-2-scale: 1;   --rizo-event-fog-2-bottom: -6%;  --rizo-event-fog-2-height: 36%; --rizo-event-fog-2-filter: none; --rizo-event-fog-2-z: 2;
-  --rizo-event-fog-3-opacity: .28; --rizo-event-fog-3-duration: 150s; --rizo-event-fog-3-direction: normal;  --rizo-event-fog-3-scale: 1.8; --rizo-event-fog-3-bottom: 48%;  --rizo-event-fog-3-height: 28%; --rizo-event-fog-3-filter: none; --rizo-event-fog-3-z: -1;
-  --rizo-event-fog-4-opacity: .22; --rizo-event-fog-4-duration: 96s;  --rizo-event-fog-4-direction: reverse; --rizo-event-fog-4-scale: 1.4; --rizo-event-fog-4-bottom: 30%;  --rizo-event-fog-4-height: 30%; --rizo-event-fog-4-filter: none; --rizo-event-fog-4-z: 2;
-  --rizo-event-fog-tile-min: 600px;
-
-  /* Low page fog (fixed band at the bottom of the viewport, above content) */
-  --rizo-event-page-fog-height: 24svh;
-  --rizo-event-page-fog-opacity: .8;
-  --rizo-event-page-fog-quiet: .3;        /* multiplier over product grids / product page / cart */
-  --rizo-event-page-fog-z: 40;            /* below sticky add-to-cart (50), dock (75+), header (80), drawers (200) */
-  --rizo-event-page-fog-1-opacity: .45; --rizo-event-page-fog-1-duration: 95s;  --rizo-event-page-fog-1-direction: normal;  --rizo-event-page-fog-1-scale: 1.2; --rizo-event-page-fog-1-bottom: -8%; --rizo-event-page-fog-1-height: 100%;
-  --rizo-event-page-fog-2-opacity: .3;  --rizo-event-page-fog-2-duration: 140s; --rizo-event-page-fog-2-direction: reverse; --rizo-event-page-fog-2-scale: 1.6; --rizo-event-page-fog-2-bottom: 12%; --rizo-event-page-fog-2-height: 80%;
-  --rizo-event-page-fog-3-opacity: .2;  --rizo-event-page-fog-3-duration: 120s; --rizo-event-page-fog-3-direction: normal;  --rizo-event-page-fog-3-scale: 1.4; --rizo-event-page-fog-3-bottom: 24%; --rizo-event-page-fog-3-height: 70%;
-
-  /* Ambient flyers (bats) */
-  --rizo-event-flock-z: 45;
-  --rizo-event-flyer-opacity: .92;
-  --rizo-event-flyer-color: #1b1e27;      /* used only by sprites in "mask" mode */
-  --rizo-event-flyer-filter: none;
-
-  /* Countdown */
-  --rizo-event-countdown-digit-font: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  --rizo-event-countdown-label-color: var(--rizo-event-accent);
-
-  /* Dial fallbacks (real values come from theme settings) */
+  /* Dial fallbacks (theme settings write the real values) */
   --rizo-event-night: .6;
-  --rizo-event-night-mix: 60%;
   --rizo-event-motion: .6;
-  --rizo-event-fog-strength: .55;
-  --rizo-event-fog-speed: .4;
-  --rizo-event-fog-ratio: 5.71;
-
-  /* Derived */
-  --rizo-event-motion-theme: 1;
-  --rizo-event-motion-scale: calc(var(--rizo-event-motion) * var(--rizo-event-motion-theme));
 }
 
-html.rizo-event[data-motion="calm"] {
-  --rizo-event-motion-theme: .5;
-}
+/* 3 · Night ----------------------------------------------------------------
+   The sky goes deeper and the moon lights a little of it. Photography and
+   product images are never filtered.                                        */
 
-/* 3. Night treatment ------------------------------------------------------
-   Token-level: the theme's own --ink / --paper shift toward the event
-   palette by the night intensity. Nothing is inverted and photography is
-   never filtered. */
-
-@supports (color: color-mix(in srgb, red 50%, blue)) {
-  html.rizo-event--night {
-    --ink: color-mix(in srgb, var(--rizo-event-bg) var(--rizo-event-night-mix), var(--rizo-base-ink, #090909));
-    --paper: color-mix(in srgb, var(--rizo-event-paper) var(--rizo-event-night-mix), var(--rizo-base-paper, #f4f0e8));
-  }
-}
-
-html.rizo-event--night body {
-  background-color: transparent; /* the html background (var(--ink)) and backdrop show through */
-}
-
-/* The few large surfaces the theme paints with a literal #090909. */
-html.rizo-event--night :is(.world-gate, .section-world-map, .section-signal-forge) {
-  background-color: var(--ink);
-}
-
-/* Hero texture art sinks into the night; the logo marks and copy do not. */
-html.rizo-event--night .world-gate-camo {
-  opacity: calc(.86 * (1 - var(--rizo-event-overlay-opacity) * var(--rizo-event-night)));
-}
-
-.rizo-event-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+html.rizo-event--night .sky-tone {
   background:
-    radial-gradient(110% 70% at 82% -12%, rgb(var(--rizo-event-glow-rgb) / calc(.1 * var(--rizo-event-atmosphere-opacity) * var(--rizo-event-night))), transparent 62%),
-    radial-gradient(90% 60% at 8% 112%, rgb(var(--rizo-event-glow-rgb) / calc(.06 * var(--rizo-event-atmosphere-opacity) * var(--rizo-event-night))), transparent 66%);
+    radial-gradient(calc(var(--moon-size) * 2.2) calc(var(--moon-size) * 2.2) at var(--moon-x) var(--moon-y), rgb(var(--rizo-event-halo-rgb) / calc(.05 + var(--rizo-event-night) * .08)), transparent 70%),
+    linear-gradient(180deg, var(--rizo-event-sky-top) 0%, #07090d 55%, var(--rizo-event-sky-low) 100%);
 }
 
-/* 4. Hero slot -------------------------------------------------------------
-   z-index: auto on purpose: no stacking context, so moon and fog interleave
-   with the hero's own layers (world gate: camo -4, grid -3, marks 1, copy 3). */
+/* 4 · Stages ---------------------------------------------------------------- */
 
-.rizo-event-hero {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  user-select: none;
-}
+.rizo-event-stage { pointer-events: none; }
+.rizo-event-stage--back { position: absolute; inset: 0; }
+.rizo-event-stage--front { position: fixed; inset: 0; z-index: var(--rizo-event-front-z); overflow: hidden; }
+html.rizo-event--paused .rizo-event-stage--front { opacity: 0; transition: opacity 240ms ease; }
 
-html.rizo-event .live-hero {
-  isolation: isolate;
-}
-
-/* 5. Moon --------------------------------------------------------------- */
+/* 5 · Moon -------------------------------------------------------------------
+   Hangs in the sky at the route's --moon-x / --moon-y. Scrolling deep
+   lowers it toward the ground fog (--rizo-moon-set, 0 → 1) where it grows
+   a little and warms, like a real moon near the horizon.                    */
 
 .rizo-event-moon {
-  --rizo-moon-size: var(--rizo-event-moon-size, 340px);
-  position: absolute;
-  top: var(--rizo-event-moon-y, 34%);
-  left: var(--rizo-event-moon-x, 72%);
-  z-index: var(--rizo-event-moon-z);
-  width: min(var(--rizo-moon-size), 72vw);
-  opacity: var(--rizo-event-moon-opacity, .9);
-  translate: -50% -50%;
-  transform: translate3d(var(--world-x-s-neg, 0px), calc(var(--world-y-s-neg, 0px) + var(--rizo-event-moon-parallax, 0px)), 0);
+  position: absolute; left: var(--moon-x); top: var(--moon-y);
+  width: var(--moon-size); aspect-ratio: 1;
+  translate: calc(var(--rizo-moon-dx, 0) * 1px) calc(var(--rizo-moon-dy, 0) * 1px);
+  transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 30lvh)) scale(calc(1 + var(--rizo-moon-set, 0) * .16));
   will-change: transform;
+  view-transition-name: rizo-moon;
 }
-
-.rizo-event-moon--front {
-  z-index: var(--rizo-event-moon-z-front);
+.rizo-event-moon-body { position: absolute; inset: 0; }
+.rizo-event-moon-art { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+.rizo-event-moon-art--low { opacity: calc(var(--rizo-moon-set, 0) * .7); filter: var(--rizo-event-moon-warm); }
+/* Tonight's phase: the unlit part is masked out (not painted dark), so it
+   is exactly as dark as whatever is behind it, with a little earthshine. */
+.rizo-event-moon-body[style*='--rizo-moon-mask'] { -webkit-mask: var(--rizo-moon-mask) 0 0 / 100% 100% no-repeat; mask: var(--rizo-moon-mask) 0 0 / 100% 100% no-repeat; }
+.rizo-event-moon-halo {
+  position: absolute; inset: -38%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--rizo-event-halo-rgb) / var(--rizo-moon-halo, .12)), rgb(var(--rizo-event-halo-rgb) / 0) 100%);
 }
-
-.rizo-event-moon-body {
-  position: relative;
-  animation: rizo-event-moon-drift calc(var(--rizo-event-moon-drift) / max(.15, var(--rizo-event-motion-scale))) ease-in-out infinite alternate;
-}
-
-.rizo-event-hero.is-dormant .rizo-event-moon-body,
-html.rizo-event--paused .rizo-event-moon-body {
-  animation-play-state: paused;
-}
-
-.rizo-event-moon[data-static] .rizo-event-moon-body {
-  animation: none;
-}
-
-.rizo-event-moon-art {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: auto;
-  -webkit-user-drag: none;
-}
-
-.rizo-event-moon-glow {
-  position: absolute;
-  inset: -45%;
-  pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(circle,
-    rgb(var(--rizo-event-moon-glow-rgb) / calc(.36 * var(--rizo-event-moon-glow, .45))) 0%,
-    rgb(var(--rizo-event-moon-glow-rgb) / calc(.1 * var(--rizo-event-moon-glow, .45))) 36%,
-    transparent 66%);
-}
-
-@keyframes rizo-event-moon-drift {
-  from { transform: translate3d(0, 0, 0) rotate(0deg); }
-  to { transform: translate3d(1.6%, -2.4%, 0) rotate(2.5deg); }
-}
-
-/* 6. Fog ------------------------------------------------------------------
-   Each layer is a clipped band; inside it a strip two tiles wide slides by
-   exactly one tile (-50%), so the loop is seamless and compositor-only.
-   The texture carries its own soft edges; no masks or live blur needed. */
-
-.rizo-event-fog {
-  /* speed dial and motion scale stretch or shrink each layer's base duration */
-  --rizo-fog-dur: calc(var(--rizo-fog-d, 90s) / (.25 + var(--rizo-event-fog-speed) * 1.5) / max(.15, var(--rizo-event-motion-scale)));
-  --rizo-fog-delay: calc(var(--rizo-fog-dur) * -.37);
-  position: absolute;
-  right: 0;
-  bottom: var(--rizo-fog-b, 0%);
-  left: 0;
-  z-index: var(--rizo-fog-z, -1);
-  height: var(--rizo-fog-h, 40%);
-  overflow: hidden;
-  opacity: min(1, calc(var(--rizo-fog-o, .4) * var(--rizo-event-fog-strength) * 1.8));
-  pointer-events: none;
-}
-
-.rizo-event-fog-strip {
-  --rizo-fog-tile: max(100vw, var(--rizo-event-fog-tile-min), calc(100vw * var(--rizo-fog-s, 1)));
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: calc(var(--rizo-fog-tile) * 2);
-  background-image: var(--rizo-event-fog-texture, none);
-  background-repeat: repeat-x;
-  background-position: 0 0;
-  background-size: var(--rizo-fog-tile) 100%;
-  filter: var(--rizo-fog-f, none);
-  animation: rizo-event-fog-drift var(--rizo-fog-dur, 90s) linear var(--rizo-fog-delay, 0s) infinite var(--rizo-fog-dir, normal);
-  will-change: transform;
-}
-
-/* The runtime paints each strip into a low-resolution canvas (fog is soft;
-   ~1/3 resolution is indistinguishable) so the moving layer costs a fraction
-   of the GPU memory. The CSS background above is the fallback. */
-.rizo-event-fog-strip.has-canvas {
-  background-image: none;
-}
-
-.rizo-event-fog-strip > canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-html.rizo-event--paused .rizo-event-fog-strip {
-  animation-play-state: paused;
-}
-
-@keyframes rizo-event-fog-drift {
-  from { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(-25%, -2.5%, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-
-.rizo-event-fog--hero.rizo-event-fog--l1 { --rizo-fog-o: var(--rizo-event-fog-1-opacity); --rizo-fog-d: var(--rizo-event-fog-1-duration); --rizo-fog-dir: var(--rizo-event-fog-1-direction); --rizo-fog-s: var(--rizo-event-fog-1-scale); --rizo-fog-b: var(--rizo-event-fog-1-bottom); --rizo-fog-h: var(--rizo-event-fog-1-height); --rizo-fog-f: var(--rizo-event-fog-1-filter); --rizo-fog-z: var(--rizo-event-fog-1-z); }
-.rizo-event-fog--hero.rizo-event-fog--l2 { --rizo-fog-o: var(--rizo-event-fog-2-opacity); --rizo-fog-d: var(--rizo-event-fog-2-duration); --rizo-fog-dir: var(--rizo-event-fog-2-direction); --rizo-fog-s: var(--rizo-event-fog-2-scale); --rizo-fog-b: var(--rizo-event-fog-2-bottom); --rizo-fog-h: var(--rizo-event-fog-2-height); --rizo-fog-f: var(--rizo-event-fog-2-filter); --rizo-fog-z: var(--rizo-event-fog-2-z); }
-.rizo-event-fog--hero.rizo-event-fog--l3 { --rizo-fog-o: var(--rizo-event-fog-3-opacity); --rizo-fog-d: var(--rizo-event-fog-3-duration); --rizo-fog-dir: var(--rizo-event-fog-3-direction); --rizo-fog-s: var(--rizo-event-fog-3-scale); --rizo-fog-b: var(--rizo-event-fog-3-bottom); --rizo-fog-h: var(--rizo-event-fog-3-height); --rizo-fog-f: var(--rizo-event-fog-3-filter); --rizo-fog-z: var(--rizo-event-fog-3-z); }
-.rizo-event-fog--hero.rizo-event-fog--l4 { --rizo-fog-o: var(--rizo-event-fog-4-opacity); --rizo-fog-d: var(--rizo-event-fog-4-duration); --rizo-fog-dir: var(--rizo-event-fog-4-direction); --rizo-fog-s: var(--rizo-event-fog-4-scale); --rizo-fog-b: var(--rizo-event-fog-4-bottom); --rizo-fog-h: var(--rizo-event-fog-4-height); --rizo-fog-f: var(--rizo-event-fog-4-filter); --rizo-fog-z: var(--rizo-event-fog-4-z); }
-
-/* Off-screen heroes drop their fog layers entirely (frees GPU memory). */
-.rizo-event-hero.is-dormant .rizo-event-fog {
-  display: none;
-}
-
-.rizo-event-page-fog {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: var(--rizo-event-page-fog-z);
-  height: var(--rizo-event-page-fog-height);
-  overflow: hidden;
-  opacity: var(--rizo-event-page-fog-opacity);
-  pointer-events: none;
-  contain: strict;
-  transition: opacity 1.4s ease, visibility 0s linear 0s;
-}
-
-.rizo-event-fog--page.rizo-event-fog--l1 { --rizo-fog-o: var(--rizo-event-page-fog-1-opacity); --rizo-fog-d: var(--rizo-event-page-fog-1-duration); --rizo-fog-dir: var(--rizo-event-page-fog-1-direction); --rizo-fog-s: var(--rizo-event-page-fog-1-scale); --rizo-fog-b: var(--rizo-event-page-fog-1-bottom); --rizo-fog-h: var(--rizo-event-page-fog-1-height); --rizo-fog-z: auto; }
-.rizo-event-fog--page.rizo-event-fog--l2 { --rizo-fog-o: var(--rizo-event-page-fog-2-opacity); --rizo-fog-d: var(--rizo-event-page-fog-2-duration); --rizo-fog-dir: var(--rizo-event-page-fog-2-direction); --rizo-fog-s: var(--rizo-event-page-fog-2-scale); --rizo-fog-b: var(--rizo-event-page-fog-2-bottom); --rizo-fog-h: var(--rizo-event-page-fog-2-height); --rizo-fog-z: auto; }
-.rizo-event-fog--page.rizo-event-fog--l3 { --rizo-fog-o: var(--rizo-event-page-fog-3-opacity); --rizo-fog-d: var(--rizo-event-page-fog-3-duration); --rizo-fog-dir: var(--rizo-event-page-fog-3-direction); --rizo-fog-s: var(--rizo-event-page-fog-3-scale); --rizo-fog-b: var(--rizo-event-page-fog-3-bottom); --rizo-fog-h: var(--rizo-event-page-fog-3-height); --rizo-fog-z: auto; }
-
-/* The hero has its own fog; the page band waits until it scrolls away,
-   and stops animating once it has faded out. */
-html.rizo-event--hero-visible .rizo-event-page-fog {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1.4s ease, visibility 0s linear 1.4s;
-}
-
-html.rizo-event--hero-visible .rizo-event-page-fog .rizo-event-fog-strip {
-  animation-play-state: paused;
-}
-
-html.rizo-event--quiet:not(.rizo-event--hero-visible) .rizo-event-page-fog {
-  opacity: calc(var(--rizo-event-page-fog-opacity) * var(--rizo-event-page-fog-quiet));
-}
-
-/* 7. Ambient flyers (bats) --------------------------------------------- */
-
-.rizo-event-flock {
-  position: fixed;
-  inset: 0;
-  z-index: var(--rizo-event-flock-z);
-  overflow: hidden;
-  pointer-events: none;
-  contain: strict;
-  transition: opacity .35s ease;
-}
-
-body.is-overlay-open .rizo-event-flock {
-  opacity: 0;
-}
-
-.rizo-event-flyer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--rizo-flyer-w, 44px);
-  height: var(--rizo-flyer-h, 20px);
-  margin: calc(var(--rizo-flyer-h, 20px) / -2) 0 0 calc(var(--rizo-flyer-w, 44px) / -2);
-  opacity: calc(var(--rizo-event-flyer-opacity) * var(--rizo-flyer-depth, 1));
-  pointer-events: none;
-  will-change: transform;
-}
-
-.rizo-event-flyer:not(.is-active) {
-  display: none;
-}
-
-.rizo-event-flyer-sprite {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: var(--rizo-event-flyer-filter);
-  transform-origin: 50% 42%;
-  animation: rizo-event-flap var(--rizo-flyer-flap, .22s) ease-in-out var(--rizo-flyer-flap-delay, 0s) infinite alternate;
-  -webkit-user-drag: none;
-}
-
-.rizo-event-flyer-sprite--rizo-flyer-mask {
-  background-color: var(--rizo-event-flyer-color);
-  -webkit-mask: var(--rizo-flyer-mask) center / contain no-repeat;
-  mask: var(--rizo-flyer-mask) center / contain no-repeat;
-}
-
-/* Two-pose sprites swap poses instead of squashing one silhouette. */
-.rizo-event-flyer--poses .rizo-event-flyer-sprite {
-  animation: rizo-event-pose calc(var(--rizo-flyer-flap, .22s) * 2) steps(1, end) var(--rizo-flyer-flap-delay, 0s) infinite;
-}
-
-.rizo-event-flyer--poses .rizo-event-flyer-sprite--b {
-  animation-delay: calc(var(--rizo-flyer-flap-delay, 0s) - var(--rizo-flyer-flap, .22s));
-}
-
-@keyframes rizo-event-flap {
-  from { transform: scaleY(1); }
-  to { transform: scaleY(.42) translateY(6%); }
-}
-
-@keyframes rizo-event-pose {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* 8. Countdown ----------------------------------------------------------- */
-
-.rizo-event-countdown {
-  display: grid;
-  gap: .55rem;
-  justify-items: start;
-  margin-top: clamp(1.6rem, 3.4vw, 2.6rem);
-  color: var(--rizo-event-text);
-}
-
-.rizo-event-countdown--before-heading {
-  margin-top: .6rem;
-  margin-bottom: .9rem;
-}
-
-/* Space is reserved but empty until the runtime writes real values. */
-.rizo-event-countdown:not([data-ready]) {
-  visibility: hidden;
-}
-
-.rizo-event-countdown-label,
-.rizo-event-countdown-unit small {
-  margin: 0;
-  font-family: var(--catalog-font, ui-monospace, monospace);
-  font-weight: 900;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-
-.rizo-event-countdown-label {
-  color: var(--rizo-event-countdown-label-color);
-  font-size: .64rem;
-}
-
-.rizo-event-countdown-clock {
-  display: block;
-}
-
-.rizo-event-countdown-units {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: clamp(.7rem, 2.4vw, 1.4rem);
-}
-
-.rizo-event-countdown-unit {
-  display: grid;
-  gap: .3rem;
-  justify-items: start;
-}
-
-.rizo-event-countdown-unit b {
-  display: block;
-  width: calc(var(--rizo-digits, 2) * .6em + .06em); /* fixed box: numbers never shift layout */
-  font-family: var(--rizo-event-countdown-digit-font);
-  font-size: clamp(2.1rem, 4.6vw, 3.6rem);
-  font-weight: 400;
-  font-variant-numeric: tabular-nums;
-  line-height: .86;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
-.rizo-event-countdown-unit--days b {
-  width: calc(var(--rizo-event-days-digits, 2) * .6em + .06em);
-}
-
-.rizo-event-countdown-unit small {
-  color: rgb(236 230 218 / .62);
-  font-size: .5rem;
-}
-
-.rizo-event-countdown-expired {
-  margin: 0;
-  font-family: var(--rizo-event-countdown-digit-font);
-  font-size: clamp(1.7rem, 4vw, 2.8rem);
-  line-height: .9;
-  text-transform: uppercase;
-}
-
-.rizo-event-countdown[data-state="expired"] :is(.rizo-event-countdown-label, .rizo-event-countdown-clock) {
-  display: none;
-}
-
-@media (max-width: 380px) {
-  .rizo-event-countdown-units { gap: .6rem; }
-  .rizo-event-countdown-unit b { font-size: 1.85rem; }
-}
-
-/* 9. Phones, device tiers and preferences --------------------------------- */
-
 @media (max-width: 749px) {
-  .rizo-event-moon {
-    --rizo-moon-size: var(--rizo-event-moon-size-mobile, 170px);
-    top: var(--rizo-event-moon-y-mobile, 23%);
-    left: var(--rizo-event-moon-x-mobile, 70%);
-    width: min(var(--rizo-moon-size), 80vw);
-  }
-
-  /* Phones keep two hero fog layers and one page fog layer. */
-  .rizo-event-fog--hero:is(.rizo-event-fog--l3, .rizo-event-fog--l4),
-  .rizo-event-fog--page:is(.rizo-event-fog--l2, .rizo-event-fog--l3) {
-    display: none;
-  }
-
-  html.rizo-event {
-    --rizo-event-page-fog-height: 20svh;
-  }
+  .rizo-event-moon { transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 22lvh)) scale(calc(1 + var(--rizo-moon-set, 0) * .12)); }
 }
 
-/* Low-power devices, or the runtime's frame-time governor, go lighter:
-   "lite" keeps one fog layer; "still" (second step) freezes the drift. */
-html.rizo-event--tier-lite :is(.rizo-event-fog--hero, .rizo-event-fog--page):not(.rizo-event-fog--l1) {
-  display: none;
-}
+/* 6 · Fog --------------------------------------------------------------------
+   A low-resolution canvas per stage, painted by the fog module. CSS only
+   stretches it; the browser's smoothing is the blur.                        */
 
-html.rizo-event--still :is(.rizo-event-fog-strip, .rizo-event-moon-body) {
-  animation-play-state: paused;
-}
+.rizo-event-fog { position: absolute; inset: 0; }
+.rizo-event-fog canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-html.rizo-event--motion-off :is(.rizo-event-fog-strip, .rizo-event-moon-body, .rizo-event-flyer-sprite) {
-  animation: none;
-}
+/* 7 · Bats -------------------------------------------------------------------
+   Each flyer shows one frame of a sprite sheet (a horizontal strip of N
+   frames). Wing beats step through the frames; nothing is squashed.         */
 
-html.rizo-event--motion-off .rizo-event-flock {
-  display: none;
+.rizo-event-flock { position: absolute; inset: 0; overflow: hidden; }
+.rizo-event-flyer {
+  position: absolute; left: 0; top: 0;
+  width: var(--rizo-flyer-w, 46px); height: var(--rizo-flyer-h, 32px);
+  margin: calc(var(--rizo-flyer-h, 32px) / -2) 0 0 calc(var(--rizo-flyer-w, 46px) / -2);
+  overflow: hidden; opacity: 0; visibility: hidden;
+  will-change: transform;
 }
+.rizo-event-flyer.is-active { opacity: var(--rizo-event-flyer-opacity); visibility: visible; }
+.rizo-event-flyer-sheet {
+  position: absolute; left: 0; top: 0; height: 100%;
+  width: calc(100% * var(--rizo-flyer-frames, 4));
+  background: var(--rizo-flyer-sheet) 0 0 / 100% 100% no-repeat;
+  animation: rizo-flap var(--rizo-flyer-flap, .12s) steps(var(--rizo-flyer-frames, 4)) infinite;
+  animation-delay: var(--rizo-flyer-flap-delay, 0s);
+}
+.rizo-event-flyer.is-gliding .rizo-event-flyer-sheet { animation-play-state: paused; }
+@keyframes rizo-flap { to { transform: translateX(-100%); } }
+html.rizo-event--paused .rizo-event-flyer-sheet,
+html.rizo-event--still .rizo-event-flyer-sheet { animation-play-state: paused; }
 
+/* Roosting bat: hangs under an edge (a solid section over open sky, or an
+   element marked data-roost). Frames: 0 wrapped, 1 looking, 2 stretching. */
+.rizo-roost {
+  position: absolute; z-index: 5; left: var(--roost-x, 50%); top: var(--roost-y, 100%);
+  width: var(--roost-w, 24px); aspect-ratio: 64 / 96;
+  margin-left: calc(var(--roost-w, 24px) / -2);
+  pointer-events: none; transform-origin: 50% 0;
+}
+.rizo-roost-frame { position: absolute; inset: 0; overflow: hidden; }
+.rizo-roost-frame span { position: absolute; left: 0; top: 0; width: 300%; height: 100%; background: var(--rizo-roost-sheet) 0 0 / 100% 100% no-repeat; transform: translateX(calc(var(--frame, 0) * -33.3333%)); }
+.rizo-roost[data-frame='1'] { --frame: 1; }
+.rizo-roost[data-frame='2'] { --frame: 2; }
+.rizo-roost.is-flying .rizo-roost-frame { display: none; }
+.rizo-roost-flight { position: absolute; left: 50%; top: 0; width: 250%; aspect-ratio: 120 / 84; margin-left: -125%; overflow: hidden; display: none; }
+.rizo-roost.is-flying .rizo-roost-flight { display: block; }
+.rizo-roost-flight span { position: absolute; left: 0; top: 0; height: 100%; width: 400%; background: var(--rizo-flyer-sheet) 0 0 / 100% 100% no-repeat; animation: rizo-flap .11s steps(4) infinite; }
+
+/* 8 · Countdown ---------------------------------------------------------------
+   A quiet line under the hero actions, not a scoreboard.                     */
+
+.rizo-event-countdown { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-top: clamp(26px, 3.2vw, 42px); }
+.rizo-event-countdown--before-heading { margin: 0 0 clamp(18px, 2.4vw, 30px); }
+.rizo-event-countdown-label { margin: 0; color: var(--bone-3); font-size: var(--t-label); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.rizo-event-countdown-clock { display: block; }
+.rizo-event-countdown-units { display: flex; gap: clamp(12px, 1.6vw, 20px); }
+.rizo-event-countdown-unit { display: inline-flex; align-items: baseline; gap: 5px; }
+.rizo-event-countdown-unit b { display: inline-block; min-width: 2ch; font-family: var(--f-sign); font-weight: 400; font-size: 1.85rem; line-height: .8; color: var(--bone); font-variant-numeric: tabular-nums; text-align: right; }
+.rizo-event-countdown-unit--days b { min-width: calc(var(--rizo-event-days-digits, 2) * 1ch); }
+.rizo-event-countdown-unit small { color: var(--bone-3); font-size: .62rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.rizo-event-countdown-expired { margin: 0; font-family: var(--f-sign); font-size: 1.85rem; line-height: .9; color: var(--bone); }
+.rizo-event-countdown[data-state='expired'] .rizo-event-countdown-clock { display: none; }
+.rizo-event-countdown[data-state='expired'] .rizo-event-countdown-label { display: none; }
+
+/* 9 · Leaving, reduced motion ------------------------------------------------ */
+
+html.rizo-event--leaving .rizo-event-stage { opacity: 0; transition: opacity 800ms ease; }
+html.rizo-event--motion-off .rizo-event-flock { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  html.rizo-event :is(.rizo-event-fog-strip, .rizo-event-moon-body, .rizo-event-flyer-sprite) {
-    animation: none;
-  }
-
-  html.rizo-event .rizo-event-flock {
-    display: none;
-  }
-
-  html.rizo-event--rm-minimal :is(.rizo-event-hero, .rizo-event-page-fog) {
-    display: none;
-  }
-}
-
-/* 10. Leaving (end of schedule reached while the page is open) ----------- */
-
-html.rizo-event--leaving :is(.rizo-event-stage, .rizo-event-hero, .rizo-event-countdown) {
-  opacity: 0;
-  transition: opacity .8s ease;
+  .rizo-event-flock, .rizo-roost { display: none !important; }
+  html.rizo-event--rm-minimal :is(.rizo-event-moon, .rizo-event-fog) { display: none; }
 }

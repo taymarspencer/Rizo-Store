@@ -1,0 +1,88 @@
+{%- comment -%}
+  An uploaded image, or one of Rizo's own photographs/scans bundled with
+  the theme. Sections expose both so a new page looks finished before
+  anything is uploaded, and the owner can swap any photo in the editor.
+
+    {% render 'rizo-image', image: section.settings.image, builtin: 'underpass', sizes: '50vw', alt: '…' %}
+{%- endcomment -%}
+{%- liquid
+  assign img_class = class | default: ''
+  assign img_loading = loading | default: 'lazy'
+  assign img_sizes = sizes | default: '100vw'
+  assign img_priority = fetchpriority | default: 'auto'
+-%}
+{%- if image != blank -%}
+  {{ image | image_url: width: 2200 | image_tag: loading: img_loading, fetchpriority: img_priority, widths: '360,540,720,960,1200,1600,2200', sizes: img_sizes, alt: alt | default: image.alt, class: img_class }}
+{%- elsif builtin != blank and builtin != 'none' -%}
+  {%- liquid
+    case builtin
+      when 'founder'
+        assign f = 'rizo-founder-full-fit.webp'
+        assign w = 1024
+        assign h = 1536
+      when 'founder_mural'
+        assign f = 'rizo-founder-mural.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'underpass'
+        assign f = 'rizo-412-underpass.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'stadium'
+        assign f = 'rizo-412-stadium.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'circle_night'
+        assign f = 'rizo-circle-night.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'circle_gym'
+        assign f = 'rizo-circle-gym.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'circle_pink'
+        assign f = 'rizo-circle-pink.webp'
+        assign w = 1200
+        assign h = 1800
+      when 'table'
+        assign f = 'rizo-community-table.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'making'
+        assign f = 'rizo-community-create.webp'
+        assign w = 1536
+        assign h = 1152
+      when 'sketch'
+        assign f = 'rizo-origin-sketch.webp'
+        assign w = 1152
+        assign h = 1536
+      when 'camo'
+        assign f = 'rizo-world-camo.webp'
+        assign w = 2400
+        assign h = 1200
+      when 'face'
+        assign f = 'rizo-face-basic.png'
+        assign w = 800
+        assign h = 800
+      when 'face_white'
+        assign f = 'rizo-face-white.png'
+        assign w = 317
+        assign h = 360
+      when 'mark_blue'
+        assign f = 'rizo-logo.png'
+        assign w = 497
+        assign h = 650
+      when 'mark_412'
+        assign f = 'rizo-412-mark.webp'
+        assign w = 768
+        assign h = 768
+      when 'wallpaper'
+        assign f = 'rizo-world-passport-wallpaper.webp'
+        assign w = 1440
+        assign h = 2560
+    endcase
+  -%}
+  {%- if f != blank -%}
+    <img{% if img_class != blank %} class="{{ img_class }}"{% endif %} src="{{ f | asset_url }}" width="{{ w }}" height="{{ h }}" loading="{{ img_loading }}" decoding="async"{% if img_priority != 'auto' %} fetchpriority="{{ img_priority }}"{% endif %} alt="{{ alt | escape }}">
+  {%- endif -%}
+{%- endif -%}

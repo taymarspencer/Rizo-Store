@@ -5,7 +5,8 @@
     "header": {
       "type": "rizo-header",
       "settings": {
-        "show_announcement": false
+        "show_announcement": false,
+        "instagram_url": "https://www.instagram.com/rizoapparel/"
       }
     }
   },

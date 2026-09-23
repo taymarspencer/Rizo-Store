@@ -1,0 +1,27 @@
+{%- liquid
+  assign head_title = section.settings.title
+  if head_title == blank
+    assign head_title = page.title | default: collection.title | default: shop.name
+  endif
+  assign head_fog = section.settings.fog | divided_by: 100.0
+-%}
+{% render 'page-head', title: head_title, label: section.settings.label, lead: section.settings.lead, voice: section.settings.voice, align: section.settings.align, crumbs: section.settings.crumbs, fog: head_fog, moon_phase: section.settings.moon_phase %}
+
+{% schema %}
+{
+  "name": "Page title",
+  "tag": "div",
+  "class": "section-page-head",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Small label" },
+    { "type": "text", "id": "title", "label": "Title", "info": "Blank uses the page's own title." },
+    { "type": "select", "id": "voice", "label": "Voice", "default": "say", "options": [{ "value": "say", "label": "Spoken (sentence case)" }, { "value": "sign", "label": "Sign (tall capitals)" }] },
+    { "type": "richtext", "id": "lead", "label": "Line under the title" },
+    { "type": "select", "id": "align", "label": "Position", "default": "left", "options": [{ "value": "left", "label": "Left" }, { "value": "offset", "label": "Pushed in" }, { "value": "right", "label": "Right" }] },
+    { "type": "checkbox", "id": "crumbs", "label": "Breadcrumb instead of the label", "default": false },
+    { "type": "checkbox", "id": "moon_phase", "label": "Tonight's moon phase under the title", "default": false, "info": "Filled in while an event with a moon is live." },
+    { "type": "range", "id": "fog", "label": "Fog", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 45 }
+  ],
+  "presets": [{ "name": "Page title" }]
+}
+{% endschema %}

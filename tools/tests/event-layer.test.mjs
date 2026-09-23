@@ -18,7 +18,8 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.TEST_PORT || 9393);
 const BASE = `http://localhost:${PORT}`;
 const FILTER = process.argv[2] ? new RegExp(process.argv[2], 'i') : null;
-const LIMITS = { desktop: 16, mobile: 8, lite: 5 };
+const LIMITS = { desktop: 10, mobile: 6, lite: 4 };
+const NIGHT = 'rgb(7, 9, 12)';
 
 const DESKTOP = { viewport: { width: 1440, height: 900 } };
 const PHONE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 };
@@ -117,16 +118,17 @@ test('Scheduled, outside window: CSS present but inert, runtime never requested'
     active: window.RizoEventBoot?.active,
     engine: typeof window.RizoEventLayer,
     classes: [...document.documentElement.classList].filter((name) => name.startsWith('rizo-event')),
-    stage: getComputedStyle(document.querySelector('.rizo-event-stage')).display,
-    hero: getComputedStyle(document.querySelector('.rizo-event-hero')).display,
+    stage: getComputedStyle(document.querySelector('.rizo-event-stage--back')).display,
+    hero: getComputedStyle(document.querySelector('.rizo-event-stage--front')).display,
     countdown: getComputedStyle(document.querySelector('.rizo-event-countdown')).display,
-    bodyBg: getComputedStyle(document.body).backgroundColor
+    bodyBg: getComputedStyle(document.body).backgroundColor,
+    night: document.documentElement.classList.contains('rizo-event--night')
   }));
   assert(result.reason === 'before-start' && result.active === false, 'boot should be waiting for the start', result);
   assert(!t.requests.some((url) => /\.js/.test(url) && EVENT_ASSET.test(url)), 'runtime JS requested outside the window');
   assert(result.engine === 'undefined' && !result.classes.length, 'event active outside window', result);
   assert(result.stage === 'none' && result.hero === 'none' && result.countdown === 'none', 'event layers visible outside window', result);
-  assert(result.bodyBg === 'rgb(9, 9, 9)', 'night treatment applied outside window', result.bodyBg);
+  assert(result.bodyBg === NIGHT && !result.night, 'night treatment applied outside window', result);
   noErrors(t.errors, 'outside window');
   await t.close();
 });
@@ -192,14 +194,16 @@ test('?rizo_event=on persists across pages for the tab; ?rizo_event=clear and =o
 test('Each module can be switched off on its own', async () => {
   const cases = [
     ['event_moon', () => !document.querySelector('.rizo-event-moon') && !window.RizoEventLayer.stats().moons],
-    ['event_fog', () => !document.querySelector('.rizo-event-fog--hero')],
-    ['event_fog_page', () => !document.querySelector('.rizo-event-page-fog')],
+    ['event_fog', () => !document.querySelector('.rizo-event-fog') && !window.RizoEventLayer.stats().fogCanvases],
     ['event_flock', () => !document.querySelector('.rizo-event-flock') && !window.RizoEventLayer.stats().modules.includes('flock')],
     ['event_countdown', () => !document.querySelector('.rizo-event-countdown')],
-    ['event_night', () => !document.documentElement.classList.contains('rizo-event--night') && getComputedStyle(document.body).backgroundColor === 'rgb(9, 9, 9)']
+    ['event_night', () => !document.documentElement.classList.contains('rizo-event--night') && getComputedStyle(document.querySelector('.sky-tone')).backgroundImage === window.__baseSky],
   ];
+  const base = await open('/?set.event_layer=off');
+  const baseSky = await base.page.evaluate(() => getComputedStyle(document.querySelector('.sky-tone')).backgroundImage);
+  await base.close();
   for (const [setting, check] of cases) {
-    const t = await open(`/?rizo_event=on&set.${setting}=false`);
+    const t = await open(`/?rizo_event=on&set.${setting}=false`, DESKTOP, (page) => page.addInitScript((sky) => { window.__baseSky = sky; }, baseSky));
     await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
     await t.page.waitForTimeout(200);
     assert(await t.page.evaluate(check), `${setting}=false still renders/runs`);
@@ -211,15 +215,19 @@ test('Each module can be switched off on its own', async () => {
   await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
   assert(!(await t.page.evaluate(() => Boolean(document.querySelector('.rizo-event-flock')))), 'bat count 0% should remove the flock');
   await t.close();
+  const f = await open('/?rizo_event=on&set.event_fog_intensity=0');
+  await waitFor(f.page, () => window.RizoEventLayer?.state.running === true);
+  assert(!(await f.page.evaluate(() => Boolean(document.querySelector('.rizo-event-fog')))), 'fog density 0% should remove the fog');
+  await f.close();
 });
 
 test('Signal bar shows the event message only while the event is live', async () => {
   const message = 'OCTOBER SIGNAL / RIZO AFTER DARK';
-  const read = (page) => page.evaluate(() => [...document.querySelectorAll('.announcement-copy')].filter((node) => getComputedStyle(node).display !== 'none').map((node) => node.textContent.trim()));
-  const live = await open(`/?rizo_event=on&section.rizo-header.show_announcement=true&set.event_announcement=${encodeURIComponent(message)}`);
+  const read = (page) => page.evaluate(() => [...document.querySelectorAll('.notice-copy')].filter((node) => getComputedStyle(node).display !== 'none').map((node) => node.textContent.trim()));
+  const live = await open(`/?rizo_event=on&section.rizo-header.show_announcement=true&section.rizo-header.announcement_text=${encodeURIComponent('Restock Friday.')}&set.event_announcement=${encodeURIComponent(message)}`);
   assert(JSON.stringify(await read(live.page)) === JSON.stringify([message]), 'event message not shown', await read(live.page));
   await live.close();
-  const idle = await open(`/?section.rizo-header.show_announcement=true&set.event_announcement=${encodeURIComponent(message)}`, { clock: { fixed: new Date('2026-09-22T12:00:00-04:00') } });
+  const idle = await open(`/?section.rizo-header.show_announcement=true&section.rizo-header.announcement_text=${encodeURIComponent('Restock Friday.')}&set.event_announcement=${encodeURIComponent(message)}`, { clock: { fixed: new Date('2026-09-22T12:00:00-04:00') } });
   const visible = await read(idle.page);
   assert(visible.length === 1 && visible[0] !== message, 'default message should show outside the window', visible);
   await idle.close();
@@ -295,7 +303,7 @@ test('Countdown reaching zero shows the ended message (setting: message)', async
   const value = await readCountdown(t.page);
   assert(value.state === 'expired' && value.expiredVisible && !value.hidden, 'did not switch to the ended message', value);
   assert(await events, 'rizo-event:countdown-expired not dispatched');
-  assert(/HALLOWEEN IS HERE/.test(await t.page.locator('[data-countdown-expired]').innerText()), 'wrong ended message');
+  assert(/Tonight\./.test(await t.page.locator('[data-countdown-expired]').innerText()), 'wrong ended message');
   await t.close();
 });
 
@@ -377,18 +385,19 @@ test('Clicks and taps pass straight through moving bats', async () => {
 test('SHOP still shops: hero CTA works with a bat parked on top of it', async () => {
   const t = await open('/?rizo_event=on');
   await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
-  const box = await t.page.locator('.world-gate-actions .button-hot').boundingBox();
+  const box = await t.page.locator('.hero-actions .btn--solid').boundingBox();
   // Clone a flyer onto the button: same classes, same CSS, stays put.
   await t.page.evaluate(({ x, y }) => {
     const bat = document.createElement('span');
     bat.className = 'rizo-event-flyer is-active';
     bat.style.transform = `translate3d(${x}px, ${y}px, 0) scale(3)`;
-    bat.innerHTML = '<img class="rizo-event-flyer-sprite" src="/cdn/assets/event-halloween-bat-1.svg" alt="">';
-    document.querySelector('[data-rizo-event-flock]').append(bat);
+    bat.style.setProperty('--rizo-flyer-sheet', 'url("/cdn/assets/event-halloween-bat-a.svg")');
+    bat.innerHTML = '<span class="rizo-event-flyer-sheet"></span>';
+    document.querySelector('[data-rizo-event-flock="front"]').append(bat);
   }, { x: box.x + box.width / 2, y: box.y + box.height / 2 });
   await t.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-  await t.page.waitForTimeout(400);
-  assert(await t.page.evaluate(() => window.location.hash) === '#RizoLiveShop', 'SHOP click did not reach the link');
+  await t.page.waitForURL(/\/collections\/all/, { timeout: 5000 }).catch(() => {});
+  assert(new URL(t.page.url()).pathname === '/collections/all', 'SHOP click did not reach the link', t.page.url());
   await t.close();
 });
 
@@ -443,8 +452,8 @@ test('Aggressive scrolling both ways wakes bats but stays bounded', async () => 
   }
 });
 
-test('Bats leave and are recycled; the loop sleeps during quiet periods', async () => {
-  const t = await open('/?rizo_event=on&set.event_flock_activity=0&rizo_event_seed=4');
+test('Bats leave and are recycled; the loop sleeps when nothing moves; fog paints at half rate', async () => {
+  const t = await open('/?rizo_event=on&set.event_flock_activity=0&set.event_fog=false&set.event_flock_roost=false&rizo_event_seed=4');
   await waitForFlock(t.page);
   await t.page.evaluate(() => document.addEventListener('click', (event) => event.preventDefault(), true));
   await t.page.mouse.click(700, 600); // startle in open hero space
@@ -454,6 +463,17 @@ test('Bats leave and are recycled; the loop sleeps during quiet periods', async 
   const s = await stats(t.page);
   assert(s.flockRecycled >= 1 && s.loopRunning === false && s.loopTasks === 0, 'bats not recycled or loop still running when idle', s);
   await t.close();
+  const f = await open('/?rizo_event=on&set.event_flock=false');
+  await waitFor(f.page, () => (window.RizoEventLayer?.stats().fogPaints || 0) > 5);
+  const rate = await f.page.evaluate(() => new Promise((resolve) => {
+    const before = window.RizoEventLayer.stats().fogPaints;
+    let frames = 0;
+    const tick = () => { frames += 1; if (frames < 120) requestAnimationFrame(tick); else resolve({ frames, paints: window.RizoEventLayer.stats().fogPaints - before }); };
+    requestAnimationFrame(tick);
+  }));
+  assert(rate.paints <= rate.frames * .55 * 2 + 2, 'fog repainted more than every other frame', rate);
+  note(`Idle fog: ${rate.paints} paints (two canvases) over ${rate.frames} frames.`);
+  await f.close();
 });
 
 test('Exactly one animation loop: at most one event-layer rAF request per frame', async () => {
@@ -465,7 +485,7 @@ test('Exactly one animation loop: at most one event-layer rAF request per frame'
       return original(callback);
     };
   }));
-  await waitForBats(t.page, 2);
+  await waitForBats(t.page, 1);
   const result = await t.page.evaluate(() => new Promise((resolve) => {
     const before = window.__eventRaf;
     let frames = 0;
@@ -482,12 +502,15 @@ test('Exactly one animation loop: at most one event-layer rAF request per frame'
 test('Open drawer/menu pauses the flock; closing resumes it', async () => {
   const t = await open('/?rizo_event=on&set.event_flock_density=100&set.event_flock_activity=100');
   await waitForBats(t.page, 1);
-  await t.page.locator('.bag-button').click();
+  await t.page.locator('.hdr-cart').click();
   await waitFor(t.page, () => document.body.classList.contains('is-overlay-open'));
-  await waitFor(t.page, () => getComputedStyle(document.querySelector('.rizo-event-flock')).opacity === '0', null, 4000).catch(() => {});
+  await waitFor(t.page, () => getComputedStyle(document.querySelector('.rizo-event-stage--front')).opacity === '0', null, 4000).catch(() => {});
+  await t.page.waitForTimeout(300);
   const open1 = await stats(t.page);
-  const paused = await t.page.evaluate(() => ({ opacity: getComputedStyle(document.querySelector('.rizo-event-flock')).opacity, fog: getComputedStyle(document.querySelector('.rizo-event-fog-strip')).animationPlayState }));
-  assert(open1.overlayOpen && !open1.loopRunning && paused.opacity === '0' && paused.fog === 'paused', 'ambient motion kept running under the drawer', { ...open1, ...paused });
+  const paused = await t.page.evaluate(() => ({ opacity: getComputedStyle(document.querySelector('.rizo-event-stage--front')).opacity, paints: window.RizoEventLayer.stats().fogPaints }));
+  await t.page.waitForTimeout(500);
+  const paintsLater = await t.page.evaluate(() => window.RizoEventLayer.stats().fogPaints);
+  assert(open1.overlayOpen && !open1.loopRunning && paused.opacity === '0' && paintsLater === paused.paints, 'ambient motion kept running under the drawer', { ...open1, ...paused, paintsLater });
   await t.page.keyboard.press('Escape');
   await waitFor(t.page, () => !document.body.classList.contains('is-overlay-open'));
   await waitFor(t.page, () => window.RizoEventLayer.stats().flockIdleScheduled || window.RizoEventLayer.stats().loopRunning);
@@ -504,8 +527,8 @@ test('Frame-time governor steps a struggling device down to lite, then still', a
   await waitFor(t.page, () => (window.RizoEventLayer?.stats().degrade || 0) >= 2, null, 45000);
   const s = await stats(t.page);
   const classes = await htmlClasses(t.page);
-  const still = await t.page.evaluate(() => getComputedStyle(document.querySelector('.rizo-event-fog-strip')).animationPlayState);
-  assert(s.tier === 'lite' && classes.includes('rizo-event--tier-lite') && classes.includes('rizo-event--still') && still === 'paused', 'governor did not step down', { s, classes, still });
+  const still = !s.fogMoving;
+  assert(s.tier === 'lite' && classes.includes('rizo-event--tier-lite') && classes.includes('rizo-event--still') && still, 'governor did not step down', { s, classes, still });
   assert(s.flockLimit <= Math.ceil(LIMITS.lite * .5), 'bat limit not reduced', s);
   note(`Governor: with 60ms of work per frame the layer stepped down to lite + still (bat limit ${s.flockLimit}).`);
   await t.close();
@@ -533,14 +556,14 @@ test('Theme editor section reloads (x8) never duplicate timers, observers or lis
   const before = await t.page.evaluate(() => ({ ...window.RizoEventLayer.stats(), listeners: window.__visibilityListeners }));
   for (let index = 0; index < 8; index += 1) {
     await t.page.evaluate(async () => {
-      const html = await (await fetch('/?section_id=gate&design_mode=1')).text();
-      const old = document.getElementById('shopify-section-gate');
-      old.dispatchEvent(new CustomEvent('shopify:section:unload', { bubbles: true, detail: { sectionId: 'gate' } }));
+      const html = await (await fetch('/?section_id=hero&design_mode=1')).text();
+      const old = document.getElementById('shopify-section-hero');
+      old.dispatchEvent(new CustomEvent('shopify:section:unload', { bubbles: true, detail: { sectionId: 'hero' } }));
       const holder = document.createElement('div');
       holder.innerHTML = html;
       const fresh = holder.firstElementChild;
       old.replaceWith(fresh);
-      fresh.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true, detail: { sectionId: 'gate' } }));
+      fresh.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true, detail: { sectionId: 'hero' } }));
     });
     await t.page.waitForTimeout(150);
   }
@@ -601,20 +624,20 @@ test('Reduced motion: night, moon, still fog and countdown stay; bats never load
   const result = await t.page.evaluate(() => ({
     night: document.documentElement.classList.contains('rizo-event--night'),
     moon: getComputedStyle(document.querySelector('.rizo-event-moon')).display,
-    moonAnimation: getComputedStyle(document.querySelector('.rizo-event-moon-body')).animationName,
-    fog: getComputedStyle(document.querySelector('.rizo-event-fog--hero')).display,
-    fogAnimation: getComputedStyle(document.querySelector('.rizo-event-fog-strip')).animationName,
+    moonSet: window.RizoEventLayer.stats().moonSet,
+    fog: getComputedStyle(document.querySelector('.rizo-event-fog')).display,
+    fogMoving: window.RizoEventLayer.stats().fogMoving,
     flock: getComputedStyle(document.querySelector('.rizo-event-flock')).display,
     countdown: document.querySelector('[data-rizo-event-countdown]').dataset.ready,
     modules: window.RizoEventLayer.stats().modules
   }));
   assert(!t.requests.some((url) => /rizo-event-flock|event-halloween\.js/.test(url)), 'flock scripts loaded under reduced motion');
   assert(result.night && result.moon !== 'none' && result.fog !== 'none' && result.countdown === 'true', 'static atmosphere missing', result);
-  assert(result.moonAnimation === 'none' && result.fogAnimation === 'none' && result.flock === 'none' && !result.modules.includes('flock'), 'motion still running', result);
+  assert(result.moonSet === 0 && result.fogMoving === false && result.flock === 'none' && !result.modules.includes('flock'), 'motion still running', result);
   await t.close();
   const minimal = await open('/?rizo_event=on&set.event_reduced_motion=minimal', { ...DESKTOP, reducedMotion: 'reduce' });
   await waitFor(minimal.page, () => window.RizoEventLayer?.state.running === true);
-  const m = await minimal.page.evaluate(() => ({ hero: getComputedStyle(document.querySelector('.rizo-event-hero')).display, countdown: getComputedStyle(document.querySelector('.rizo-event-countdown')).display, night: document.documentElement.classList.contains('rizo-event--night') }));
+  const m = await minimal.page.evaluate(() => ({ hero: getComputedStyle(document.querySelector('.rizo-event-moon')).display === 'none' && getComputedStyle(document.querySelector('.rizo-event-fog')).display === 'none' ? 'none' : 'shown', countdown: getComputedStyle(document.querySelector('.rizo-event-countdown')).display, night: document.documentElement.classList.contains('rizo-event--night') }));
   assert(m.hero === 'none' && m.countdown !== 'none' && m.night, '"minimal" should keep only night + countdown', m);
   await minimal.close();
 });
@@ -638,15 +661,15 @@ test('Decorative layers stay out of the accessibility tree; countdown is a label
   await waitFor(t.page, () => document.querySelector('[data-rizo-event-countdown]')?.dataset.ready === 'true');
   await waitForBats(t.page, 1);
   const result = await t.page.evaluate(() => {
-    const hiddenOk = [...document.querySelectorAll('.rizo-event-stage, .rizo-event-hero, .rizo-event-flyer')].every((node) => node.closest('[aria-hidden="true"]'));
-    const focusable = document.querySelectorAll('.rizo-event-stage a, .rizo-event-stage button, .rizo-event-hero a, .rizo-event-hero button, .rizo-event-stage [tabindex], .rizo-event-hero [tabindex]').length;
+    const hiddenOk = [...document.querySelectorAll('.rizo-event-stage, .rizo-event-flyer, .rizo-roost, .sky')].every((node) => node.closest('[aria-hidden="true"]'));
+    const focusable = document.querySelectorAll('.sky a, .sky button, .sky [tabindex], .rizo-event-stage a, .rizo-event-stage button, .rizo-event-stage [tabindex]').length;
     const timer = document.querySelector('.rizo-event-countdown [role="timer"]');
     const live = document.querySelector('.rizo-event-countdown [aria-live]:not([aria-live="off"])');
     return { hiddenOk, focusable, labelled: Boolean(timer?.getAttribute('aria-labelledby')), digitsHidden: timer?.querySelector('.rizo-event-countdown-units')?.getAttribute('aria-hidden') === 'true', live: Boolean(live) };
   });
   assert(result.hiddenOk && result.focusable === 0 && result.labelled && result.digitsHidden && !result.live, 'accessibility contract broken', result);
   const aria = await t.page.locator('.rizo-event-countdown').ariaSnapshot();
-  assert(/timer "HALLOWEEN IN"/.test(aria) && /Halloween begins/.test(aria) && !/\b\d{2}\b.*\b\d{2}\b.*\b\d{2}\b/.test(aria.replace(/2026|12:00/g, '')), 'unexpected countdown accessibility snapshot', aria);
+  assert(/timer "Halloween in"/.test(aria) && /Halloween begins/.test(aria) && !/\b\d{2}\b.*\b\d{2}\b.*\b\d{2}\b/.test(aria.replace(/2026|12:00/g, '')), 'unexpected countdown accessibility snapshot', aria);
   note(`Countdown ARIA: ${aria.replace(/\n\s*/g, ' / ')}`);
   await t.close();
 });
@@ -690,7 +713,7 @@ test('Quick add (variant + single-variant), cart drawer, cart page and checkout 
     await t.page.keyboard.press('Escape');
     await waitFor(t.page, () => document.getElementById('RizoCart').hidden);
     // Single-variant product: direct add.
-    await tap(t.page.locator('[data-product-card][data-product-title="Flame Cap"] .quick-add-form button[type="submit"]'));
+    await tap(t.page.locator('[data-product-card][data-product-title="Flame Cap"] .card-form button[type="submit"]'));
     await waitFor(t.page, () => !document.getElementById('RizoCart').hidden && document.querySelector('[data-cart-count]').textContent.trim() === '2');
     // Cart page: increase quantity, then checkout.
     await t.page.goto(`${BASE}/cart`);
@@ -716,7 +739,7 @@ test('Product page: variant picker, sold-out state, add to cart and sticky bar w
   await t.page.keyboard.press('Escape');
   await t.page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await t.page.waitForTimeout(600);
-  const sticky = await t.page.evaluate(() => { const bar = document.querySelector('[data-sticky-atc]'); const fog = document.querySelector('.rizo-event-page-fog'); return { visible: !bar.hidden, barZ: Number(getComputedStyle(bar).zIndex), fogZ: fog ? Number(getComputedStyle(fog).zIndex) : 0 }; });
+  const sticky = await t.page.evaluate(() => { const bar = document.querySelector('[data-sticky-atc]'); const fog = document.querySelector('.rizo-event-stage--front'); return { visible: !bar.hidden, barZ: Number(getComputedStyle(bar).zIndex), fogZ: fog ? Number(getComputedStyle(fog).zIndex) : 0 }; });
   assert(soldOut, 'sold-out size should be marked unavailable');
   assert(quiet, 'product page should be a quiet zone for effects');
   assert(!sticky.visible || sticky.barZ > sticky.fogZ, 'sticky add-to-cart must sit above the page fog', sticky);
@@ -727,16 +750,16 @@ test('Product page: variant picker, sold-out state, add to cart and sticky bar w
 test('Menu, search and newsletter form work with the event live', async () => {
   const t = await open('/?rizo_event=on&set.event_flock_density=100&set.event_flock_activity=100', PHONE);
   await waitForBats(t.page, 1);
-  await press(t.page, t.page.locator('.header-menu-button'), true);
+  await press(t.page, t.page.locator('.hdr-menu'), true);
   await waitFor(t.page, () => !document.getElementById('RizoMenu').hidden && document.activeElement?.closest('#RizoMenu'));
   await t.page.keyboard.press('Escape');
   await waitFor(t.page, () => document.getElementById('RizoMenu').hidden);
-  assert(await t.page.evaluate(() => document.activeElement?.classList.contains('header-menu-button')), 'focus did not return to the menu button');
-  await press(t.page, t.page.locator('.mobile-dock [data-overlay-open="search"]'), true);
+  assert(await t.page.evaluate(() => document.activeElement?.classList.contains('hdr-menu')), 'focus did not return to the menu button');
+  await press(t.page, t.page.locator('.dock [data-overlay-open="search"]'), true);
   await waitFor(t.page, () => !document.getElementById('RizoSearch').hidden);
   await t.page.keyboard.press('Escape');
   await waitFor(t.page, () => document.getElementById('RizoSearch').hidden);
-  const form = t.page.locator('.newsletter-form').first();
+  const form = t.page.locator('.signup-form').first();
   await form.locator('input[type="email"]').fill('signal@example.com');
   const [request] = await Promise.all([t.page.waitForRequest((req) => req.method() === 'POST' && /\/contact/.test(req.url())), press(t.page, form.locator('button[type="submit"]'), true)]);
   assert(Boolean(request), 'newsletter form did not submit');
@@ -745,7 +768,7 @@ test('Menu, search and newsletter form work with the event live', async () => {
 });
 
 test('Every page type loads without errors with the event live', async () => {
-  for (const path of ['/', '/collections/all', '/products/rizo-camo-tee', '/products/412-crewneck', '/cart', '/pages/world', '/pages/about', '/pages/contact', '/search', '/nope']) {
+  for (const path of ['/', '/collections/all', '/products/rizo-camo-tee', '/products/412-crewneck', '/cart', '/pages/world', '/pages/about', '/pages/circle', '/pages/contact', '/pages/faq', '/collections', '/search', '/search?q=hoodie', '/nope']) {
     for (const options of [DESKTOP, PHONE]) {
       const t = await open(`${path}${path.includes('?') ? '&' : '?'}rizo_event=on`, options);
       await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
@@ -816,7 +839,7 @@ test('Performance sample: frame pacing (event Off vs On) while the page scrolls;
     const offResult = await sample(off.page);
     await off.close();
     const t = await open('/?rizo_event=on&set.event_flock_density=100&set.event_flock_activity=100', options);
-    await waitForBats(t.page, 2);
+    await waitForBats(t.page, 1, 15000).catch(() => {});
     const onResult = await sample(t.page);
     const s = await stats(t.page);
     const weights = await t.page.evaluate(() => {

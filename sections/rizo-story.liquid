@@ -1,0 +1,68 @@
+{%- comment -%}
+  A photograph and a few sentences. Optionally, a drawing tucked behind
+  the photo that can be pulled out (native <details>, no script needed).
+{%- endcomment -%}
+<section class="s" data-surface="{{ section.settings.surface }}" data-space="{{ section.settings.space }}" data-fog="{{ section.settings.fog | divided_by: 100.0 }}">
+  <div class="wrap story" data-flip="{{ section.settings.flip }}">
+    <div class="story-media">
+      <figure class="story-photo">
+        {% render 'rizo-image', image: section.settings.image, builtin: section.settings.builtin_image, sizes: '(min-width: 750px) 40vw, 82vw', alt: section.settings.image_alt %}
+        {%- if section.settings.caption != blank -%}<figcaption>{{ section.settings.caption | escape }}</figcaption>{%- endif -%}
+      </figure>
+      {%- if section.settings.show_pocket -%}
+        <details class="pocket">
+          <summary>
+            <span class="pocket-sheet">{% render 'rizo-image', image: section.settings.pocket_image, builtin: 'sketch', sizes: '(min-width: 750px) 36vw, 70vw', alt: section.settings.pocket_alt %}</span>
+            <span class="pocket-tab">{{ section.settings.pocket_label | escape }}</span>
+          </summary>
+          {%- if section.settings.pocket_note != blank -%}<p class="pocket-note">{{ section.settings.pocket_note | escape }}</p>{%- endif -%}
+        </details>
+      {%- endif -%}
+    </div>
+    <div class="story-copy">
+      {%- if section.settings.label != blank -%}<p class="v-label muted">{{ section.settings.label | escape }}</p>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading | escape }}</h2>{%- endif -%}
+      {%- if section.settings.body != blank -%}<div class="story-body">{{ section.settings.body }}</div>{%- endif -%}
+      {%- if section.settings.link_label != blank -%}
+        <a class="link" href="{{ section.settings.link | default: '/pages/about' }}"><span>{{ section.settings.link_label | escape }}</span>{% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Story",
+  "tag": "div",
+  "class": "section-story",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photo" },
+    { "type": "select", "id": "builtin_image", "label": "Photo when none is uploaded", "default": "founder", "options": [
+      { "value": "founder", "label": "Taymar, full fit" }, { "value": "founder_mural", "label": "Taymar at the mural" },
+      { "value": "underpass", "label": "Underpass" }, { "value": "stadium", "label": "Stadium at night" },
+      { "value": "circle_night", "label": "Friends at night" }, { "value": "circle_gym", "label": "Gym" },
+      { "value": "circle_pink", "label": "Pink hoodie" }, { "value": "table", "label": "Event table" },
+      { "value": "making", "label": "Making" }, { "value": "none", "label": "None" }
+    ] },
+    { "type": "text", "id": "image_alt", "label": "Photo description", "default": "Taymar Spencer in a black Rizo outfit" },
+    { "type": "text", "id": "caption", "label": "Caption" },
+    { "type": "text", "id": "label", "label": "Small label" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Taymar Spencer" },
+    { "type": "richtext", "id": "body", "label": "Text", "default": "<p>Rizo started with one person drawing, pressing and figuring it out in Pittsburgh.</p>" },
+    { "type": "text", "id": "link_label", "label": "Link", "default": "How it started" },
+    { "type": "url", "id": "link", "label": "Link destination" },
+    { "type": "checkbox", "id": "flip", "label": "Photo on the right", "default": false },
+    { "type": "header", "content": "Tucked-in drawing" },
+    { "type": "checkbox", "id": "show_pocket", "label": "Tuck a drawing behind the photo", "default": true },
+    { "type": "image_picker", "id": "pocket_image", "label": "Drawing", "info": "Defaults to the first Rizo drawing." },
+    { "type": "text", "id": "pocket_label", "label": "Label on the corner", "default": "First drawing" },
+    { "type": "text", "id": "pocket_alt", "label": "Drawing description", "default": "Pencil sketch of the first Rizo flame face" },
+    { "type": "text", "id": "pocket_note", "label": "Line when it’s pulled out" },
+    { "type": "header", "content": "Surface" },
+    { "type": "select", "id": "surface", "label": "Surface", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "raised", "label": "Raised" }, { "value": "open", "label": "Open sky" }] },
+    { "type": "select", "id": "space", "label": "Space", "default": "l", "options": [{ "value": "s", "label": "Tight" }, { "value": "m", "label": "Normal" }, { "value": "l", "label": "Loose" }] },
+    { "type": "range", "id": "fog", "label": "Fog", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 10 }
+  ],
+  "presets": [{ "name": "Story" }]
+}
+{% endschema %}

@@ -1,0 +1,41 @@
+{%- comment -%}
+  A real release time for a real piece. When the clock clears it switches
+  to the live line and the link. Never a fake timer: leave the date blank
+  and the section hides.
+{%- endcomment -%}
+{%- if section.settings.date != blank -%}
+  <section class="s" data-surface="{{ section.settings.surface }}" data-space="m" data-fog="{{ section.settings.fog | divided_by: 100.0 }}">
+    <div class="wrap release" data-release data-date="{{ section.settings.date | escape }}" data-live-text="{{ section.settings.live_text | escape }}">
+      {%- if section.settings.label != blank -%}<p class="v-label muted">{{ section.settings.label | escape }}</p>{%- endif -%}
+      <h2 data-release-heading>{{ section.settings.heading | escape }}</h2>
+      <div class="release-clock" data-release-clock aria-hidden="true">
+        <span><b data-days>00</b><small>Days</small></span>
+        <span><b data-hours>00</b><small>Hours</small></span>
+        <span><b data-minutes>00</b><small>Minutes</small></span>
+      </div>
+      <p class="visually-hidden">Releases {{ section.settings.date | date: '%A, %B %-d at %-I:%M %p' }}.</p>
+      {%- if section.settings.text != blank -%}<p data-release-copy>{{ section.settings.text | escape }}</p>{%- endif -%}
+      {%- if section.settings.link_label != blank -%}<a class="btn btn--line" href="{{ section.settings.link | default: routes.all_products_collection_url }}">{{ section.settings.link_label | escape }}{% render 'icon', name: 'arrow' %}</a>{%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Release countdown",
+  "tag": "div",
+  "class": "section-release",
+  "settings": [
+    { "type": "text", "id": "date", "label": "Release time", "placeholder": "2026-10-31T19:00:00-04:00", "info": "ISO date/time with offset. Blank hides the section." },
+    { "type": "text", "id": "label", "label": "Small label", "default": "Next piece" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Coming soon" },
+    { "type": "text", "id": "text", "label": "Text" },
+    { "type": "text", "id": "live_text", "label": "Heading once it’s out", "default": "Out now." },
+    { "type": "text", "id": "link_label", "label": "Link", "default": "Shop" },
+    { "type": "url", "id": "link", "label": "Link destination" },
+    { "type": "select", "id": "surface", "label": "Surface", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "raised", "label": "Raised" }, { "value": "open", "label": "Open sky" }] },
+    { "type": "range", "id": "fog", "label": "Fog", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 0 }
+  ],
+  "presets": [{ "name": "Release countdown" }]
+}
+{% endschema %}

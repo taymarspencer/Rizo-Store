@@ -1,86 +1,130 @@
 {
   "sections": {
-    "gate": {
-      "type": "rizo-world-gate",
+    "hero": {
+      "type": "rizo-hero",
       "settings": {
-        "show_dateline": true,
-        "dateline_label": "RIZO APPAREL / PITTSBURGH, PA",
-        "eyebrow": "",
-        "heading": "THE WORLD IS WEARABLE.",
-        "text": "<p>Clothes from our corner of the world.</p>",
-        "enter_label": "EXPLORE RIZO",
-        "shop_label": "SHOP THE PIECES",
-        "shop_link": "#RizoLiveShop",
-        "enter_link": "/pages/world"
+        "heading": "Pittsburgh’s\npersonal flame.",
+        "text": "Clothes made in Pittsburgh.",
+        "shop_label": "Shop",
+        "shop_link": "shopify://collections/all",
+        "second_label": "How it started",
+        "second_link": "/pages/about",
+        "fog": 85
       }
     },
-    "live": {
-      "type": "rizo-live-products",
+    "shop": {
+      "type": "rizo-products",
       "settings": {
         "collection": "all",
-        "view_all_label": "ALL PIECES",
-        "eyebrow": "THE CURRENT ROTATION",
-        "heading": "MADE TO GO OUT.",
-        "text": "",
         "products_to_show": 4,
-        "mobile_layout": "grid",
-        "show_size_preview": false,
-        "show_artifact_link": false,
-        "show_quick_add": true
+        "layout": "grid",
+        "label": "Shop",
+        "show_count": true,
+        "heading": "",
+        "link_label": "All pieces",
+        "show_quick_add": true,
+        "show_sizes": false,
+        "surface": "solid",
+        "space": "m"
       }
     },
     "founder": {
-      "type": "rizo-founder-signal",
+      "type": "rizo-story",
       "settings": {
-        "built_in_portrait": "founder_full_fit",
-        "link": "/pages/about#RizoOriginFile",
-        "link_label": "HOW IT STARTED",
-        "show_origin_marks": false,
-        "portrait_alt": "Taymar Spencer wearing a full black Rizo outfit",
-        "portrait_caption": "TAYMAR SPENCER / RIZO FOUNDER",
-        "eyebrow": "FROM HERE.",
-        "heading": "PITTSBURGH\u2019S PERSONAL FLAME.",
-        "show_dateline": false,
-        "bio": "<p>Started by Taymar Spencer. Drawn, pressed, and figured out along the way in Pittsburgh.</p><p>The clothes came first. A whole world followed.</p>",
-        "founder_name": "",
-        "location_line": ""
-      },
-      "blocks": {},
-      "block_order": []
+        "builtin_image": "founder",
+        "image_alt": "Taymar Spencer in a black Rizo outfit",
+        "caption": "",
+        "label": "Founder",
+        "heading": "Taymar Spencer",
+        "body": "<p>“Rizo started through limitations. I was in a box, and I broke out.”</p><p>Every piece is still drawn, pressed and figured out in Pittsburgh.</p>",
+        "link_label": "How it started",
+        "link": "/pages/about",
+        "flip": false,
+        "show_pocket": true,
+        "pocket_label": "First drawing",
+        "pocket_alt": "Pencil sketch of the first Rizo flame face",
+        "pocket_note": "",
+        "surface": "raised",
+        "space": "l",
+        "fog": 0
+      }
     },
-    "door": {
-      "type": "rizo-after-hours",
-      "settings": {}
+    "night": {
+      "type": "rizo-interlude",
+      "settings": {
+        "line": "",
+        "align": "left",
+        "height": 70,
+        "fog": 95,
+        "fog_bias": "ground"
+      }
     },
     "circle": {
-      "type": "rizo-team",
+      "type": "rizo-gallery",
+      "blocks": {
+        "underpass": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "underpass",
+            "alt": "Two friends in black Rizo 412 sets under a concrete overpass",
+            "caption": "Pittsburgh",
+            "caption_right": ""
+          }
+        },
+        "night": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_night",
+            "alt": "Friends in Rizo hoodies at night",
+            "caption": "",
+            "caption_right": ""
+          }
+        },
+        "gym": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_gym",
+            "alt": "Two friends flexing in Rizo shirts",
+            "caption": "",
+            "caption_right": ""
+          }
+        },
+        "table": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "making",
+            "alt": "Rizo at an outdoor event table",
+            "caption": "",
+            "caption_right": ""
+          }
+        }
+      },
+      "block_order": ["underpass", "night", "gym", "table"],
       "settings": {
-        "mode": "circle",
-        "display_style": "compact",
-        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
-        "eyebrow": "THE CIRCLE",
-        "heading": "OUT IN THE WORLD.",
-        "text": "<p>Friends, late nights, familiar faces.<br>The people who make the clothes their own.</p>",
-        "shoutout": ""
+        "label": "The Circle",
+        "heading": "",
+        "text": "<p>Friends, late nights, familiar faces.</p>",
+        "layout": "spread",
+        "link_label": "Meet the Circle",
+        "link": "/pages/circle",
+        "anchor": "circle",
+        "surface": "open",
+        "space": "m",
+        "fog": 30
       }
     },
     "signup": {
-      "type": "rizo-signal-signup",
+      "type": "rizo-signup",
       "settings": {
-        "eyebrow": "STAY CLOSE",
-        "heading": "WHEN SOMETHING\u2019S NEXT.",
-        "value": "New pieces. Restocks. Where to find us in Pittsburgh.",
-        "shop_label": "",
-        "shop_link": "#RizoLiveShop"
+        "heading": "Hear about new pieces first.",
+        "text": "Drops, restocks, and where we’ll be in Pittsburgh. Not much else.",
+        "button": "Sign up",
+        "note": "",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
       }
     }
   },
-  "order": [
-    "gate",
-    "live",
-    "founder",
-    "door",
-    "circle",
-    "signup"
-  ]
+  "order": ["hero", "shop", "founder", "night", "circle", "signup"]
 }

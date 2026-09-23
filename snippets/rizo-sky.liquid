@@ -1,0 +1,15 @@
+{%- comment -%}
+  RIZO SKY — the fixed environment behind every page.
+
+  Sections are surfaces laid over it: data-surface="open" lets the sky show
+  through, "solid" covers it. That single rule is what makes the moon,
+  fog and bats appear between sections instead of on top of the store.
+
+  Where the moon sits is route art direction (assets/rizo.css → "Sky
+  positions"). The event layer fills the back stage; with no event live
+  the sky is only night tone.
+{%- endcomment -%}
+<div class="sky" data-sky aria-hidden="true">
+  <div class="sky-tone"></div>
+  {% render 'rizo-event-stage', layer: 'back' %}
+</div>

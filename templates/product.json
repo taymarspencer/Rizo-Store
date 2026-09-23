@@ -4,30 +4,19 @@
       "type": "main-product",
       "blocks": {
         "secure": {
-          "type": "confidence",
-          "settings": {
-            "text": "Secure Shopify checkout"
-          }
+          "type": "note",
+          "settings": { "text": "Secure checkout through Shopify", "icon": "lock" }
         },
-        "timing": {
-          "type": "confidence",
-          "settings": {
-            "text": "Shipping cost calculated at checkout"
-          }
-        },
-        "tracked": {
-          "type": "confidence",
-          "settings": {
-            "text": "Tracking sent when the carrier provides it"
-          }
+        "shipping": {
+          "type": "note",
+          "settings": { "text": "Ships from Pittsburgh. Tracking as soon as the carrier has it.", "icon": "pin" }
         }
       },
-      "block_order": [
-        "secure",
-        "timing",
-        "tracked"
-      ],
-      "settings": {}
+      "block_order": ["secure", "shipping"],
+      "settings": {
+        "fallback_line": "",
+        "show_dynamic_checkout": false
+      }
     },
     "recommendations": {
       "type": "rizo-product-recommendations",
@@ -38,9 +27,5 @@
       "settings": {}
     }
   },
-  "order": [
-    "main",
-    "recommendations",
-    "recent"
-  ]
+  "order": ["main", "recommendations", "recent"]
 }

@@ -1,186 +1,200 @@
-{% liquid
+{%- liquid
   assign selected_variant = product.selected_variant
   assign first_variant = product.selected_or_first_available_variant
-  assign has_multiple_options = false
-  assign serial_source = product.id | append: ''
-  assign product_serial = serial_source | slice: -4, 4
   assign low_stock_threshold = settings.low_stock_threshold | default: 5
   assign first_variant_low_stock = false
   assign processing_note = product.metafields.custom.shipping_note | default: section.settings.shipping_note
-  assign return_note = section.settings.return_note
   if first_variant.available and first_variant.inventory_management != blank and first_variant.inventory_policy == 'deny' and first_variant.inventory_quantity > 0 and first_variant.inventory_quantity <= low_stock_threshold
     assign first_variant_low_stock = true
   endif
-  if product.variants.size > 1
-    assign has_multiple_options = true
-  endif
-%}
-<section class="product-page-shell" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}">
-  <nav class="page-width product-breadcrumbs" aria-label="Breadcrumb">
-    <a href="{{ routes.root_url }}">World</a><span aria-hidden="true">/</span><a href="{{ routes.all_products_collection_url }}">Shop</a><span aria-hidden="true">/</span><span aria-current="page">{{ product.title }}</span>
-  </nav>
-  {% if settings.heritage_mode %}{% capture product_file_label %}{{ settings.catalog_prefix | default: 'RZ' }}-{{ product_serial }} / PRODUCT FILE{% endcapture %}<div class="page-width product-fileline">{% render 'rizo-dateline', label: product_file_label %}<span>{% if product.available %}AVAILABLE{% else %}ENDED{% endif %}</span></div>{% endif %}
+  assign media_count = product.media.size
+-%}
+<section class="pdp" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}" data-rizo-event-quiet>
+  <div class="wrap wrap--wide">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="{{ routes.all_products_collection_url }}">Shop</a><span aria-hidden="true">/</span><span aria-current="page">{{ product.title }}</span>
+    </nav>
 
-  <div class="product-page page-width">
-    <div class="product-gallery-shell" data-media-gallery>
-      {% if product.media.size > 1 %}
-        <nav class="product-thumbnails" aria-label="Product media navigation">
-          {% for media in product.media %}
-            <button type="button" class="product-thumbnail" data-media-thumb="{{ media.id }}" aria-label="View media {{ forloop.index }} of {{ product.media.size }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
-              {% if media.preview_image != blank %}{{ media.preview_image | image_url: width: 180 | image_tag: loading: 'lazy', widths: '90,130,180', sizes: '72px', alt: '' }}{% else %}<span>{{ forloop.index }}</span>{% endif %}
-              <small>{{ forloop.index | prepend: '0' }}</small>
-            </button>
-          {% endfor %}
-        </nav>
-      {% endif %}
+    <div class="pdp-grid">
+      <div class="pdp-gallery{% if media_count < 2 %} pdp-gallery--single{% endif %}" data-media-gallery>
+        {%- if media_count > 1 -%}
+          <nav class="pdp-thumbs" aria-label="Product images">
+            {%- for media in product.media -%}
+              <button type="button" class="pdp-thumb" data-media-thumb="{{ media.id }}" aria-label="Image {{ forloop.index }} of {{ media_count }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
+                {%- if media.preview_image != blank -%}{{ media.preview_image | image_url: width: 180 | image_tag: loading: 'lazy', widths: '90,180', sizes: '64px', alt: '' }}{%- endif -%}
+              </button>
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
 
-      <div class="product-gallery" role="region" aria-label="Product media" data-media-track>
-        {% for media in product.media %}
-          <div class="product-media" id="Media-{{ section.id }}-{{ media.id }}" data-media-id="{{ media.id }}" data-media-index="{{ forloop.index0 }}" data-media-type="{{ media.media_type }}">
-            <span class="product-media-number" aria-hidden="true">{{ forloop.index | prepend: '0' }} / {{ product.media.size | prepend: '0' }}</span>
-            {% case media.media_type %}
-              {% when 'image' %}
-                {% if forloop.first %}
-                  {{ media | image_url: width: 2000 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '540,720,900,1200,1500,1800,2000', sizes: '(min-width:990px) 54vw,100vw', alt: media.alt | default: product.title }}
-                {% else %}
-                  {{ media | image_url: width: 2000 | image_tag: loading: 'lazy', widths: '540,720,900,1200,1500,1800,2000', sizes: '(min-width:990px) 54vw,100vw', alt: media.alt | default: product.title }}
-                {% endif %}
-                <button class="media-zoom-button" type="button" data-media-zoom="{{ media | image_url: width: 2400 }}" data-media-alt="{{ media.alt | default: product.title | escape }}">VIEW FULL SIZE</button>
-              {% when 'external_video' %}
-                {{ media | external_video_tag: loading: 'lazy' }}
-              {% when 'video' %}
-                {{ media | media_tag: image_size: '1400x', autoplay: false, controls: true, preload: 'metadata' }}
-              {% when 'model' %}
-                {{ media | media_tag: image_size: '1400x', toggleable: true }}
-              {% else %}
-                {{ media | media_tag }}
-            {% endcase %}
-          </div>
-        {% else %}
-          <div class="product-placeholder product-placeholder--large" role="img" aria-label="Product image not yet available">
-            <span class="product-placeholder-grid" aria-hidden="true"></span>
-            <img src="{{ 'rizo-logo.png' | asset_url }}" width="497" height="650" alt="" loading="eager">
-            <span class="product-placeholder-code">{{ settings.catalog_prefix | default: 'RZ' }}-{{ product_serial }} / IMAGE 00</span>
-            <strong>PRODUCT FILE</strong>
-            <small>Fit, material, and release details remain available below.</small>
-          </div>
-        {% endfor %}
-      </div>
-      {% if product.media.size > 1 %}<p class="mobile-gallery-hint">SWIPE TO SEE THE WHOLE PIECE <span aria-hidden="true">→</span></p>{% endif %}
-    </div>
-
-    <div class="product-panel"><div class="product-panel-inner">
-      <div class="product-badges product-badges--panel">{% render 'product-badge', product: product %}</div>
-      {% if section.settings.show_artifact_number %}<p class="eyebrow">{{ settings.catalog_prefix | default: 'RZ' }}-{{ product_serial }} · PRODUCT FILE</p>{% endif %}
-      <h1>{{ product.title }}</h1>
-      {% if product.metafields.custom.short_description != blank %}<p class="product-positioning">{{ product.metafields.custom.short_description }}</p>{% elsif section.settings.fallback_positioning != blank %}<p class="product-positioning">{{ section.settings.fallback_positioning }}</p>{% endif %}
-
-      {% form 'product', product, class: 'product-form', data-ajax-product-form: '', data-product-form: '' %}
-        {% render 'price', product: product, context: 'product', form: form %}
-
-        {% unless product.has_only_default_variant %}
-          <div class="option-picker" data-option-picker data-low-stock-threshold="{{ low_stock_threshold }}">
-            <script type="application/json" data-product-variants>{{ product.variants | json }}</script>
-            <script type="application/json" data-product-stock>[{% for variant in product.variants %}{"id":{{ variant.id | json }},"quantity":{{ variant.inventory_quantity | default: 0 | json }},"tracked":{% if variant.inventory_management != blank %}true{% else %}false{% endif %},"policy":{{ variant.inventory_policy | json }}}{% unless forloop.last %},{% endunless %}{% endfor %}]</script>
-            <input type="hidden" name="id" data-variant-input value="" disabled>
-            <noscript><label class="field-group">Choose an available option<select name="id">{% for variant in product.variants %}<option value="{{ variant.id }}"{% unless variant.available %} disabled{% endunless %}>{{ variant.title }} — {{ variant.price | money }}{% unless variant.available %} — Sold out{% endunless %}</option>{% endfor %}</select></label></noscript>
-            <div class="option-picker-intro"><strong>CHOOSE THE RIGHT PIECE</strong><span>Select each option to confirm price and live stock.</span></div>
-            {% for option in product.options_with_values %}
-              {% assign option_name_downcase = option.name | downcase %}
-              {% assign is_color = false %}
-              {% assign is_size = false %}
-              {% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}{% assign is_color = true %}{% endif %}
-              {% if option_name_downcase contains 'size' %}{% assign is_size = true %}{% endif %}
-              <fieldset class="option-group{% if is_color %} option-group--color{% endif %}{% if is_size %} option-group--size{% endif %}" data-option-group data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
-                <legend><span>{{ option.name }}</span><b data-option-selection>{% if option.values.size == 1 %}{{ option.values.first }}{% else %}Choose {{ option.name | downcase }}{% endif %}</b></legend>
-                <div class="option-values">
-                  {% for value in option.values %}
-                    <button type="button" class="option-button" data-option-button data-value="{{ value | escape }}" aria-pressed="{% if option.values.size == 1 %}true{% else %}false{% endif %}"{% if option.values.size == 1 %} data-auto-selected="true"{% endif %}>
-                      {% if is_color %}<i class="option-swatch" style="--swatch:{{ value | escape }}" aria-hidden="true"></i>{% endif %}<span>{{ value }}</span><small data-option-unavailable>Unavailable</small>
-                    </button>
-                  {% endfor %}
-                </div>
-                {% if is_size %}
-                  <div class="size-help-row">
-                    {% if product.metafields.custom.model_info != blank %}<span>{{ product.metafields.custom.model_info }}</span>{% endif %}
-                    {% if product.metafields.custom.size_guide != blank or section.settings.size_guide_page != blank %}<button type="button" class="text-button" data-size-guide-open>SIZE GUIDE</button>{% endif %}
-                  </div>
-                {% endif %}
-              </fieldset>
-            {% endfor %}
-            <p class="selection-summary" data-selection-summary aria-live="polite" aria-atomic="true">Choose each option to confirm availability.</p>
-            <p class="form-message form-message--error" data-variant-error role="alert" hidden>Please choose every required option.</p>
-          </div>
-        {% else %}
-          <input type="hidden" name="id" value="{{ first_variant.id }}" data-variant-input>
-        {% endunless %}
-
-        <div class="product-buy-row">
-          <div class="quantity-control quantity-control--product"><button type="button" data-quantity-step="-1" aria-label="Decrease quantity">{% render 'icon', name: 'minus' %}</button><input type="number" name="quantity" min="1" value="1" inputmode="numeric" aria-label="Quantity"><button type="button" data-quantity-step="1" aria-label="Increase quantity">{% render 'icon', name: 'plus' %}</button></div>
-          <button class="button button-hot product-submit" type="submit" data-product-submit{% unless product.available %} disabled aria-disabled="true"{% endunless %}><span data-product-submit-label>{% if product.available %}Add to cart{% else %}Sold out{% endif %}</span>{% render 'icon', name: 'arrow' %}</button>
+        <div class="pdp-track" role="region" aria-label="Product images" data-media-track>
+          {%- for media in product.media -%}
+            <div class="pdp-media" id="Media-{{ section.id }}-{{ media.id }}" data-media-id="{{ media.id }}" data-media-index="{{ forloop.index0 }}" data-media-type="{{ media.media_type }}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  {%- if forloop.first -%}
+                    {{ media | image_url: width: 2000 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '540,720,900,1200,1500,2000', sizes: '(min-width: 990px) 56vw, 88vw', alt: media.alt | default: product.title }}
+                  {%- else -%}
+                    {{ media | image_url: width: 2000 | image_tag: loading: 'lazy', widths: '540,720,900,1200,1500,2000', sizes: '(min-width: 990px) 56vw, 88vw', alt: media.alt | default: product.title }}
+                  {%- endif -%}
+                  <button class="pdp-zoom" type="button" data-media-zoom="{{ media | image_url: width: 2400 }}" data-media-alt="{{ media.alt | default: product.title | escape }}">{% render 'icon', name: 'expand' %}Full size</button>
+                {%- when 'external_video' -%}
+                  {{ media | external_video_tag: loading: 'lazy' }}
+                {%- when 'video' -%}
+                  {{ media | media_tag: image_size: '1400x', autoplay: false, controls: true, preload: 'metadata' }}
+                {%- when 'model' -%}
+                  {{ media | media_tag: image_size: '1400x', toggleable: true }}
+                {%- else -%}
+                  {{ media | media_tag }}
+              {%- endcase -%}
+              {%- if media_count > 1 -%}<span class="pdp-count" aria-hidden="true">{{ forloop.index }} / {{ media_count }}</span>{%- endif -%}
+            </div>
+          {%- else -%}
+            <div class="pdp-media" role="img" aria-label="No photo yet" style="aspect-ratio: 4 / 5"><span class="placeholder-media">{% render 'rizo-mark' %}</span></div>
+          {%- endfor -%}
         </div>
-        {% if section.settings.show_dynamic_checkout and product.has_only_default_variant and product.available %}<div class="dynamic-checkout">{{ form | payment_button }}</div>{% endif %}
-      {% endform %}
-
-      <div class="purchase-answer-grid">
-        <div><span>AVAILABILITY</span><strong data-product-availability role="status" aria-live="polite" aria-atomic="true">{% if product.available == false %}Sold out{% elsif product.has_only_default_variant and first_variant_low_stock %}Low stock · {{ first_variant.inventory_quantity }} left{% elsif product.has_only_default_variant %}In stock online{% else %}Choose options to confirm{% endif %}</strong></div>
-        {% if section.settings.release_note != blank %}<div><span>RELEASE METHOD</span><strong>{{ section.settings.release_note }}</strong></div>{% endif %}
-        {% if processing_note != blank %}<div><span>PROCESSING</span><strong>{{ processing_note }}</strong></div>{% endif %}
-        {% if return_note != blank or shop.refund_policy != blank %}
-          <div><span>RETURNS / EXCHANGES</span><strong>{% if return_note != blank %}{{ return_note }}{% elsif shop.refund_policy != blank %}<a href="{{ shop.refund_policy.url }}">Read the posted return policy</a>{% endif %}</strong></div>
-        {% endif %}
       </div>
 
-      <div class="trust-strip">{% for block in section.blocks %}{% if block.type == 'confidence' %}<span {{ block.shopify_attributes }}>{% render 'icon', name: 'check' %}{{ block.settings.text }}</span>{% endif %}{% endfor %}</div>
+      <div class="pdp-info">
+        <div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>
+        <h1 class="pdp-title">{{ product.title }}</h1>
+        {%- if product.metafields.custom.short_description != blank -%}
+          <p class="pdp-line">{{ product.metafields.custom.short_description }}</p>
+        {%- elsif section.settings.fallback_line != blank -%}
+          <p class="pdp-line">{{ section.settings.fallback_line }}</p>
+        {%- endif -%}
 
-      {% unless product.available %}<div class="sold-out-next-action"><strong>THIS SIGNAL ENDED.</strong><span>Restocks are announced when they are real—not before.</span><a href="{{ routes.root_url }}#RizoSignal">GET RESTOCK SIGNALS {% render 'icon', name: 'arrow' %}</a></div>{% endunless %}
+        {%- form 'product', product, class: 'pdp-form', data-ajax-product-form: '', data-product-form: '' -%}
+          {%- render 'price', product: product, context: 'product', form: form -%}
 
-      <div class="product-proof-apps">{% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}</div>
+          {%- unless product.has_only_default_variant -%}
+            <div class="opt-picker" data-option-picker data-low-stock-threshold="{{ low_stock_threshold }}">
+              <script type="application/json" data-product-variants>{{ product.variants | json }}</script>
+              <script type="application/json" data-product-stock>[{% for variant in product.variants %}{"id":{{ variant.id | json }},"quantity":{{ variant.inventory_quantity | default: 0 | json }},"tracked":{% if variant.inventory_management != blank %}true{% else %}false{% endif %},"policy":{{ variant.inventory_policy | json }}}{% unless forloop.last %},{% endunless %}{% endfor %}]</script>
+              <input type="hidden" name="id" data-variant-input value="" disabled>
+              <noscript><label class="field"><span>Choose</span><select class="select" name="id">{% for variant in product.variants %}<option value="{{ variant.id }}"{% unless variant.available %} disabled{% endunless %}>{{ variant.title }} — {{ variant.price | money }}{% unless variant.available %} — Sold out{% endunless %}</option>{% endfor %}</select></label></noscript>
+              {%- for option in product.options_with_values -%}
+                {%- assign option_name_downcase = option.name | downcase -%}
+                {%- assign is_color = false -%}
+                {%- assign is_size = false -%}
+                {%- if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}{% assign is_color = true %}{% endif -%}
+                {%- if option_name_downcase contains 'size' %}{% assign is_size = true %}{% endif -%}
+                <fieldset class="opt-group" data-option-group data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
+                  <legend><span>{{ option.name }}</span><b data-option-selection>{% if option.values.size == 1 %}{{ option.values.first }}{% else %}Choose {{ option.name | downcase }}{% endif %}</b></legend>
+                  <div class="opt-values">
+                    {%- for value in option.values -%}
+                      <button type="button" class="opt" data-option-button data-value="{{ value | escape }}" aria-pressed="{% if option.values.size == 1 %}true{% else %}false{% endif %}"{% if option.values.size == 1 %} data-auto-selected="true"{% endif %}>
+                        {%- if is_color %}<i class="opt-swatch" style="--swatch: {{ value | handle | replace: '-', '' }}" aria-hidden="true"></i>{% endif -%}
+                        <span>{{ value }}</span>
+                      </button>
+                    {%- endfor -%}
+                  </div>
+                  {%- if is_size -%}
+                    {%- if product.metafields.custom.model_info != blank or product.metafields.custom.size_guide != blank or section.settings.size_guide_page != blank -%}
+                      <div class="opt-help">
+                        {%- if product.metafields.custom.model_info != blank %}<span>{{ product.metafields.custom.model_info }}</span>{% endif -%}
+                        {%- if product.metafields.custom.size_guide != blank or section.settings.size_guide_page != blank %}<button type="button" class="text-button" data-size-guide-open>Size guide</button>{% endif -%}
+                      </div>
+                    {%- endif -%}
+                  {%- endif -%}
+                </fieldset>
+              {%- endfor -%}
+              <p class="pdp-summary" data-selection-summary aria-live="polite" aria-atomic="true"></p>
+              <p class="form-message form-message--error" data-variant-error role="alert" hidden>Choose every option first.</p>
+            </div>
+          {%- else -%}
+            <input type="hidden" name="id" value="{{ first_variant.id }}" data-variant-input>
+          {%- endunless -%}
 
-      <div class="product-details">
-        {% assign details = 'story,fit,materials,print_process,care,shipping' | split: ',' %}
-        {% for key in details %}{% assign value = product.metafields.custom[key] %}{% if value != blank %}<details class="product-detail"><summary>{{ key | replace: '_', ' ' | capitalize }}<span>+</span></summary><div class="rte">{{ value | metafield_tag }}</div></details>{% endif %}{% endfor %}
-        {% if product.description != blank %}<details class="product-detail"><summary>Full details<span>+</span></summary><div class="rte">{{ product.description }}</div></details>{% endif %}
-        {% for block in section.blocks %}{% case block.type %}{% when 'detail' %}{% if block.settings.heading != blank and block.settings.content != blank %}<details class="product-detail" {{ block.shopify_attributes }}><summary>{{ block.settings.heading }}<span>+</span></summary><div class="rte">{{ block.settings.content }}</div></details>{% endif %}{% endcase %}{% endfor %}
+          <div class="pdp-buy">
+            <div class="quantity-control">
+              <button type="button" data-quantity-step="-1" aria-label="One fewer">{% render 'icon', name: 'minus' %}</button>
+              <input type="number" name="quantity" min="1" value="1" inputmode="numeric" aria-label="Quantity">
+              <button type="button" data-quantity-step="1" aria-label="One more">{% render 'icon', name: 'plus' %}</button>
+            </div>
+            <button class="btn btn--solid" type="submit" data-product-submit{% unless product.available %} disabled aria-disabled="true"{% endunless %}><span data-product-submit-label>{% if product.available %}Add to cart{% else %}Sold out{% endif %}</span></button>
+          </div>
+          {%- if section.settings.show_dynamic_checkout and product.has_only_default_variant and product.available -%}<div class="pdp-dynamic">{{ form | payment_button }}</div>{%- endif -%}
+        {%- endform -%}
+
+        {%- unless product.available -%}
+          <p class="pdp-soldout">Sold out for now. <a href="{{ routes.root_url }}#signup">Get told when it’s back</a>.</p>
+        {%- endunless -%}
+
+        <div class="pdp-notes">
+          <p><span data-product-availability class="pdp-status" role="status" aria-live="polite" aria-atomic="true">{% if product.available == false %}Sold out{% elsif product.has_only_default_variant and first_variant_low_stock %}Low stock · {{ first_variant.inventory_quantity }} left{% elsif product.has_only_default_variant %}In stock{% else %}Pick a size to check stock{% endif %}</span></p>
+          {%- if processing_note != blank -%}<p>{% render 'icon', name: 'truck' %}<span>{{ processing_note }}</span></p>{%- endif -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'note' and block.settings.text != blank -%}<p {{ block.shopify_attributes }}>{% render 'icon', name: block.settings.icon %}<span>{{ block.settings.text }}</span></p>{%- endif -%}
+          {%- endfor -%}
+          {%- if shop.refund_policy != blank -%}<p>{% render 'icon', name: 'return' %}<a href="{{ shop.refund_policy.url }}">Returns and exchanges</a></p>{%- endif -%}
+        </div>
+
+        <div class="product-proof-apps">{%- for block in section.blocks -%}{%- if block.type == '@app' -%}{% render block %}{%- endif -%}{%- endfor -%}</div>
+
+        <div class="details-list">
+          {%- if product.description != blank -%}
+            <details class="detail" open><summary>Details<i aria-hidden="true"></i></summary><div class="rte">{{ product.description }}</div></details>
+          {%- endif -%}
+          {%- assign details = 'fit,materials,print_process,care,story,shipping' | split: ',' -%}
+          {%- for key in details -%}
+            {%- assign value = product.metafields.custom[key] -%}
+            {%- if value != blank -%}<details class="detail"><summary>{{ key | replace: '_', ' ' | capitalize }}<i aria-hidden="true"></i></summary><div class="rte">{{ value | metafield_tag }}</div></details>{%- endif -%}
+          {%- endfor -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'detail' and block.settings.heading != blank and block.settings.content != blank -%}
+              <details class="detail" {{ block.shopify_attributes }}><summary>{{ block.settings.heading }}<i aria-hidden="true"></i></summary><div class="rte">{{ block.settings.content }}</div></details>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
       </div>
-    </div></div>
-  </div>
-
-  <div class="sticky-atc" data-sticky-atc hidden>
-    <div><strong>{{ product.title | truncate: 28 }}</strong><span data-sticky-variant>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}Ready{% else %}Choose options{% endif %}</span></div>
-    <span data-sticky-price>{{ first_variant.price | money }}</span>
-    <button class="button button-hot" type="button" data-sticky-submit{% unless product.available %} disabled aria-disabled="true"{% endunless %}>{% if product.available == false %}SOLD OUT{% elsif product.has_only_default_variant %}ADD{% else %}CHOOSE{% endif %}</button>
-  </div>
-
-  <div class="overlay-shell media-viewer-shell" data-overlay="product-media" hidden>
-    <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close full-size image"></button>
-    <section class="media-viewer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-label="Full-size product image"><button class="media-viewer-close" type="button" data-overlay-close aria-label="Close full-size image">{% render 'icon', name: 'close' %}</button><img data-media-viewer-image src="" alt=""></section>
-  </div>
-
-  {% if product.metafields.custom.size_guide != blank or section.settings.size_guide_page != blank %}
-    <div class="overlay-shell size-guide-shell" data-overlay="size-guide" hidden>
-      <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close size guide"></button>
-      <aside class="size-guide-drawer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-labelledby="SizeGuideTitle"><header class="drawer-header"><div><p class="eyebrow">FIT BEFORE GUESSWORK</p><h2 id="SizeGuideTitle">Size guide</h2></div><button class="header-icon" type="button" data-overlay-close aria-label="Close size guide">{% render 'icon', name: 'close' %}</button></header><div class="rte">{% if product.metafields.custom.size_guide != blank %}{{ product.metafields.custom.size_guide | metafield_tag }}{% else %}{{ section.settings.size_guide_page.content }}{% endif %}</div></aside>
     </div>
-  {% endif %}
+  </div>
+
+  <div class="sticky-buy" data-sticky-atc hidden>
+    <div><strong>{{ product.title }}</strong><span data-sticky-variant>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}In stock{% else %}Choose a size{% endif %}</span></div>
+    <span data-sticky-price>{{ first_variant.price | money }}</span>
+    <button class="btn btn--solid" type="button" data-sticky-submit{% unless product.available %} disabled aria-disabled="true"{% endunless %}>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}Add{% else %}Choose{% endif %}</button>
+  </div>
+
+  <div class="overlay-shell" data-overlay="product-media" hidden>
+    <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close"></button>
+    <section class="media-viewer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-label="Full-size image">
+      <button class="icon-btn media-viewer-close" type="button" data-overlay-close aria-label="Close">{% render 'icon', name: 'close' %}</button>
+      <img data-media-viewer-image src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" width="1600" height="2000" alt="">
+    </section>
+  </div>
+
+  {%- if product.metafields.custom.size_guide != blank or section.settings.size_guide_page != blank -%}
+    <div class="overlay-shell" data-overlay="size-guide" hidden>
+      <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close size guide"></button>
+      <aside class="size-guide" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-labelledby="SizeGuideTitle">
+        <header class="drawer-head"><h2 id="SizeGuideTitle">Size guide</h2><button class="icon-btn" type="button" data-overlay-close aria-label="Close size guide">{% render 'icon', name: 'close' %}</button></header>
+        <div class="rte">{% if product.metafields.custom.size_guide != blank %}{{ product.metafields.custom.size_guide | metafield_tag }}{% else %}{{ section.settings.size_guide_page.content }}{% endif %}</div>
+      </aside>
+    </div>
+  {%- endif -%}
 </section>
 
 {% schema %}
 {
-  "name":"Main product",
-  "settings":[
-    {"type":"checkbox","id":"show_artifact_number","label":"Show product file number","default":true},
-    {"type":"checkbox","id":"show_dynamic_checkout","label":"Show dynamic checkout for single-variant products","default":false},
-    {"type":"text","id":"fallback_positioning","label":"Fallback short positioning line","default":"Built in Pittsburgh to leave the screen and live outside."},
-    {"type":"page","id":"size_guide_page","label":"Fallback size guide page"},
-    {"type":"text","id":"release_note","label":"Release method summary","default":"Small-run release; made-to-order only when the product says so"},
-    {"type":"text","id":"shipping_note","label":"Fallback processing/shipping note","info":"Enter a factual processing range, such as 3–5 business days. Leave blank to hide this row when the product has no custom.shipping_note metafield."},
-    {"type":"text","id":"return_note","label":"Returns/exchange summary","info":"Enter a concise factual summary. Leave blank to use the store’s posted return-policy link when available."}
+  "name": "Product",
+  "settings": [
+    { "type": "text", "id": "fallback_line", "label": "Line under the name", "info": "Used when a product has no custom.short_description metafield. Leave blank to show nothing." },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Express checkout buttons on one-size products", "default": false },
+    { "type": "page", "id": "size_guide_page", "label": "Size guide page", "info": "Used when a product has no custom.size_guide metafield." },
+    { "type": "text", "id": "shipping_note", "label": "Shipping line", "info": "A factual processing time, e.g. Ships from Pittsburgh in 3–5 business days. A custom.shipping_note metafield overrides it." }
   ],
-  "blocks":[
-    {"type":"@app"},
-    {"type":"confidence","name":"Confidence item","limit":4,"settings":[{"type":"text","id":"text","label":"Text","default":"Secure Shopify checkout"}]},
-    {"type":"detail","name":"Collapsible detail","settings":[{"type":"text","id":"heading","label":"Heading","default":"Details"},{"type":"richtext","id":"content","label":"Content"}]}
+  "blocks": [
+    { "type": "@app" },
+    { "type": "note", "name": "Short note", "limit": 3, "settings": [
+      { "type": "text", "id": "text", "label": "Text", "default": "Secure checkout through Shopify" },
+      { "type": "select", "id": "icon", "label": "Icon", "default": "lock", "options": [{ "value": "lock", "label": "Lock" }, { "value": "truck", "label": "Truck" }, { "value": "return", "label": "Return" }, { "value": "check", "label": "Check" }, { "value": "pin", "label": "Pin" }] }
+    ] },
+    { "type": "detail", "name": "Collapsible detail", "settings": [
+      { "type": "text", "id": "heading", "label": "Heading", "default": "Care" },
+      { "type": "richtext", "id": "content", "label": "Content" }
+    ] }
   ]
 }
 {% endschema %}

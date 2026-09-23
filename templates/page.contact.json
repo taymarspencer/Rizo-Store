@@ -1,14 +1,16 @@
 {
   "sections": {
+    "head": {
+      "type": "rizo-page-head",
+      "settings": { "label": "", "title": "Contact", "voice": "say", "lead": "", "align": "left", "crumbs": false, "fog": 45 }
+    },
     "contact": {
-      "type": "rizo-contact-signal",
+      "type": "rizo-contact",
       "settings": {
-        "eyebrow": "CONTACT / OPEN CHANNEL",
-        "heading": "SEND IT TO RIZO.",
-        "intro": "Order help, sizing questions, collaborations, events, press, or something that does not fit a box. Send a real message through the channel below.",
-        "note": "No fake chatbot. No invented response time. Your message goes through Shopify’s contact system to the store inbox."
+        "text": "<p>Orders, sizing, working together, or anything else. It goes straight to the Rizo inbox.</p>",
+        "instagram_url": "https://www.instagram.com/rizoapparel/"
       }
     }
   },
-  "order": ["contact"]
+  "order": ["head", "contact"]
 }

@@ -1,19 +1,20 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Rizo Portal",
+    "theme_name": "Rizo",
     "theme_author": "Rizo Apparel",
-    "theme_version": "0.8.0",
+    "theme_version": "1.0.0",
     "theme_documentation_url": "https://rizo.store",
     "theme_support_url": "https://rizo.store"
   },
   {
-    "name": "Brand system",
+    "name": "Brand",
     "settings": [
       {
         "type": "image_picker",
         "id": "logo",
-        "label": "Logo"
+        "label": "Logo",
+        "info": "Leave empty to use the vector Rizo mark (sharper, and it follows the colours below)."
       },
       {
         "type": "image_picker",
@@ -23,41 +24,38 @@
       {
         "type": "color",
         "id": "color_ink",
-        "label": "Ink",
-        "default": "#090909"
+        "label": "Night",
+        "default": "#07090c",
+        "info": "The darkest colour. The sky and every page start here."
       },
       {
         "type": "color",
         "id": "color_paper",
-        "label": "Paper",
-        "default": "#f4f0e8"
+        "label": "Bone",
+        "default": "#ece8df",
+        "info": "Text and light surfaces."
       },
       {
         "type": "color",
         "id": "color_accent",
         "label": "Rizo blue",
-        "default": "#20bdf2"
+        "default": "#20bdf2",
+        "info": "The flame, the X that marks where you are, focus rings. Used sparingly."
       },
       {
         "type": "color",
         "id": "color_accent_2",
-        "label": "Heat",
-        "default": "#ff5d21"
-      },
-      {
-        "type": "color",
-        "id": "color_muted",
-        "label": "Muted",
-        "default": "#8d8d8d"
+        "label": "Pale blue",
+        "default": "#a7d8e8"
       },
       {
         "type": "range",
         "id": "radius",
         "label": "Corner radius",
         "min": 0,
-        "max": 32,
-        "step": 2,
-        "default": 18,
+        "max": 12,
+        "step": 1,
+        "default": 3,
         "unit": "px"
       },
       {
@@ -73,12 +71,12 @@
     ]
   },
   {
-    "name": "Experience",
+    "name": "Motion",
     "settings": [
       {
         "type": "select",
         "id": "motion_level",
-        "label": "Motion level",
+        "label": "Motion",
         "default": "balanced",
         "options": [
           {
@@ -88,182 +86,46 @@
           {
             "value": "balanced",
             "label": "Balanced"
-          },
-          {
-            "value": "expressive",
-            "label": "Expressive"
-          }
-        ]
-      },
-      {
-        "type": "select",
-        "id": "texture_level",
-        "label": "Texture level",
-        "default": "balanced",
-        "options": [
-          {
-            "value": "calm",
-            "label": "Calm"
-          },
-          {
-            "value": "balanced",
-            "label": "Balanced"
-          },
-          {
-            "value": "expressive",
-            "label": "Expressive"
           }
         ],
-        "info": "Controls lightweight grain, registration marks, and tactile surfaces."
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_sound",
-        "label": "Show optional sound control",
-        "default": false,
-        "info": "Sound always starts off and only activates after a customer chooses it."
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_install_guide",
-        "label": "Show Home Screen install option",
-        "default": false
+        "info": "Calm halves seasonal motion and removes image zoom on hover. Visitors who ask their device for reduced motion always get a still site."
       }
     ]
   },
   {
-    "name": "Original signal",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "heritage_mode",
-        "label": "Enable original-site details",
-        "default": true,
-        "info": "Adds the date/time, catalog notation, and stripped-back archive details inspired by the original Rizo storefront."
-      },
-      {
-        "type": "select",
-        "id": "signal_clock_mode",
-        "label": "Signal clock mode",
-        "default": "archive",
-        "options": [
-          {
-            "value": "archive",
-            "label": "Original archive time"
-          },
-          {
-            "value": "live",
-            "label": "Live Pittsburgh time"
-          }
-        ]
-      },
-      {
-        "type": "text",
-        "id": "archive_date",
-        "label": "Archive date",
-        "default": "02/22/2023"
-      },
-      {
-        "type": "text",
-        "id": "archive_time",
-        "label": "Archive time",
-        "default": "2:22 PM"
-      },
-      {
-        "type": "text",
-        "id": "signal_timezone",
-        "label": "Live clock timezone",
-        "default": "America/New_York",
-        "info": "Use an IANA timezone such as America/New_York."
-      },
-      {
-        "type": "text",
-        "id": "catalog_prefix",
-        "label": "Catalog prefix",
-        "default": "RZ"
-      }
-    ]
-  },
-  {
-    "name": "Product signals",
+    "name": "Shop",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Badge priority: SOLD OUT always wins. A custom.badge product metafield overrides automatic states except sold out."
-      },
-      {
-        "type": "paragraph",
-        "content": "Exact lowercase product tags: new-drop (or legacy just-entered), low-stock, restocked, event-exclusive, core-piece. Remove outdated tags when the state ends."
+        "content": "Badges: SOLD OUT always wins. A custom.badge product metafield overrides the automatic ones. Automatic tags (lowercase): new-drop, low-stock, restocked, event-exclusive, core-piece."
       },
       {
         "type": "range",
         "id": "low_stock_threshold",
-        "label": "Automatic low-stock threshold",
+        "label": "Low-stock badge below",
         "min": 1,
         "max": 20,
         "step": 1,
         "default": 5,
-        "info": "Applied only to tracked inventory that stops selling at zero. The low-stock tag can still force the badge."
-      }
-    ]
-  },
-  {
-    "name": "World state",
-    "settings": [
-      {
-        "type": "select",
-        "id": "world_state",
-        "label": "Current world state",
-        "default": "quiet",
-        "options": [
-          {
-            "value": "quiet",
-            "label": "Quiet"
-          },
-          {
-            "value": "teasing",
-            "label": "Teasing"
-          },
-          {
-            "value": "drop-incoming",
-            "label": "Drop incoming"
-          },
-          {
-            "value": "live",
-            "label": "Live"
-          },
-          {
-            "value": "sold-out",
-            "label": "Sold out"
-          },
-          {
-            "value": "event-mode",
-            "label": "Event mode"
-          }
-        ]
-      },
-      {
-        "type": "checkbox",
-        "id": "show_world_state_in_header",
-        "label": "Show state indicator in header",
-        "default": true
+        "info": "Only for tracked inventory that stops selling at zero."
       },
       {
         "type": "checkbox",
         "id": "enable_mobile_shop_utility",
-        "label": "Enable mobile bottom shop utility",
-        "default": true
+        "label": "Bottom bar on phones",
+        "default": true,
+        "info": "Home, Shop, Search and Cart within thumb reach."
       },
       {
         "type": "range",
         "id": "free_shipping_threshold",
-        "label": "Free shipping threshold",
+        "label": "Free shipping from",
         "min": 0,
         "max": 300,
         "step": 5,
         "default": 0,
         "unit": "$",
-        "info": "Set to 0 to disable. Only enable when the offer is real."
+        "info": "0 hides the progress bar. Only set this when the offer is real."
       }
     ]
   },
@@ -272,7 +134,7 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "A seasonal layer that sits on top of normal Rizo. Choose Off to return to normal Rizo instantly \u2014 nothing is deleted. Halloween is October mode."
+        "content": "A seasonal change to the world around the store: sky, moon, fog, bats, countdown. Off returns to normal Rizo instantly; nothing is deleted. See docs/EVENT-LAYER.md."
       },
       {
         "type": "select",
@@ -282,11 +144,11 @@
         "options": [
           {
             "value": "off",
-            "label": "Off \u2014 normal Rizo"
+            "label": "Off — normal Rizo"
           },
           {
             "value": "halloween",
-            "label": "Halloween (October mode)"
+            "label": "Halloween"
           }
         ]
       },
@@ -298,11 +160,11 @@
         "options": [
           {
             "value": "scheduled",
-            "label": "Scheduled \u2014 between start and end"
+            "label": "Scheduled — between start and end"
           },
           {
             "value": "always",
-            "label": "Always on \u2014 manual override"
+            "label": "Always on"
           }
         ]
       },
@@ -325,13 +187,13 @@
         "id": "event_editor_preview",
         "label": "Always preview in the theme editor",
         "default": true,
-        "info": "Shows the selected event while you edit, even outside its schedule. Customers still follow the schedule. Add ?rizo_event=on to a storefront URL to preview it in a browser tab; ?rizo_event=clear to stop."
+        "info": "Customers still follow the schedule. Add ?rizo_event=on to any storefront link to preview in a normal tab."
       },
       {
         "type": "text",
         "id": "event_announcement",
-        "label": "Signal bar message during the event",
-        "info": "Replaces the header signal bar message only while the event is live. Blank keeps the normal message."
+        "label": "Announcement during the event",
+        "info": "Shown above the header only while the event is live."
       },
       {
         "type": "header",
@@ -340,14 +202,14 @@
       {
         "type": "checkbox",
         "id": "event_night",
-        "label": "Night treatment",
+        "label": "Night sky",
         "default": true,
-        "info": "Deepens the dark surfaces and dims paper surfaces slightly. Product photography is never tinted."
+        "info": "Deepens the sky and lets the moon light a little of it. Product photos are never tinted."
       },
       {
         "type": "range",
         "id": "event_night_intensity",
-        "label": "Night intensity",
+        "label": "Moonlight",
         "min": 0,
         "max": 100,
         "step": 5,
@@ -357,13 +219,13 @@
       {
         "type": "range",
         "id": "event_motion",
-        "label": "Motion intensity",
+        "label": "Motion",
         "min": 0,
         "max": 100,
         "step": 5,
         "unit": "%",
         "default": 60,
-        "info": "Scales fog drift, moon drift and bat flight. 0% keeps everything still. The theme's Calm motion level halves it."
+        "info": "Scales fog drift and bat flight. 0% keeps everything still."
       },
       {
         "type": "select",
@@ -377,7 +239,7 @@
           },
           {
             "value": "minimal",
-            "label": "Night treatment and countdown only"
+            "label": "Night sky and countdown only"
           }
         ]
       }
@@ -389,117 +251,42 @@
       {
         "type": "checkbox",
         "id": "event_moon",
-        "label": "Show moon in the hero",
+        "label": "Moon",
         "default": true
       },
       {
         "type": "image_picker",
         "id": "event_moon_image",
         "label": "Moon artwork",
-        "info": "Transparent PNG, WebP or SVG. Blank uses the event\u2019s Rizo moon artwork."
-      },
-      {
-        "type": "range",
-        "id": "event_moon_size",
-        "label": "Size on desktop",
-        "min": 120,
-        "max": 640,
-        "step": 10,
-        "unit": "px",
-        "default": 340
-      },
-      {
-        "type": "range",
-        "id": "event_moon_size_mobile",
-        "label": "Size on mobile",
-        "min": 80,
-        "max": 360,
-        "step": 10,
-        "unit": "px",
-        "default": 170
-      },
-      {
-        "type": "range",
-        "id": "event_moon_x",
-        "label": "Horizontal position on desktop",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 72
-      },
-      {
-        "type": "range",
-        "id": "event_moon_y",
-        "label": "Vertical position on desktop",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 34
-      },
-      {
-        "type": "range",
-        "id": "event_moon_x_mobile",
-        "label": "Horizontal position on mobile",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 70
-      },
-      {
-        "type": "range",
-        "id": "event_moon_y_mobile",
-        "label": "Vertical position on mobile",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 23
-      },
-      {
-        "type": "range",
-        "id": "event_moon_opacity",
-        "label": "Opacity",
-        "min": 10,
-        "max": 100,
-        "step": 5,
-        "unit": "%",
-        "default": 90
-      },
-      {
-        "type": "range",
-        "id": "event_moon_glow",
-        "label": "Glow",
-        "min": 0,
-        "max": 100,
-        "step": 5,
-        "unit": "%",
-        "default": 45
+        "info": "Square, transparent, the disc filling the frame. Blank uses the event's moon."
       },
       {
         "type": "select",
-        "id": "event_moon_layer",
-        "label": "Layer",
-        "default": "behind",
+        "id": "event_moon_phase",
+        "label": "Phase",
+        "default": "real",
         "options": [
           {
-            "value": "behind",
-            "label": "Behind the hero artwork"
+            "value": "real",
+            "label": "Tonight's real phase"
           },
           {
-            "value": "front",
-            "label": "In front of the artwork, behind the text"
+            "value": "full",
+            "label": "Always full"
           }
-        ]
+        ],
+        "info": "The real phase follows the actual moon over Pittsburgh, including the dark nights around the new moon."
       },
       {
         "type": "checkbox",
         "id": "event_moon_motion",
-        "label": "Moon drift and scroll parallax",
+        "label": "Moon moves",
         "default": true,
-        "info": "Off keeps the moon visible but perfectly still."
+        "info": "It sets toward the footer as people scroll, crosses the sky slowly during a visit and travels between pages. Off keeps it still."
+      },
+      {
+        "type": "paragraph",
+        "content": "Where the moon hangs on each kind of page is art direction in assets/rizo.css (Sky positions)."
       }
     ]
   },
@@ -509,41 +296,36 @@
       {
         "type": "checkbox",
         "id": "event_fog",
-        "label": "Hero fog",
+        "label": "Fog",
         "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "event_fog_page",
-        "label": "Low page fog",
-        "default": true,
-        "info": "A faint band along the bottom of the screen after the hero. It thins out automatically over product grids, product pages and the cart."
-      },
-      {
-        "type": "image_picker",
-        "id": "event_fog_texture",
-        "label": "Fog texture",
-        "info": "Soft, horizontally tileable PNG or WebP with transparency, roughly 4:1 to 6:1. Blank uses the event's texture."
       },
       {
         "type": "range",
         "id": "event_fog_intensity",
-        "label": "Fog intensity",
+        "label": "Density",
         "min": 0,
         "max": 100,
         "step": 5,
         "unit": "%",
-        "default": 55
+        "default": 60,
+        "info": "Fog always clears over products, the product page and the cart. Each section has its own fog setting."
       },
       {
         "type": "range",
         "id": "event_fog_speed",
-        "label": "Fog speed",
+        "label": "Drift",
         "min": 0,
         "max": 100,
         "step": 5,
         "unit": "%",
         "default": 40
+      },
+      {
+        "type": "checkbox",
+        "id": "event_fog_clock",
+        "label": "Follow Pittsburgh's clock",
+        "default": true,
+        "info": "Thicker at dawn, when the rivers fog over; thinnest in the afternoon."
       }
     ]
   },
@@ -553,43 +335,50 @@
       {
         "type": "checkbox",
         "id": "event_flock",
-        "label": "Show bats",
+        "label": "Bats",
         "default": true
       },
       {
         "type": "range",
         "id": "event_flock_density",
-        "label": "Bat count",
-        "min": 0,
-        "max": 100,
-        "step": 10,
-        "unit": "%",
-        "default": 60,
-        "info": "Share of the flock limit allowed on screen at once: 16 on desktop, 8 on phones, 5 on low-power devices."
-      },
-      {
-        "type": "range",
-        "id": "event_flock_activity",
-        "label": "Idle activity",
+        "label": "How many at once",
         "min": 0,
         "max": 100,
         "step": 10,
         "unit": "%",
         "default": 50,
-        "info": "How often bats cross on their own. Lower values leave longer quiet periods; 0% means only scrolling and taps wake them."
+        "info": "Share of the limit: 10 on desktop, 6 on phones, 4 on low-power devices."
+      },
+      {
+        "type": "range",
+        "id": "event_flock_activity",
+        "label": "How often",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "unit": "%",
+        "default": 40,
+        "info": "Lower leaves longer quiet stretches. 0% means only scrolling, taps and the moon wake them."
+      },
+      {
+        "type": "checkbox",
+        "id": "event_flock_roost",
+        "label": "A bat roosts on the page",
+        "default": true,
+        "info": "One bat hangs under an edge, notices the pointer, leaves when disturbed and comes back somewhere else."
       },
       {
         "type": "checkbox",
         "id": "event_flock_scroll",
-        "label": "Scrolling wakes bats",
+        "label": "Fast scrolling wakes them",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "event_flock_tap",
-        "label": "Taps and clicks scatter bats",
+        "label": "Taps scatter them",
         "default": true,
-        "info": "Bats never block a tap: buttons, links and cart controls always receive the click."
+        "info": "Bats never block a tap: buttons, links and cart controls always get the click."
       }
     ]
   },
@@ -599,7 +388,7 @@
       {
         "type": "checkbox",
         "id": "event_countdown",
-        "label": "Show countdown in the hero",
+        "label": "Countdown in the hero",
         "default": true
       },
       {
@@ -610,56 +399,54 @@
         "options": [
           {
             "value": "after_actions",
-            "label": "Below the hero buttons"
+            "label": "Below the buttons"
           },
           {
             "value": "before_heading",
-            "label": "Above the hero heading"
+            "label": "Above the headline"
           }
         ]
       },
       {
         "type": "text",
         "id": "event_countdown_target",
-        "label": "Target date/time",
+        "label": "Counts down to",
         "placeholder": "2026-10-31T00:00:00-04:00",
-        "info": "ISO date/time. Blank uses the event's moment \u2014 Halloween: Oct 31 2026, 12:00 AM New York time, whatever the visitor's timezone."
+        "info": "Blank uses the event's moment. Halloween: Oct 31 2026, 12:00 AM New York time, whatever the visitor's timezone."
       },
       {
         "type": "text",
         "id": "event_countdown_label",
         "label": "Label",
-        "placeholder": "HALLOWEEN IN",
-        "info": "Blank uses the event's label."
+        "placeholder": "Halloween in"
       },
       {
         "type": "checkbox",
         "id": "event_countdown_seconds",
-        "label": "Show seconds",
-        "default": true
+        "label": "Seconds",
+        "default": false
       },
       {
         "type": "select",
         "id": "event_countdown_expired",
-        "label": "When it reaches zero",
+        "label": "At zero",
         "default": "message",
         "options": [
           {
             "value": "message",
-            "label": "Show the ended message"
+            "label": "Show the message"
           },
           {
             "value": "hide",
-            "label": "Hide the countdown"
+            "label": "Hide"
           }
         ]
       },
       {
         "type": "text",
         "id": "event_countdown_expired_label",
-        "label": "Ended message",
-        "placeholder": "HALLOWEEN IS HERE",
-        "info": "Blank uses the event's message."
+        "label": "Message",
+        "placeholder": "Tonight."
       }
     ]
   }
