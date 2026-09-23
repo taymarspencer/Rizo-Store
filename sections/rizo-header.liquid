@@ -1,0 +1,140 @@
+{% liquid
+  assign state = settings.world_state | default: 'quiet'
+  assign state_label = state | replace: '-', ' ' | upcase
+  assign state_message = section.settings.announcement_text
+  if section.settings.use_world_state_message
+    case state
+      when 'teasing'
+        assign state_message = section.settings.teasing_message
+      when 'drop-incoming'
+        assign state_message = section.settings.incoming_message
+      when 'live'
+        assign state_message = section.settings.live_message
+      when 'sold-out'
+        assign state_message = section.settings.sold_out_message
+      when 'event-mode'
+        assign state_message = section.settings.event_message
+      else
+        assign state_message = section.settings.quiet_message
+    endcase
+  endif
+%}
+{%- capture event_message -%}{% render 'rizo-event-value', key: 'announcement' %}{%- endcapture -%}
+{%- assign event_message = event_message | strip -%}
+<div class="header-stack header-stack--v5" data-header-stack>
+  {% if section.settings.show_dateline and settings.heritage_mode %}
+    <div class="header-dateline page-width">
+      {% render 'rizo-dateline', label: section.settings.dateline_label, compact: true %}
+    </div>
+  {% endif %}
+
+  {% if section.settings.show_announcement and state_message != blank or section.settings.show_announcement and event_message != blank %}
+    <a class="announcement announcement--{{ state }}{% if state_message == blank %} rizo-event-only{% endif %}" href="{{ section.settings.announcement_link | default: routes.all_products_collection_url }}">
+      <span class="announcement-state"><i aria-hidden="true"></i>{{ state_label }}</span>
+      {%- if state_message != blank %}
+      <span class="announcement-copy"{% if event_message != blank %} data-rizo-event-default{% endif %}>{{ state_message }}</span>
+      {%- endif %}
+      {%- if event_message != blank %}
+      <span class="announcement-copy rizo-event-only">{{ event_message }}</span>
+      {%- endif %}
+      {% render 'icon', name: 'arrow' %}
+    </a>
+  {% endif %}
+
+  <header class="site-header" data-header>
+    <button class="header-icon header-menu-button" type="button" data-overlay-open="menu" aria-label="Open menu" aria-controls="RizoMenu" aria-expanded="false">
+      {% render 'icon', name: 'menu' %}<span>Menu</span>
+    </button>
+
+    <a class="brand-mark brand-mark--v5" href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
+      <span class="brand-symbol" aria-hidden="true">
+        {% if settings.logo != blank %}
+          {{ settings.logo | image_url: width: 240 | image_tag: widths: '120,180,240', sizes: '54px', loading: 'eager', alt: '' }}
+        {% else %}
+          {% render 'rizo-brand-stamp', variant: 'logo', class: 'header-primary-logo' %}
+        {% endif %}
+      </span>
+      <span class="brand-wordmark">RIZO<small>APPAREL / 412</small></span>
+    </a>
+
+    <nav class="desktop-nav desktop-nav--v5" aria-label="Primary navigation">
+      {% for link in section.settings.menu.links %}
+        <a href="{{ link.url }}"{% if link.current or link.child_active %} aria-current="page"{% endif %}>{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="header-actions">
+      {% if settings.show_world_state_in_header %}<span class="nav-state"><i aria-hidden="true"></i>{{ state_label }}</span>{% endif %}
+      {% if shop.customer_accounts_enabled %}<a class="header-icon header-account" href="{{ routes.account_url }}" aria-label="Account">Account</a>{% endif %}
+      <a class="header-icon" href="{{ routes.search_url }}" data-overlay-open="search" aria-label="Search" aria-controls="RizoSearch" aria-expanded="false">
+        {% render 'icon', name: 'search' %}<span class="header-action-label">Search</span>
+      </a>
+      {% if settings.enable_sound %}
+        <button class="header-icon" type="button" data-sound-toggle aria-pressed="false" aria-label="Turn Rizo sounds on">
+          {% render 'icon', name: 'sound' %}
+        </button>
+      {% endif %}
+      {% if settings.enable_install_guide %}<button class="install-pill" type="button" data-install-open>Add Rizo</button>{% endif %}
+      <a class="bag-button" href="{{ routes.cart_url }}" data-overlay-open="cart" aria-label="Open cart with {{ cart.item_count }} items" aria-controls="RizoCart" aria-expanded="false">
+        <span class="bag-label">Cart</span><span class="bag-count" data-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </header>
+
+</div>
+
+{% if settings.enable_mobile_shop_utility %}
+  <nav class="mobile-dock" aria-label="Quick navigation">
+    <a href="{{ routes.root_url }}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>{% render 'icon', name: 'home' %}<span>World</span></a>
+    <a href="{{ section.settings.mobile_shop_link | default: routes.all_products_collection_url }}"{% if request.page_type == 'collection' or request.page_type == 'product' %} aria-current="page"{% endif %}>{% render 'icon', name: 'shop' %}<span>{{ section.settings.mobile_shop_label }}</span></a>
+    <a href="{{ routes.search_url }}" data-overlay-open="search" aria-label="Search" aria-controls="RizoSearch" aria-expanded="false"{% if request.page_type == 'search' %} aria-current="page"{% endif %}>{% render 'icon', name: 'search' %}<span>Search</span></a>
+    <a href="{{ routes.cart_url }}" data-overlay-open="cart" aria-label="Open cart with {{ cart.item_count }} items" aria-controls="RizoCart" aria-expanded="false"{% if request.page_type == 'cart' %} aria-current="page"{% endif %}><span class="dock-icon-wrap">{% render 'icon', name: 'bag' %}<span class="dock-count" data-cart-count>{{ cart.item_count }}</span></span><span>Cart</span></a>
+  </nav>
+{% endif %}
+
+<div class="overlay-shell menu-shell" id="RizoMenu" data-overlay="menu" hidden>
+  <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close menu"></button>
+  <aside class="menu-drawer menu-drawer--v5" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-labelledby="MenuTitle">
+    <header class="drawer-header">
+      <div>{% render 'rizo-dateline', label: section.settings.dateline_label, compact: true %}<p class="eyebrow">YOU ARE IN THE RIZO WORLD</p><h2 id="MenuTitle">Choose a path</h2></div>
+      <button class="header-icon" type="button" data-overlay-close aria-label="Close menu">{% render 'icon', name: 'close' %}</button>
+    </header>
+    <nav class="menu-links" aria-label="Mobile navigation">
+      {% for link in section.settings.menu.links %}
+        <a href="{{ link.url }}"{% if link.current or link.child_active %} aria-current="page"{% endif %}><span><small>{{ forloop.index | prepend: '0' }}</small>{{ link.title }}</span>{% render 'icon', name: 'arrow' %}</a>
+        {% if link.links != blank %}<div class="menu-sublinks">{% for child in link.links %}<a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title }}</a>{% endfor %}</div>{% endif %}
+      {% endfor %}
+    </nav>
+    <div class="menu-world-shortcuts">
+      <a href="{{ routes.root_url }}#RizoCircle">THE CIRCLE {% render 'icon', name: 'arrow' %}</a>
+      <a href="{{ routes.root_url }}#RizoSignalForge">SIGNAL FORGE {% render 'icon', name: 'arrow' %}</a>
+    </div>
+    <div class="menu-world-note"><span>{{ state_label }}</span>{% if section.settings.menu_note != blank %}<p>{{ section.settings.menu_note }}</p>{% endif %}</div>
+    {% render 'rizo-character', variant: 'shadow', size: 220, alt: '', interaction: 'menu-rizo', message: section.settings.rizo_menu_message %}
+  </aside>
+</div>
+
+{% schema %}
+{
+  "name":"Rizo header",
+  "settings":[
+    {"type":"link_list","id":"menu","label":"Menu","default":"main-menu"},
+    {"type":"checkbox","id":"show_dateline","label":"Show original signal dateline","default":true},
+    {"type":"text","id":"dateline_label","label":"Dateline label","default":"PITTSBURGH / RIZO WORLD"},
+    {"type":"checkbox","id":"show_announcement","label":"Show signal bar","default":true},
+    {"type":"checkbox","id":"use_world_state_message","label":"Use message for current world state","default":true},
+    {"type":"text","id":"announcement_text","label":"Manual announcement","default":"Pittsburgh made. The next signal is live."},
+    {"type":"text","id":"quiet_message","label":"Quiet message","default":"THE WORLD IS OPEN. START WITH WHAT IS LIVE."},
+    {"type":"text","id":"teasing_message","label":"Teasing message","default":"SOMETHING IS FORMING. GET THE SIGNAL FIRST."},
+    {"type":"text","id":"incoming_message","label":"Drop incoming message","default":"A NEW PIECE IS ON THE WAY. NO FAKE COUNTDOWN."},
+    {"type":"text","id":"live_message","label":"Live message","default":"THE DROP IS LIVE. THE PIECES ARE THE PORTAL."},
+    {"type":"text","id":"sold_out_message","label":"Sold out message","default":"THAT SIGNAL ENDED. SEE WHAT STILL EXISTS."},
+    {"type":"text","id":"event_message","label":"Event message","default":"RIZO IS OUTSIDE. FIND THE NEXT REAL-WORLD STOP."},
+    {"type":"url","id":"announcement_link","label":"Signal bar link"},
+    {"type":"text","id":"mobile_shop_label","label":"Mobile shop label","default":"Shop"},
+    {"type":"url","id":"mobile_shop_link","label":"Mobile shop link"},
+    {"type":"textarea","id":"menu_note","label":"Menu note","default":"Clothing, characters and a world built in Pittsburgh."},
+    {"type":"text","id":"rizo_menu_message","label":"Rizo menu message","default":"Pick a path. I’ll be around."}
+  ]
+}
+{% endschema %}

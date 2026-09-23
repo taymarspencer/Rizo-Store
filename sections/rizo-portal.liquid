@@ -1,0 +1,98 @@
+{% liquid
+  case section.settings.character
+    when 'ember'
+      assign character_asset = 'rizo-ember.png'
+    when 'shadow'
+      assign character_asset = 'rizo-shadow.png'
+    else
+      assign character_asset = 'rizo-classic.png'
+  endcase
+%}
+
+<section
+  class="portal-hero portal-hero--{{ section.settings.layout }}"
+  data-rizo-hero
+  data-rizo-fire
+  data-intensity="{{ section.settings.fire_intensity }}"
+  style="--portal-accent: {{ section.settings.accent_color }};"
+>
+  <canvas class="fire-canvas" aria-hidden="true"></canvas>
+  <div class="portal-atmosphere" aria-hidden="true"></div>
+  <div class="portal-grid" aria-hidden="true"></div>
+
+  <div class="portal-copy">
+    {% if section.settings.eyebrow != blank %}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}
+    <h1>{{ section.settings.heading }}</h1>
+    {% if section.settings.text != blank %}<div class="portal-text rte">{{ section.settings.text }}</div>{% endif %}
+
+    <div class="portal-actions">
+      {% if section.settings.primary_label != blank %}
+        <a class="button button-hot" href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.primary_label }}{% render 'icon', name: 'arrow' %}
+        </a>
+      {% endif %}
+      {% if section.settings.secondary_label != blank and section.settings.secondary_link != blank %}
+        <a class="button button-ghost" href="{{ section.settings.secondary_link }}">{{ section.settings.secondary_label }}</a>
+      {% endif %}
+    </div>
+
+    {% if section.settings.microcopy != blank %}<p class="portal-microcopy">{{ section.settings.microcopy }}</p>{% endif %}
+  </div>
+
+  <div class="portal-stage" data-parallax>
+    <div class="portal-halo" aria-hidden="true"><span></span><span></span><span></span></div>
+    <button
+      class="portal-character"
+      type="button"
+      data-rizo-character
+      data-classic="{{ 'rizo-classic.png' | asset_url }}"
+      data-ember="{{ 'rizo-ember.png' | asset_url }}"
+      data-shadow="{{ 'rizo-shadow.png' | asset_url }}"
+      {% if section.settings.character_image == blank %}data-cycle="true"{% endif %}
+      aria-label="Tap Rizo"
+    >
+      {% if section.settings.character_image != blank %}
+        {{ section.settings.character_image | image_url: width: 900 | image_tag: widths: '360,520,720,900', sizes: '(min-width: 900px) 42vw, 72vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.character_alt }}
+      {% else %}
+        <img src="{{ character_asset | asset_url }}" width="520" height="670" alt="{{ section.settings.character_alt | escape }}" fetchpriority="high">
+      {% endif %}
+      <span class="character-shadow" aria-hidden="true"></span>
+    </button>
+    {% if section.settings.show_tap_hint %}<span class="tap-hint">Tap Rizo</span>{% endif %}
+  </div>
+
+  {% if section.settings.status != blank %}
+    <div class="world-status"><span class="live-dot" aria-hidden="true"></span>{{ section.settings.status }}</div>
+  {% endif %}
+
+  <a class="portal-scroll" href="#PortalAfter" aria-label="Continue into the Rizo World">
+    <span>Explore</span><i aria-hidden="true"></i>
+  </a>
+</section>
+<div id="PortalAfter" class="scroll-anchor" aria-hidden="true"></div>
+
+{% schema %}
+{
+  "name": "Rizo portal",
+  "class": "section-rizo-portal",
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"THE PORTAL IS OPEN"},
+    {"type":"text","id":"heading","label":"Heading","default":"THE PORTAL OPENS IN PITTSBURGH"},
+    {"type":"richtext","id":"text","label":"Text","default":"<p>Independent clothing, strange little signals, and Pittsburgh energy—made to live outside.</p>"},
+    {"type":"text","id":"primary_label","label":"Primary button","default":"SHOP THE CURRENT SIGNAL"},
+    {"type":"url","id":"primary_link","label":"Primary link"},
+    {"type":"text","id":"secondary_label","label":"Secondary button","default":"MEET THE FLAME"},
+    {"type":"url","id":"secondary_link","label":"Secondary link"},
+    {"type":"text","id":"microcopy","label":"Small note","default":"Small runs. Honest timing. Built to be worn hard."},
+    {"type":"text","id":"status","label":"World status","default":"PITTSBURGH · WORLD 01 ONLINE"},
+    {"type":"select","id":"layout","label":"Desktop layout","default":"split","options":[{"value":"split","label":"Split"},{"value":"centered","label":"Centered"}]},
+    {"type":"select","id":"character","label":"Rizo character","default":"classic","options":[{"value":"classic","label":"Classic"},{"value":"ember","label":"Ember"},{"value":"shadow","label":"Shadow"}]},
+    {"type":"image_picker","id":"character_image","label":"Custom character image"},
+    {"type":"text","id":"character_alt","label":"Character alt text","default":"Rizo, the blue flame character"},
+    {"type":"checkbox","id":"show_tap_hint","label":"Show tap hint","default":true},
+    {"type":"color","id":"accent_color","label":"Portal glow","default":"#20bdf2"},
+    {"type":"range","id":"fire_intensity","label":"Heat intensity","min":0,"max":100,"step":10,"default":60,"info":"Automatically reduced on slower devices and for reduced-motion visitors."}
+  ],
+  "presets": [{"name":"Rizo portal"}]
+}
+{% endschema %}

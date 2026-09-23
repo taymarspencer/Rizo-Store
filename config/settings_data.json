@@ -1,0 +1,28 @@
+{
+  "current": {
+    "color_ink": "#090909",
+    "color_paper": "#f4f0e8",
+    "color_accent": "#20bdf2",
+    "color_accent_2": "#ff5d21",
+    "color_muted": "#8d8d8d",
+    "radius": 18,
+    "page_width": 1240,
+    "motion_level": "balanced",
+    "enable_sound": false,
+    "enable_install_guide": false,
+    "world_state": "quiet",
+    "show_world_state_in_header": false,
+    "enable_mobile_shop_utility": true,
+    "free_shipping_threshold": 0,
+    "texture_level": "balanced",
+    "heritage_mode": true,
+    "signal_clock_mode": "archive",
+    "archive_date": "02/22/2023",
+    "archive_time": "2:22 PM",
+    "signal_timezone": "America/New_York",
+    "catalog_prefix": "RZ",
+    "event_layer": "halloween",
+    "event_activation": "scheduled"
+  },
+  "presets": {}
+}

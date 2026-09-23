@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "circle": {
+      "type": "rizo-team",
+      "settings": {
+        "mode": "circle",
+        "display_style": "full",
+        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
+        "eyebrow": "THE RIZO CIRCLE",
+        "heading": "ONE VISION. MANY HANDS ALONG THE WAY.",
+        "text": "<p>Rizo is founder-led, but the world has never moved alone. Friends, models, event help, supporters, and people who believed early helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>",
+        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+      }
+    },
+    "signup": {
+      "type": "rizo-signal-signup",
+      "settings": {
+        "eyebrow": "STAY IN THE CIRCLE",
+        "heading": "GET THE NEXT SIGNAL.",
+        "shop_label": "SHOP WHAT IS LIVE",
+        "shop_link": "shopify://collections/all",
+        "value": "Pieces, events, restocks, and where Rizo moves next."
+      }
+    }
+  },
+  "order": [
+    "circle",
+    "signup"
+  ]
+}

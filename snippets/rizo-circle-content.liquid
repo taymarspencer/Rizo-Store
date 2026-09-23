@@ -1,0 +1,44 @@
+{% liquid
+  assign circle_id = id | default: 'RizoCircle'
+  assign circle_style = style | default: 'full'
+  assign circle_dateline = dateline_label | default: 'RIZO PEOPLE / THE CIRCLE'
+  assign circle_eyebrow = eyebrow | default: 'THE RIZO CIRCLE'
+  assign circle_heading = heading | default: 'ONE VISION. MANY HANDS ALONG THE WAY.'
+  assign circle_text = text
+  assign circle_shoutout = shoutout | default: 'SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT.'
+  if circle_text == blank
+    assign circle_text = '<p>Rizo is founder-led, but the world has never moved alone. Friends, models, event help, supporters, and people who believed early helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>'
+  endif
+%}
+<section class="rizo-circle rizo-circle--{{ circle_style }} page-width" id="{{ circle_id }}">
+  <div class="rizo-circle-copy">
+    {% if settings.heritage_mode %}{% render 'rizo-dateline', label: circle_dateline %}{% endif %}
+    <div class="section-mark-line section-mark-line--circle" aria-hidden="true">
+      {% render 'rizo-brand-stamp', variant: 'face', class: 'section-secondary-mark rizo-circle-face-stamp' %}
+    </div>
+    {% if circle_eyebrow != blank %}<p class="eyebrow">{{ circle_eyebrow }}</p>{% endif %}
+    {% if circle_heading != blank %}<h2>{{ circle_heading }}</h2>{% endif %}
+    <div class="rte rizo-circle-intro">{{ circle_text }}</div>
+    {% if circle_shoutout != blank %}<p class="rizo-circle-shoutout">{{ circle_shoutout }}</p>{% endif %}
+    <div class="rizo-circle-actions">
+      <a class="button button-hot" href="{{ routes.all_products_collection_url }}">SHOP WHAT IS LIVE {% render 'icon', name: 'arrow' %}</a>
+      <a class="button button-ghost" href="{{ routes.root_url }}pages/contact">CONTACT RIZO</a>
+    </div>
+    {% render 'rizo-brand-stamp', variant: 'logo', class: 'rizo-circle-primary-signoff' %}
+  </div>
+
+  <div class="rizo-circle-gallery" role="region" aria-label="People helping Rizo move through Pittsburgh">
+    <figure class="rizo-circle-frame rizo-circle-frame--wide">
+      <img src="{{ 'rizo-412-underpass.webp' | asset_url }}" width="1152" height="1536" loading="lazy" alt="Two people wearing coordinated black and gold Rizo 412 sets beneath a Pittsburgh underpass">
+      <figcaption><span>412 / OUTSIDE</span>THE CLOTHES LEAVE THE SCREEN.</figcaption>
+    </figure>
+    <figure class="rizo-circle-frame">
+      <img src="{{ 'rizo-circle-night.webp' | asset_url }}" width="1152" height="1536" loading="lazy" alt="Friends wearing black and gold Rizo clothing together at night">
+      <figcaption><span>THE CIRCLE</span>PEOPLE SHOWED UP BEFORE THERE WERE TITLES.</figcaption>
+    </figure>
+    <figure class="rizo-circle-frame rizo-circle-frame--community">
+      <img src="{{ 'rizo-community-create.webp' | asset_url }}" width="1536" height="1152" loading="lazy" alt="People sharing art supplies at a community creative table in Pittsburgh">
+      <figcaption><span>CREATIVITY OUTSIDE</span>THE OUTLET DOES NOT END AT THE GARMENT.</figcaption>
+    </figure>
+  </div>
+</section>

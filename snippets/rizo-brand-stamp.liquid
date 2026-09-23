@@ -1,0 +1,5 @@
+{% liquid
+  assign stamp_variant = variant | default: 'face'
+  assign stamp_class = class | default: ''
+%}
+<span class="rizo-brand-stamp rizo-brand-stamp--{{ stamp_variant }}{% if stamp_class != blank %} {{ stamp_class }}{% endif %}" aria-hidden="true"></span>

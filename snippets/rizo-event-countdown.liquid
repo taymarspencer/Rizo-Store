@@ -1,0 +1,48 @@
+{%- comment -%}
+  RIZO EVENT LAYER — countdown.
+
+    {% render 'rizo-event-countdown', placement: 'after_actions', id: section.id %}
+
+  Renders only when the active event has the countdown capability, the
+  countdown is enabled, and `placement` matches the chosen position.
+  The runtime ticks it; screen readers get a static sentence with the exact
+  moment instead of per-second announcements.
+{%- endcomment -%}
+{%- if settings.event_layer != blank and settings.event_layer != 'off' and settings.event_countdown_position == placement -%}
+  {%- capture ev_countdown -%}{% render 'rizo-event-value', key: 'feature', feature: 'countdown' %}{%- endcapture -%}
+  {%- capture ev_target -%}{% render 'rizo-event-value', key: 'countdown_target' %}{%- endcapture -%}
+  {%- assign ev_target = ev_target | strip -%}
+  {%- if ev_countdown == 'true' and ev_target != blank -%}
+    {%- capture ev_label -%}{% render 'rizo-event-value', key: 'countdown_label' %}{%- endcapture -%}
+    {%- capture ev_expired_label -%}{% render 'rizo-event-value', key: 'countdown_expired_label' %}{%- endcapture -%}
+    {%- capture ev_description -%}{% render 'rizo-event-value', key: 'countdown_description' %}{%- endcapture -%}
+    {%- capture ev_timezone -%}{% render 'rizo-event-value', key: 'timezone' %}{%- endcapture -%}
+    {%- liquid
+      assign ev_label = ev_label | strip
+      assign ev_expired_label = ev_expired_label | strip
+      assign ev_description = ev_description | strip | default: 'Countdown ends'
+      assign ev_label_id = 'RizoEventCountdownLabel-' | append: id | append: '-' | append: placement
+      assign ev_now_s = 'now' | date: '%s' | plus: 0
+      assign ev_target_s = ev_target | date: '%s' | plus: 0
+      assign ev_expired = false
+      if ev_target_s > 1000000000 and ev_now_s >= ev_target_s
+        assign ev_expired = true
+      endif
+    -%}
+    <div class="rizo-event-countdown rizo-event-countdown--{{ placement | replace: '_', '-' }}" data-rizo-event-countdown data-target="{{ ev_target | escape }}" data-timezone="{{ ev_timezone | strip | escape }}" data-description="{{ ev_description | escape }}" data-expired-mode="{{ settings.event_countdown_expired | default: 'message' }}" data-state="{% if ev_expired %}expired{% else %}running{% endif %}"{% if ev_expired and settings.event_countdown_expired == 'hide' %} hidden{% endif %}>
+      {%- if ev_label != blank -%}<p class="rizo-event-countdown-label" id="{{ ev_label_id }}">{{ ev_label }}</p>{%- endif -%}
+      <div class="rizo-event-countdown-clock" role="timer"{% if ev_label != blank %} aria-labelledby="{{ ev_label_id }}"{% endif %}>
+        <span class="visually-hidden" data-countdown-summary>{{ ev_description }} {{ ev_target | date: '%A, %B %-d, %Y at %-I:%M %p' }}.</span>
+        <span class="rizo-event-countdown-units" aria-hidden="true">
+          <span class="rizo-event-countdown-unit rizo-event-countdown-unit--days"><b data-unit="days">00</b><small>Days</small></span>
+          <span class="rizo-event-countdown-unit"><b data-unit="hours">00</b><small>Hours</small></span>
+          <span class="rizo-event-countdown-unit"><b data-unit="minutes">00</b><small>Minutes</small></span>
+          {%- if settings.event_countdown_seconds -%}
+            <span class="rizo-event-countdown-unit"><b data-unit="seconds">00</b><small>Seconds</small></span>
+          {%- endif -%}
+        </span>
+      </div>
+      <p class="rizo-event-countdown-expired" data-countdown-expired{% unless ev_expired %} hidden{% endunless %}>{{ ev_expired_label }}</p>
+    </div>
+  {%- endif -%}
+{%- endif -%}

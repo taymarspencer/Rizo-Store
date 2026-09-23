@@ -1,0 +1,11 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "header": {
+      "type": "rizo-header",
+      "settings": {}
+    }
+  },
+  "order": ["header"]
+}

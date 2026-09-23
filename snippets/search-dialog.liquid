@@ -1,0 +1,15 @@
+<div class="overlay-shell search-shell" id="RizoSearch" data-overlay="search" hidden>
+  <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close search"></button>
+  <section class="search-dialog" role="dialog" aria-modal="true" aria-labelledby="SearchTitle" data-predictive-search data-predictive-url="{{ routes.predictive_search_url }}">
+    <header class="drawer-header"><div>{% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'RIZO SEARCH / LIVE ARCHIVE', compact: true %}{% endif %}<p class="eyebrow">FIND YOUR WAY IN</p><h2 id="SearchTitle">Search Rizo</h2></div><button class="header-icon" type="button" data-overlay-close aria-label="Close search">{% render 'icon', name: 'close' %}</button></header>
+    <form class="search-form" action="{{ routes.search_url }}" method="get" role="search" data-predictive-form>
+      <label class="visually-hidden" for="RizoSearchInput">Search the store</label>
+      <input id="RizoSearchInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Try ‘hoodie’, ‘blue’, or a piece name" autocomplete="off" data-overlay-focus data-predictive-input aria-autocomplete="list" aria-controls="RizoPredictiveResults" aria-expanded="false">
+      <input type="hidden" name="type" value="product,page,collection,article">
+      <button class="button button-hot" type="submit">Search</button>
+    </form>
+    <p class="predictive-status" data-predictive-status aria-live="polite"></p>
+    <div class="predictive-results" id="RizoPredictiveResults" data-predictive-results role="listbox" hidden></div>
+    <div class="search-shortcuts" data-search-shortcuts><span>START SOMEWHERE</span><a href="{{ routes.all_products_collection_url }}">Shop everything {% render 'icon', name: 'arrow' %}</a><a href="{{ routes.collections_url }}">Browse collections {% render 'icon', name: 'arrow' %}</a></div>
+  </section>
+</div>

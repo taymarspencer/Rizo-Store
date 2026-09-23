@@ -1,0 +1,30 @@
+{% liquid
+  assign featured_product = section.settings.product
+  assign show_story = false
+  if featured_product != blank or section.settings.story_image != blank or section.settings.heading != blank
+    assign show_story = true
+  endif
+%}
+{% if show_story %}
+  <section class="product-story page-width">
+    <div class="product-story-media">
+      {% if section.settings.story_image != blank %}
+        {{ section.settings.story_image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '500,800,1100,1400', sizes: '(min-width:900px) 52vw,100vw', alt: section.settings.story_image.alt }}
+      {% elsif featured_product.featured_image %}
+        {{ featured_product.featured_image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '500,800,1100,1400', sizes: '(min-width:900px) 52vw,100vw', alt: featured_product.title }}
+      {% else %}
+        <div class="story-file-placeholder" aria-hidden="true"><span>RIZO / STORY FILE</span><img src="{{ 'rizo-face-white.png' | asset_url }}" width="317" height="360" alt="" loading="lazy"></div>
+      {% endif %}
+    </div>
+    <div class="product-story-copy">
+      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2>{{ section.settings.heading | default: featured_product.title }}</h2>
+      {% if section.settings.story != blank %}<div class="rte">{{ section.settings.story }}</div>{% endif %}
+      <dl class="artifact-facts">{% if section.settings.material_fact != blank %}<div><dt>MATERIAL</dt><dd>{{ section.settings.material_fact }}</dd></div>{% endif %}{% if section.settings.process_fact != blank %}<div><dt>PROCESS</dt><dd>{{ section.settings.process_fact }}</dd></div>{% endif %}</dl>
+      {% if featured_product != blank %}<strong class="story-price">{{ featured_product.price | money }}</strong><a class="button button-hot" href="{{ featured_product.url }}">VIEW THE PIECE {% render 'icon', name: 'arrow' %}</a>{% endif %}
+    </div>
+  </section>
+{% elsif request.design_mode %}
+  <div class="editor-setup-state page-width">Select a product or story image to publish the product story spotlight.</div>
+{% endif %}
+{% schema %}{"name":"Product story spotlight","settings":[{"type":"product","id":"product","label":"Product"},{"type":"image_picker","id":"story_image","label":"Story or process image"},{"type":"text","id":"eyebrow","label":"Eyebrow","default":"WHY THIS PIECE EXISTS"},{"type":"text","id":"heading","label":"Heading"},{"type":"richtext","id":"story","label":"Story","default":"<p>A Rizo piece starts as a signal, then earns its place outside. Use this file for the real moment, material, or process behind this release.</p>"},{"type":"text","id":"material_fact","label":"Material fact"},{"type":"text","id":"process_fact","label":"Print/process fact"}],"presets":[{"name":"Product story spotlight"}]}{% endschema %}

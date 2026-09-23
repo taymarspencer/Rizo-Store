@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 100" width="220" height="100">
+  <!-- TEMPORARY PLACEHOLDER — bat silhouette, wings down (second flap pose for bat-1). -->
+  <defs>
+    <linearGradient id="bat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b4252"/>
+      <stop offset="1" stop-color="#171a22"/>
+    </linearGradient>
+  </defs>
+  <path d="M110.0 76.0 L104.0 68.0 L100.0 60.0 L92.0 64.0 L82.0 70.0 L72.0 78.0 L64.0 86.0 L58.0 78.0 L48.0 76.0 L36.0 80.0 L26.0 86.0 L26.0 72.0 L22.0 60.0 L16.0 50.0 L34.0 44.0 L54.0 40.0 L72.0 38.0 L88.0 38.0 L97.0 38.0 L100.0 30.0 L103.0 20.0 L106.0 13.0 L108.0 24.0 L112.0 24.0 L114.0 13.0 L117.0 20.0 L120.0 30.0 L123.0 38.0 L132.0 38.0 L148.0 38.0 L166.0 40.0 L186.0 44.0 L204.0 50.0 L198.0 60.0 L194.0 72.0 L194.0 86.0 L184.0 80.0 L172.0 76.0 L162.0 78.0 L156.0 86.0 L148.0 78.0 L138.0 70.0 L128.0 64.0 L120.0 60.0 L116.0 68.0 L110.0 76.0 Z" fill="url(#bat)"/>
+</svg>

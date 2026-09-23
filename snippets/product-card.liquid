@@ -1,0 +1,83 @@
+{% liquid
+  assign card_product = product
+  assign quick_add = show_quick_add | default: false
+  assign secondary_image = card_product.images[1]
+  assign color_count = 0
+  assign size_option = blank
+  assign size_index = -1
+  assign serial_source = card_product.id | append: ''
+  assign product_serial = serial_source | slice: -4, 4
+  for option in card_product.options_with_values
+    assign downcase_name = option.name | downcase
+    if downcase_name contains 'color' or downcase_name contains 'colour'
+      assign color_count = option.values.size
+    endif
+    if downcase_name contains 'size'
+      assign size_option = option
+      assign size_index = option.position | minus: 1
+    endif
+  endfor
+%}
+<article class="product-card product-card--v5" data-product-card data-product-id="{{ card_product.id }}" data-product-title="{{ card_product.title | escape }}" data-product-url="{{ card_product.url }}" data-reveal>
+  {% if settings.heritage_mode %}
+    {% capture card_file_label %}{{ settings.catalog_prefix | default: 'RZ' }}-{{ product_serial }}{% endcapture %}
+    <div class="product-card-fileline">
+      {% render 'rizo-dateline', label: card_file_label, compact: true %}
+      <span>{% if card_product.available %}AVAILABLE{% else %}ENDED{% endif %}</span>
+    </div>
+  {% endif %}
+  <a href="{{ card_product.url }}" class="product-card-media" data-analytics="product_clicked" aria-label="{{ card_product.title | escape }}">
+    {% if card_product.featured_image %}
+      {{ card_product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '320,480,640,800,1000,1200', sizes: '(min-width:1100px) 25vw,(min-width:700px) 33vw,72vw', alt: card_product.featured_image.alt | default: card_product.title }}
+      {% if secondary_image %}{{ secondary_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '320,480,640,800,1000,1200', sizes: '(min-width:1100px) 25vw,(min-width:700px) 33vw,72vw', alt: secondary_image.alt | default: card_product.title, class: 'product-card-secondary' }}{% endif %}
+    {% else %}
+      <div class="product-placeholder product-placeholder--card" aria-hidden="true">
+        <span class="product-placeholder-grid"></span>
+        <img src="{{ 'rizo-face-variant-blue.png' | asset_url }}" width="533" height="680" alt="" loading="lazy">
+        <span class="product-placeholder-code">{{ settings.catalog_prefix | default: 'RZ' }}-{{ product_serial }} / PRODUCT FILE</span>
+        <strong>RIZO</strong>
+      </div>
+    {% endif %}
+    <div class="product-badges">{% render 'product-badge', product: card_product %}</div>
+    <span class="product-card-enter">VIEW PIECE {% render 'icon', name: 'arrow' %}</span>
+    {% if settings.heritage_mode %}<span class="product-card-registration" aria-hidden="true">××××</span>{% endif %}
+  </a>
+  <div class="product-card-info">
+    <div>
+      <a href="{{ card_product.url }}"><strong>{{ card_product.title }}</strong></a>
+      <div class="product-card-meta">
+        {% if color_count > 0 %}<small>{{ color_count }} color{% if color_count != 1 %}s{% endif %}</small>{% endif %}
+        {% if card_product.vendor != blank and show_vendor %}<small>{{ card_product.vendor }}</small>{% endif %}
+      </div>
+    </div>
+    {% render 'price', product: card_product, context: 'card' %}
+  </div>
+  {% if show_size_preview and size_option != blank %}
+    {% assign available_size_count = 0 %}
+    {% capture available_size_markup %}
+      {% for value in size_option.values limit: 7 %}
+        {% assign value_available = false %}
+        {% for variant in card_product.variants %}
+          {% if variant.available and variant.options[size_index] == value %}{% assign value_available = true %}{% break %}{% endif %}
+        {% endfor %}
+        {% if value_available %}{% assign available_size_count = available_size_count | plus: 1 %}<b>{{ value }}</b>{% endif %}
+      {% endfor %}
+    {% endcapture %}
+    {% if available_size_count > 0 %}<div class="card-size-preview" role="group" aria-label="Available sizes"><span>AVAILABLE SIZES</span>{{ available_size_markup }}</div>{% endif %}
+  {% endif %}
+  {% if quick_add and card_product.available %}
+    {% if card_product.has_only_default_variant %}
+      {% form 'product', card_product, class: 'quick-add-form', data-ajax-product-form: '' %}
+        <input type="hidden" name="id" value="{{ card_product.selected_or_first_available_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button class="quick-add" type="submit">ADD TO CART {% render 'icon', name: 'plus' %}</button>
+        <p class="form-message form-message--error" data-variant-error role="alert" hidden></p>
+      {% endform %}
+    {% else %}
+      <button class="quick-add" type="button" data-quick-add-open="{{ card_product.handle }}" data-product-url="{{ card_product.url }}.js">{% if size_option != blank %}CHOOSE SIZE{% else %}CHOOSE OPTIONS{% endif %} {% render 'icon', name: 'plus' %}</button>
+    {% endif %}
+  {% elsif card_product.available == false %}
+    <span class="quick-add quick-add--disabled">SIGNAL ENDED</span>
+  {% endif %}
+  {% if show_artifact_link %}<a class="artifact-link" href="{{ card_product.url }}">FIT · STORY · DETAILS</a>{% endif %}
+</article>

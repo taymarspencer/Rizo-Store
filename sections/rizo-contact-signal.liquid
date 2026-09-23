@@ -1,0 +1,25 @@
+{% assign contact_form_id = 'RizoContactForm-' | append: section.id %}
+<section class="contact-page page-width">
+  {% render 'rizo-contact-form',
+    form_id: contact_form_id,
+    eyebrow: section.settings.eyebrow,
+    heading: section.settings.heading,
+    intro: section.settings.intro,
+    note: section.settings.note
+  %}
+</section>
+
+{% schema %}
+{
+  "name":"Rizo contact channel",
+  "tag":"section",
+  "class":"section-rizo-contact",
+  "settings":[
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"CONTACT / OPEN CHANNEL"},
+    {"type":"text","id":"heading","label":"Heading","default":"SEND IT TO RIZO."},
+    {"type":"textarea","id":"intro","label":"Intro","default":"Order help, sizing questions, collaborations, events, press, or something that does not fit a box. Send a real message through the channel below."},
+    {"type":"textarea","id":"note","label":"Honesty note","default":"No fake chatbot. No invented response time. Your message goes through Shopify’s contact system to the store inbox."}
+  ],
+  "presets":[{"name":"Rizo contact channel"}]
+}
+{% endschema %}

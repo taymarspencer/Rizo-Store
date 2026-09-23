@@ -1,0 +1,102 @@
+{% liquid
+  assign world_state = settings.world_state | default: 'quiet'
+  assign status = section.settings.drop_status
+  assign featured_product = section.settings.featured_product
+  if status == blank and section.settings.use_world_state
+    assign status = world_state | replace: '-', ' ' | upcase
+  endif
+%}
+<section class="live-hero live-hero--v5 live-hero--{{ section.settings.layout }} live-hero--{{ section.settings.content_position }} live-hero--media-{{ section.settings.media_treatment }}" data-rizo-hero data-intensity="{{ section.settings.motion_intensity }}" style="--hero-overlay:{{ section.settings.overlay_intensity | divided_by: 100.0 }}">
+  <div class="hero-issue-rail" aria-hidden="true">
+    <span>{{ section.settings.issue_number }}</span><span>RIZO / 412</span><span>THE WORLD IS WEARABLE</span>
+  </div>
+  {% render 'rizo-event-hero' %}
+
+  <div class="live-hero-media">
+    {% if section.settings.campaign_video != blank %}
+      {{ section.settings.campaign_video | video_tag: autoplay: false, loop: true, muted: true, controls: true, preload: 'metadata', image_size: '1800x' }}
+    {% elsif section.settings.campaign_image != blank %}
+      {% render 'responsive-picture', image: section.settings.campaign_image, mobile_image: section.settings.mobile_campaign_image, loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 900px) 58vw, 100vw', alt: section.settings.heading %}
+    {% elsif featured_product.featured_image != blank %}
+      {% render 'responsive-picture', image: featured_product.featured_image, loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 900px) 58vw, 100vw', alt: featured_product.title %}
+    {% else %}
+      <div class="live-hero-built-in live-hero-built-in--world">
+        <span class="live-hero-built-in-bg" aria-hidden="true"></span>
+        <img class="live-hero-built-in-art live-hero-built-in-art--logo" src="{{ 'rizo-logo-white.webp' | asset_url }}" width="1393" height="1600" loading="eager" fetchpriority="high" alt="Rizo logo">
+        <img class="live-hero-built-in-art live-hero-built-in-art--face" src="{{ 'rizo-face-variant-blue.png' | asset_url }}" width="533" height="680" loading="eager" fetchpriority="low" alt="">
+        <img class="live-hero-built-in-art live-hero-built-in-art--412" src="{{ 'rizo-412-mark.webp' | asset_url }}" width="768" height="768" loading="eager" fetchpriority="low" alt="">
+        <span>RIZO WORLD / PITTSBURGH FILE</span>
+      </div>
+    {% endif %}
+    <div class="hero-contact-sheet" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span></div>
+    <div class="hero-registration" aria-hidden="true"><span>RIZO</span><span>{{ section.settings.frame_caption }}</span><span>{{ 'now' | date: '%Y' }}</span></div>
+    {% if settings.heritage_mode and section.settings.show_legacy_signature %}<img class="hero-secondary-face" src="{{ 'rizo-secondary-face.png' | asset_url }}" width="317" height="178" alt="" aria-hidden="true">{% endif %}
+  </div>
+
+  <div class="live-hero-copy text-{{ section.settings.text_alignment }}">
+    {% if section.settings.show_dateline %}{% render 'rizo-dateline', label: section.settings.dateline_label %}{% endif %}
+    {% if status != blank %}<p class="release-pill"><span></span>{{ status }}</p>{% endif %}
+    {% if section.settings.eyebrow != blank %}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}
+    {% render 'rizo-event-countdown', placement: 'before_heading', id: section.id %}
+    <h1>{{ section.settings.heading }}</h1>
+    {% if section.settings.supporting_copy != blank %}<div class="rte hero-support">{{ section.settings.supporting_copy }}</div>{% endif %}
+    {% if section.settings.price_line != blank or section.settings.stock_line != blank %}<div class="hero-commerce-meta">{% if section.settings.price_line != blank %}<strong>{{ section.settings.price_line }}</strong>{% endif %}{% if section.settings.stock_line != blank %}<span>{{ section.settings.stock_line }}</span>{% endif %}</div>{% endif %}
+
+    {% if featured_product != blank and section.settings.show_product_signal %}
+      <a class="hero-product-signal" href="{{ featured_product.url }}" data-analytics="product_clicked">
+        {% if featured_product.featured_image != blank %}{{ featured_product.featured_image | image_url: width: 240 | image_tag: loading: 'eager', widths: '120,180,240', sizes: '72px', alt: featured_product.title }}{% endif %}
+        <span><small>{% if featured_product.available %}AVAILABLE NOW{% else %}SIGNAL ENDED{% endif %}</small><strong>{{ featured_product.title }}</strong><b>{{ featured_product.price | money }}</b></span>
+        {% render 'icon', name: 'arrow' %}
+      </a>
+    {% endif %}
+
+    <div class="portal-actions">
+      {% if section.settings.primary_cta != blank %}<a class="button button-hot" href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" data-analytics="campaign_cta_clicked">{{ section.settings.primary_cta }}{% render 'icon', name: 'arrow' %}</a>{% endif %}
+      {% if section.settings.secondary_cta != blank and section.settings.secondary_link != blank %}<a class="button button-ghost" href="{{ section.settings.secondary_link }}">{{ section.settings.secondary_cta }}</a>{% endif %}
+    </div>
+    {% render 'rizo-event-countdown', placement: 'after_actions', id: section.id %}
+    <a class="hero-skip-link" href="#RizoLiveShop">SEE THE PIECES <span aria-hidden="true">↓</span></a>
+  </div>
+
+  <div class="live-hero-rizo">{% render 'rizo-character', variant: section.settings.character, custom_image: section.settings.custom_character, size: 190, loading: 'eager', alt: 'Rizo guiding the current drop', interaction: 'hero-guide', message: section.settings.rizo_message %}</div>
+</section>
+{% schema %}
+{
+  "name":"Live drop hero",
+  "tag":"section",
+  "class":"section-live-hero",
+  "settings":[
+    {"type":"text","id":"issue_number","label":"Issue number","default":"ISSUE 005"},
+    {"type":"checkbox","id":"show_dateline","label":"Show date and time","default":true},
+    {"type":"text","id":"dateline_label","label":"Dateline label","default":"ORIGINAL SIGNAL / PITTSBURGH"},
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"THE WORLD IS WEARABLE"},
+    {"type":"text","id":"heading","label":"Heading","default":"BUILT FROM LIMITS. WORN BEYOND THEM."},
+    {"type":"richtext","id":"supporting_copy","label":"Supporting copy","default":"<p>Founder-made clothing from Pittsburgh. Designed and made by Taymar Spencer for people who need creativity to live somewhere real.</p>"},
+    {"type":"text","id":"primary_cta","label":"Primary CTA","default":"SHOP WHAT IS LIVE"},
+    {"type":"url","id":"primary_link","label":"Primary link"},
+    {"type":"text","id":"secondary_cta","label":"Secondary CTA","default":"SEE THE STORY"},
+    {"type":"url","id":"secondary_link","label":"Secondary link"},
+    {"type":"product","id":"featured_product","label":"Featured product signal"},
+    {"type":"checkbox","id":"show_product_signal","label":"Show featured product signal","default":true},
+    {"type":"image_picker","id":"campaign_image","label":"Campaign image"},
+    {"type":"image_picker","id":"mobile_campaign_image","label":"Mobile campaign image"},
+    {"type":"video","id":"campaign_video","label":"Campaign video"},
+    {"type":"select","id":"media_treatment","label":"Media treatment","default":"contact-sheet","options":[{"value":"clean","label":"Clean"},{"value":"contact-sheet","label":"Contact sheet"},{"value":"raw","label":"Raw archive"}]},
+    {"type":"text","id":"frame_caption","label":"Media frame caption","default":"RIZO WORLD / PITTSBURGH FILE"},
+    {"type":"checkbox","id":"show_legacy_signature","label":"Show secondary face mark","default":true},
+    {"type":"select","id":"character","label":"Rizo character","default":"classic","options":[{"value":"classic","label":"Classic"},{"value":"ember","label":"Ember"},{"value":"shadow","label":"Shadow"}]},
+    {"type":"image_picker","id":"custom_character","label":"Custom character"},
+    {"type":"text","id":"rizo_message","label":"Optional Rizo message","default":"The box was real. So was the way out."},
+    {"type":"text","id":"drop_status","label":"Optional status override","info":"Leave blank to use the global world state when enabled."},
+    {"type":"checkbox","id":"use_world_state","label":"Use global world state when status is blank","default":true},
+    {"type":"text","id":"price_line","label":"Optional price line"},
+    {"type":"text","id":"stock_line","label":"Optional stock/message line","default":"SMALL RUNS. FOUNDER-MADE. HONEST STOCK."},
+    {"type":"select","id":"layout","label":"Layout","default":"split","options":[{"value":"split","label":"Split editorial"},{"value":"overlay","label":"Media overlay"}]},
+    {"type":"range","id":"motion_intensity","label":"Motion intensity","min":0,"max":100,"step":10,"default":40},
+    {"type":"range","id":"overlay_intensity","label":"Overlay intensity","min":0,"max":90,"step":5,"default":35},
+    {"type":"select","id":"text_alignment","label":"Text alignment","default":"left","options":[{"value":"left","label":"Left"},{"value":"center","label":"Center"}]},
+    {"type":"select","id":"content_position","label":"Content position","default":"center","options":[{"value":"top","label":"Top"},{"value":"center","label":"Center"},{"value":"bottom","label":"Bottom"}]}
+  ],
+  "presets":[{"name":"Live drop hero"}]
+}
+{% endschema %}

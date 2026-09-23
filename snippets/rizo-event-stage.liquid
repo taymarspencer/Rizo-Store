@@ -1,0 +1,29 @@
+{%- comment -%}
+  RIZO EVENT LAYER — page-level stage. Rendered once, right after <body>.
+
+  Fixed, decorative, pointer-events: none layers that are not tied to a section:
+    .rizo-event-backdrop   night gradient painted *behind* page content
+    .rizo-event-page-fog   low fog band at the bottom of the viewport
+    .rizo-event-flock      container the flock runtime fills with a bounded pool
+
+  Hidden by CSS unless html.rizo-event is active. Renders nothing when the
+  Event layer is Off.
+{%- endcomment -%}
+{%- if settings.event_layer != blank and settings.event_layer != 'off' -%}
+  {%- capture ev_night -%}{% render 'rizo-event-value', key: 'feature', feature: 'night' %}{%- endcapture -%}
+  {%- capture ev_page_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'page_fog' %}{%- endcapture -%}
+  {%- capture ev_flock -%}{% render 'rizo-event-value', key: 'feature', feature: 'flock' %}{%- endcapture -%}
+  {%- capture ev_page_fog_layers -%}{% render 'rizo-event-value', key: 'page_fog_layers' %}{%- endcapture -%}
+  {%- assign ev_page_fog_layers = ev_page_fog_layers | strip | default: 1 | plus: 0 | at_most: 3 -%}
+  <div class="rizo-event-stage" data-rizo-event-stage aria-hidden="true">
+    {%- if ev_night == 'true' -%}<div class="rizo-event-backdrop"></div>{%- endif -%}
+    {%- if ev_page_fog == 'true' and ev_page_fog_layers > 0 -%}
+      <div class="rizo-event-page-fog" data-rizo-event-page-fog>
+        {%- for i in (1..ev_page_fog_layers) -%}
+          <div class="rizo-event-fog rizo-event-fog--page rizo-event-fog--l{{ i }}"><div class="rizo-event-fog-strip"></div></div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- if ev_flock == 'true' -%}<div class="rizo-event-flock" data-rizo-event-flock></div>{%- endif -%}
+  </div>
+{%- endif -%}

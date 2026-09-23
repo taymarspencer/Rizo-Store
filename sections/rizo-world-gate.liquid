@@ -1,0 +1,46 @@
+<section class="world-gate" id="RizoWorldGate" data-world-gate data-world-reactive>
+  <div class="world-gate-camo" aria-hidden="true"></div>
+  <div class="world-gate-grid" aria-hidden="true"></div>
+  <div class="world-gate-scan" aria-hidden="true"></div>
+  {% render 'rizo-event-hero' %}
+
+  <img class="world-gate-mark world-gate-mark--logo" src="{{ 'rizo-logo.png' | asset_url }}" width="497" height="650" loading="eager" fetchpriority="high" alt="Rizo flame logo">
+
+  <div class="world-gate-copy page-width">
+    {% if section.settings.show_dateline %}{% render 'rizo-dateline', label: section.settings.dateline_label %}{% endif %}
+    <div class="section-mark-line section-mark-line--gate">{% render 'rizo-brand-stamp', variant: 'face', class: 'section-secondary-mark world-gate-secondary-face' %}{% if section.settings.eyebrow != blank %}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}</div>
+    {% render 'rizo-event-countdown', placement: 'before_heading', id: section.id %}
+    {% if section.settings.heading != blank %}<h1>{{ section.settings.heading }}</h1>{% endif %}
+    {% if section.settings.text != blank %}<div class="rte world-gate-intro">{{ section.settings.text }}</div>{% endif %}
+
+    <div class="world-gate-actions">
+      <a class="button button-hot" href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}">{{ section.settings.shop_label }} {% render 'icon', name: 'arrow' %}</a>
+      <a class="button button-ghost" href="#RizoWorldMap" data-world-enter>{{ section.settings.enter_label }}</a>
+    </div>
+    {% render 'rizo-event-countdown', placement: 'after_actions', id: section.id %}
+  </div>
+
+  <a class="world-gate-scroll" href="#RizoWorldMap">
+    <span>ENTER BELOW</span>
+    <b aria-hidden="true">↓</b>
+  </a>
+</section>
+
+{% schema %}
+{
+  "name":"Rizo world gate",
+  "tag":"section",
+  "class":"section-world-gate",
+  "settings":[
+    {"type":"checkbox","id":"show_dateline","label":"Show world fileline","default":true},
+    {"type":"text","id":"dateline_label","label":"Fileline label","default":"WORLD GATE / PITTSBURGH 412"},
+    {"type":"text","id":"eyebrow","label":"Optional eyebrow"},
+    {"type":"text","id":"heading","label":"Heading","default":"THE WORLD IS WEARABLE."},
+    {"type":"richtext","id":"text","label":"Intro copy","default":"<p>Built from limits in Pittsburgh. Carried beyond them.</p>"},
+    {"type":"text","id":"enter_label","label":"Enter button label","default":"ENTER THE WORLD"},
+    {"type":"text","id":"shop_label","label":"Shop button label","default":"SHOP WHAT IS LIVE"},
+    {"type":"url","id":"shop_link","label":"Shop button destination"}
+  ],
+  "presets":[{"name":"Rizo world gate"}]
+}
+{% endschema %}

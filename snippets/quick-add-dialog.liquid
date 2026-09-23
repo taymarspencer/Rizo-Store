@@ -1,0 +1,15 @@
+<div class="overlay-shell" id="RizoQuickAdd" data-overlay="quick-add" hidden>
+  <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close quick add"></button>
+  <aside class="quick-add-dialog" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-labelledby="QuickAddTitle">
+    <header class="drawer-header"><div><p class="eyebrow">CHOOSE DELIBERATELY</p><h2 id="QuickAddTitle" data-quick-add-title>Choose your piece</h2></div><button class="header-icon" type="button" data-overlay-close aria-label="Close quick add">{% render 'icon', name: 'close' %}</button></header>
+    <div class="quick-add-product"><div class="quick-add-media" data-quick-add-media></div><div><span data-quick-add-status>SELECT YOUR OPTIONS</span><strong data-quick-add-price></strong></div></div>
+    <form data-quick-add-form data-ajax-product-form>
+      <div data-quick-add-options class="quick-add-options"></div>
+      <p class="selection-summary" data-quick-add-summary aria-live="polite" aria-atomic="true">Choose each option to continue.</p>
+      <p class="form-message form-message--error" data-quick-add-error role="alert" hidden></p>
+      <button class="button button-hot button-full" type="submit" disabled data-quick-add-submit>CHOOSE OPTIONS</button>
+      <div class="quick-add-confidence" role="group" aria-label="Checkout confidence"><span>{% render 'icon', name: 'check' %} Secure Shopify checkout</span><span>{% render 'icon', name: 'check' %} Shipping cost calculated at checkout</span>{% if shop.refund_policy != blank %}<a href="{{ shop.refund_policy.url }}">Read return policy</a>{% endif %}</div>
+    </form>
+    <a class="artifact-link quick-add-full-link" href="{{ routes.all_products_collection_url }}" data-quick-add-link>OPEN FIT, STORY & FULL DETAILS {% render 'icon', name: 'arrow' %}</a>
+  </aside>
+</div>

@@ -1,0 +1,190 @@
+{%- comment -%}
+  RIZO EVENT LAYER — <head> output. Rendered once from layout/theme.liquid.
+
+  Active event = Off  → renders nothing. Normal Rizo pays no CSS/JS cost.
+  Otherwise:
+    1. event stylesheets (engine + preset art direction)
+    2. "dial" CSS variables driven by theme settings
+    3. #RizoEventConfig — JSON the runtime reads
+    4. an inline boot script that decides, before first paint, whether the
+       event is live (schedule / manual / editor preview / ?rizo_event=) and
+       only then adds html.rizo-event … and loads the runtime scripts.
+{%- endcomment -%}
+{%- if settings.event_layer != blank and settings.event_layer != 'off' -%}
+  {%- capture ev_id -%}{% render 'rizo-event-value', key: 'id' %}{%- endcapture -%}
+  {%- capture ev_name -%}{% render 'rizo-event-value', key: 'name' %}{%- endcapture -%}
+  {%- capture ev_theme_class -%}{% render 'rizo-event-value', key: 'theme_class' %}{%- endcapture -%}
+  {%- capture ev_timezone -%}{% render 'rizo-event-value', key: 'timezone' %}{%- endcapture -%}
+  {%- capture ev_start -%}{% render 'rizo-event-value', key: 'start' %}{%- endcapture -%}
+  {%- capture ev_end -%}{% render 'rizo-event-value', key: 'end' %}{%- endcapture -%}
+  {%- capture ev_stylesheet -%}{% render 'rizo-event-value', key: 'stylesheet' %}{%- endcapture -%}
+  {%- capture ev_behavior_script -%}{% render 'rizo-event-value', key: 'behavior_script' %}{%- endcapture -%}
+  {%- capture ev_fog_src -%}{% render 'rizo-event-value', key: 'fog_src' %}{%- endcapture -%}
+  {%- capture ev_fog_ratio -%}{% render 'rizo-event-value', key: 'fog_ratio' %}{%- endcapture -%}
+  {%- capture ev_flock_behavior -%}{% render 'rizo-event-value', key: 'flock_behavior' %}{%- endcapture -%}
+  {%- capture ev_flock_sprites -%}{% render 'rizo-event-value', key: 'flock_sprites' %}{%- endcapture -%}
+  {%- capture ev_night -%}{% render 'rizo-event-value', key: 'feature', feature: 'night' %}{%- endcapture -%}
+  {%- capture ev_moon -%}{% render 'rizo-event-value', key: 'feature', feature: 'moon' %}{%- endcapture -%}
+  {%- capture ev_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'fog' %}{%- endcapture -%}
+  {%- capture ev_page_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'page_fog' %}{%- endcapture -%}
+  {%- capture ev_flock -%}{% render 'rizo-event-value', key: 'feature', feature: 'flock' %}{%- endcapture -%}
+  {%- capture ev_countdown -%}{% render 'rizo-event-value', key: 'feature', feature: 'countdown' %}{%- endcapture -%}
+  {%- liquid
+    assign ev_flock_sprites = ev_flock_sprites | strip | default: '[]'
+    assign ev_fog_ratio = ev_fog_ratio | strip | default: 4
+    assign ev_flock_on = false
+    if ev_flock == 'true' and ev_flock_behavior != blank and ev_behavior_script != blank
+      assign ev_flock_on = true
+    endif
+  -%}
+
+  {{ 'rizo-event-layer.css' | asset_url | stylesheet_tag }}
+  {%- assign ev_stylesheet = ev_stylesheet | strip -%}
+  {%- if ev_stylesheet != blank %}
+  {{ ev_stylesheet | asset_url | stylesheet_tag }}
+  {%- endif %}
+  <style>
+    html.rizo-event {
+      --rizo-base-ink: {{ settings.color_ink }};
+      --rizo-base-paper: {{ settings.color_paper }};
+      --rizo-event-night: {{ settings.event_night_intensity | divided_by: 100.0 }};
+      --rizo-event-night-mix: {{ settings.event_night_intensity }}%;
+      --rizo-event-motion: {{ settings.event_motion | divided_by: 100.0 }};
+      --rizo-event-moon-size: {{ settings.event_moon_size }}px;
+      --rizo-event-moon-size-mobile: {{ settings.event_moon_size_mobile }}px;
+      --rizo-event-moon-x: {{ settings.event_moon_x }}%;
+      --rizo-event-moon-y: {{ settings.event_moon_y }}%;
+      --rizo-event-moon-x-mobile: {{ settings.event_moon_x_mobile }}%;
+      --rizo-event-moon-y-mobile: {{ settings.event_moon_y_mobile }}%;
+      --rizo-event-moon-opacity: {{ settings.event_moon_opacity | divided_by: 100.0 }};
+      --rizo-event-moon-glow: {{ settings.event_moon_glow | divided_by: 100.0 }};
+      --rizo-event-fog-strength: {{ settings.event_fog_intensity | divided_by: 100.0 }};
+      --rizo-event-fog-speed: {{ settings.event_fog_speed | divided_by: 100.0 }};
+      --rizo-event-fog-ratio: {{ ev_fog_ratio }};
+      {%- if ev_fog_src != blank %}
+      --rizo-event-fog-texture: url("{{ ev_fog_src }}");
+      {%- endif %}
+    }
+  </style>
+  <script type="application/json" id="RizoEventConfig">
+    {
+      "version": 1,
+      "id": {{ ev_id | strip | json }},
+      "name": {{ ev_name | strip | json }},
+      "themeClass": {{ ev_theme_class | strip | json }},
+      "activation": {{ settings.event_activation | default: 'scheduled' | json }},
+      "start": {{ ev_start | strip | json }},
+      "end": {{ ev_end | strip | json }},
+      "timezone": {{ ev_timezone | strip | default: 'America/New_York' | json }},
+      "designMode": {% if request.design_mode %}true{% else %}false{% endif %},
+      "editorPreview": {% if settings.event_editor_preview %}true{% else %}false{% endif %},
+      "features": {
+        "night": {% if ev_night == 'true' %}true{% else %}false{% endif %},
+        "moon": {% if ev_moon == 'true' %}true{% else %}false{% endif %},
+        "fog": {% if ev_fog == 'true' %}true{% else %}false{% endif %},
+        "pageFog": {% if ev_page_fog == 'true' %}true{% else %}false{% endif %},
+        "flock": {% if ev_flock_on %}true{% else %}false{% endif %},
+        "countdown": {% if ev_countdown == 'true' %}true{% else %}false{% endif %}
+      },
+      "motion": {
+        "intensity": {{ settings.event_motion | divided_by: 100.0 }},
+        "reduced": {{ settings.event_reduced_motion | default: 'still' | json }}
+      },
+      "moon": { "motion": {% if settings.event_moon_motion %}true{% else %}false{% endif %} },
+      "fog": { "src": {{ ev_fog_src | strip | json }} },
+      "flock": {
+        "behavior": {{ ev_flock_behavior | strip | json }},
+        "density": {{ settings.event_flock_density | divided_by: 100.0 }},
+        "activity": {{ settings.event_flock_activity | divided_by: 100.0 }},
+        "scroll": {% if settings.event_flock_scroll %}true{% else %}false{% endif %},
+        "tap": {% if settings.event_flock_tap %}true{% else %}false{% endif %},
+        "sprites": {{ ev_flock_sprites }}
+      },
+      "quietSelectors": ".product-grid, .product-page-shell, .cart-page, .recently-viewed, [data-rizo-event-quiet]",
+      "scripts": {
+        "engine": {{ 'rizo-event-layer.js' | asset_url | json }},
+        "flock": [{{ 'rizo-event-flock.js' | asset_url | json }}{% if ev_behavior_script != blank %}, {{ ev_behavior_script | strip | asset_url | json }}{% endif %}]
+      }
+    }
+  </script>
+  <script>
+    /* Rizo Event Layer boot: decides activation before first paint. */
+    (function (doc, win) {
+      var root = doc.documentElement;
+      var node = doc.getElementById('RizoEventConfig');
+      var config;
+      try { config = JSON.parse(node.textContent); } catch (error) { return; }
+
+      /* Offset (ms) of an IANA zone from UTC at a given instant. */
+      function zoneOffset(ms, zone) {
+        var parts = {};
+        new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })
+          .formatToParts(new Date(ms)).forEach(function (part) { parts[part.type] = Number(part.value); });
+        return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour % 24, parts.minute, parts.second) - Math.floor(ms / 1000) * 1000;
+      }
+      /* ISO date/time → epoch ms. Strings without an offset are read in the event's timezone, never the visitor's. */
+      function zonedTime(value, zone) {
+        if (!value) return NaN;
+        value = String(value).trim();
+        if (/(?:[zZ]|[+-]\d\d:?\d\d)$/.test(value)) return Date.parse(value);
+        var m = value.match(/^(\d{4})-(\d\d)-(\d\d)(?:[T ](\d\d):(\d\d)(?::(\d\d))?)?$/);
+        if (!m) return Date.parse(value);
+        var wall = Date.UTC(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+        try {
+          var guess = wall - zoneOffset(wall, zone || config.timezone);
+          return wall - zoneOffset(guess, zone || config.timezone);
+        } catch (error) { return wall; }
+      }
+
+      /* Preview override for this tab: ?rizo_event=on | off | clear */
+      var preview = null;
+      try {
+        var param = new URLSearchParams(win.location.search).get('rizo_event');
+        if (param === 'clear') win.sessionStorage.removeItem('rizoEventPreview');
+        else if (param === 'on' || param === 'off') win.sessionStorage.setItem('rizoEventPreview', param);
+        preview = win.sessionStorage.getItem('rizoEventPreview');
+      } catch (error) {}
+
+      var now = Date.now();
+      var start = zonedTime(config.start, config.timezone);
+      var end = zonedTime(config.end, config.timezone);
+      var inWindow = (isNaN(start) || now >= start) && (isNaN(end) || now < end);
+      var active = config.activation === 'always' || inWindow;
+      var reason = config.activation === 'always' ? 'manual' : (inWindow ? 'schedule' : (now < start ? 'before-start' : 'after-end'));
+      if (config.designMode && config.editorPreview) { active = true; reason = 'editor-preview'; }
+      if (preview === 'on') { active = true; reason = 'preview'; }
+      if (preview === 'off') { active = false; reason = 'preview-off'; }
+
+      var boot = win.RizoEventBoot = { config: config, active: false, reason: reason, start: start, end: end, zonedTime: zonedTime, activate: activate };
+
+      function load(src) {
+        var script = doc.createElement('script');
+        script.src = src;
+        script.async = false; /* ordered: engine → flock → preset behaviour */
+        doc.head.appendChild(script);
+      }
+
+      function activate(why) {
+        if (boot.active) return;
+        boot.active = true;
+        if (why) boot.reason = why;
+        root.classList.add('rizo-event', 'rizo-event--' + config.id);
+        if (config.themeClass) root.classList.add(config.themeClass);
+        if (config.features.night) root.classList.add('rizo-event--night');
+        if (config.motion.reduced === 'minimal') root.classList.add('rizo-event--rm-minimal');
+        if (!(config.motion.intensity > 0)) root.classList.add('rizo-event--motion-off');
+        root.setAttribute('data-rizo-event', config.id);
+        load(config.scripts.engine);
+        var reduced = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (config.features.flock && !reduced && config.motion.intensity > 0) config.scripts.flock.forEach(load);
+        boot.flockLoaded = config.features.flock && !reduced && config.motion.intensity > 0;
+      }
+
+      if (active) activate();
+      else if (reason === 'before-start' && start - now < 864e5) {
+        /* Page left open across the start time: switch on live. */
+        boot.startTimer = win.setTimeout(function () { activate('schedule'); }, start - now);
+      }
+    })(document, window);
+  </script>
+{%- endif -%}

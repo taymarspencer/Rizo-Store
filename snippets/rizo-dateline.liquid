@@ -1,0 +1,12 @@
+{% liquid
+  assign dateline_mode = mode | default: settings.signal_clock_mode | default: 'archive'
+  assign dateline_date = date | default: settings.archive_date | default: '02/22/2023'
+  assign dateline_time = time | default: settings.archive_time | default: '2:22 PM'
+  assign dateline_label = label | default: 'PITTSBURGH / RIZO'
+  assign dateline_timezone = settings.signal_timezone | default: 'America/New_York'
+%}
+<div class="rizo-dateline{% if compact %} rizo-dateline--compact{% endif %}" data-rizo-clock data-clock-mode="{{ dateline_mode }}" data-time-zone="{{ dateline_timezone | escape }}">
+  <time data-rizo-clock-date datetime="{{ 'now' | date: '%Y-%m-%d' }}">{{ dateline_date }}</time>
+  <span>{{ dateline_label }}</span>
+  <time data-rizo-clock-time>{{ dateline_time }}</time>
+</div>

@@ -1,0 +1,77 @@
+{
+  "sections": {
+    "about": {
+      "type": "rizo-about",
+      "blocks": {
+        "limits": {
+          "type": "point",
+          "settings": {
+            "title": "LIMITATIONS WERE THE FIRST MATERIAL",
+            "text": "The lack of a perfect setup forced Rizo to invent its own process, language and way forward."
+          }
+        },
+        "craft": {
+          "type": "point",
+          "settings": {
+            "title": "FOUNDER-LED FROM IDEA TO GARMENT",
+            "text": "Taymar develops the designs and makes the clothes himself, keeping the work close to the original intent."
+          }
+        },
+        "outlet": {
+          "type": "point",
+          "settings": {
+            "title": "CREATIVITY NEEDS AN OUTLET",
+            "text": "Rizo exists to help people show more of who they are, not disappear into what everyone else is wearing."
+          }
+        },
+        "help": {
+          "type": "point",
+          "settings": {
+            "title": "HELP MATTERED ALONG THE WAY",
+            "text": "Friends, supporters and people who showed up helped the world move forward before there were formal titles."
+          }
+        },
+        "becoming": {
+          "type": "point",
+          "settings": {
+            "title": "STILL BECOMING",
+            "text": "Growth is not hidden behind a polished story. Learning, rebuilding and getting better are part of the design."
+          }
+        }
+      },
+      "block_order": [
+        "limits",
+        "craft",
+        "outlet",
+        "help",
+        "becoming"
+      ],
+      "settings": {
+        "dateline_label": "RIZO STORY / ORIGIN FILE",
+        "eyebrow": "ORIGIN FILE / TAYMAR SPENCER",
+        "heading": "BUILT WITHOUT A BLUEPRINT.",
+        "body": "<p>Rizo did not begin with unlimited resources, industry connections, or a perfect plan. It began with Taymar Spencer wanting a real way to express himself—and refusing to let limitations decide what he could create.</p><p>Taymar learned by making, experimenting, rebuilding, and accepting help from people who believed in the vision. He continues to develop the designs and make the clothes himself.</p><p>At first, the goal was simply to become great and keep improving. Clothing became the passion through people: seeing someone receive a piece, put it on, and feel confidence, excitement or recognition.</p><p>What began as one person’s outlet became a mission to give other people room to express themselves. The goal is bigger than garments. It is to create something that moves people and use that energy to change the world around it.</p>",
+        "quote": "Rizo started through limitations. I was in a box, and I broke out.",
+        "quote_attribution": "TAYMAR SPENCER / FOUNDER & BRAND OWNER",
+        "show_origin_art": true,
+        "link_label": "",
+        "theme": "paper"
+      }
+    },
+    "team": {
+      "type": "rizo-team",
+      "settings": {
+        "mode": "circle",
+        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
+        "eyebrow": "THE RIZO CIRCLE",
+        "heading": "ONE VISION. MANY HANDS ALONG THE WAY.",
+        "text": "<p>Rizo is founder-led. Taymar designs and makes the pieces, but the world has never moved alone. Friends, models, event help, supporters and people who believed early have helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>",
+        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+      }
+    }
+  },
+  "order": [
+    "about",
+    "team"
+  ]
+}

@@ -1,0 +1,22 @@
+{% if settings.enable_install_guide %}
+  <div class="overlay-shell install-shell" data-install-guide data-overlay="install" hidden>
+    <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close install guide"></button>
+    <section class="install-card" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-labelledby="InstallTitle">
+      <button class="header-icon install-close" type="button" data-overlay-close aria-label="Close install guide">{% render 'icon', name: 'close' %}</button>
+      <img src="{{ 'rizo-classic.png' | asset_url }}" alt="" width="160" height="206" loading="lazy">
+      <p class="eyebrow">KEEP RIZO ONE TAP AWAY</p>
+      <h2 id="InstallTitle">Put Rizo on your Home Screen</h2>
+      <div class="install-steps" data-ios-steps>
+        <div><b>1</b><span>Open this page in Safari.</span></div>
+        <div><b>2</b><span>Tap the Share icon.</span></div>
+        <div><b>3</b><span>Choose “Add to Home Screen.”</span></div>
+      </div>
+      <div class="install-steps" data-browser-steps hidden>
+        <div><b>1</b><span>Open your browser menu.</span></div>
+        <div><b>2</b><span>Choose “Install app” or “Add to Home screen.”</span></div>
+      </div>
+      <p class="install-note">This adds a shortcut to the public Rizo store. It does not install private tools or access anything on your device.</p>
+      <button class="button button-hot button-full" type="button" data-install-action>Got it</button>
+    </section>
+  </div>
+{% endif %}

@@ -1,0 +1,20 @@
+<div class="overlay-shell drawer-shell{% if cart.item_count == 0 %} is-empty{% endif %}" id="RizoCart" data-overlay="cart" hidden data-cart-shell data-free-shipping-threshold="{{ settings.free_shipping_threshold | times: 100 }}">
+  <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close cart"></button>
+  <aside class="cart-drawer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-labelledby="CartDrawerTitle">
+    <header class="drawer-header">
+      <div>{% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'CART / CURRENT WORLD', compact: true %}{% endif %}<p class="eyebrow">YOUR CURRENT WORLD</p><h2 id="CartDrawerTitle">Rizo cart <span data-cart-count-heading>{% if cart.item_count > 0 %}({{ cart.item_count }}){% endif %}</span></h2></div>
+      <button class="header-icon" type="button" data-overlay-close aria-label="Close cart">{% render 'icon', name: 'close' %}</button>
+    </header>
+    <div class="cart-rizo-signal" data-cart-rizo-signal><img src="{{ 'rizo-classic.png' | asset_url }}" width="84" height="108" alt="" loading="lazy"><p data-cart-signal-copy>{% if cart.item_count > 0 %}Good choice. Check the size and quantity before checkout.{% else %}The bag is quiet. The live pieces are one tap away.{% endif %}</p></div>
+    <div class="shipping-progress" data-shipping-progress hidden><div><span data-shipping-copy></span><b data-shipping-percent>0%</b></div><div class="shipping-progress-track" aria-hidden="true"><i data-shipping-bar></i></div></div>
+    <div class="drawer-lines" data-cart-lines aria-busy="false"><p class="drawer-loading">Reading your cart…</p></div>
+    <footer class="drawer-footer">
+      <div class="drawer-total"><span>Subtotal</span><strong data-cart-total>{{ cart.total_price | money }}</strong></div>
+      <div class="drawer-confidence"><span>{% render 'icon', name: 'check' %} Secure Shopify checkout</span><span>{% render 'icon', name: 'check' %} Shipping cost calculated at checkout</span>{% if shop.refund_policy != blank %}<a href="{{ shop.refund_policy.url }}">Read return policy</a>{% endif %}</div>
+      <p class="drawer-caption">Review the piece, option, and quantity. Shipping and taxes are calculated at checkout.</p>
+      <form action="{{ routes.cart_url }}" method="post"><button class="button button-hot button-full" type="submit" name="checkout" data-analytics="checkout_clicked">CHECKOUT {% render 'icon', name: 'arrow' %}</button></form>
+      <a class="button button-ghost button-full" href="{{ routes.cart_url }}">REVIEW FULL CART</a>
+      <button class="text-button drawer-continue" type="button" data-overlay-close>KEEP EXPLORING</button>
+    </footer>
+  </aside>
+</div>

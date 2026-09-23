@@ -1,0 +1,66 @@
+{% liquid
+  assign shipping_threshold = settings.free_shipping_threshold | times: 100
+  assign shipping_remaining = shipping_threshold | minus: cart.total_price
+  assign shipping_percent = 0
+  if shipping_threshold > 0
+    assign shipping_percent = cart.total_price | times: 100 | divided_by: shipping_threshold | at_most: 100
+  endif
+%}
+<section class="cart-page page-width">
+  <nav class="product-breadcrumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">World</a><span aria-hidden="true">/</span><span aria-current="page">Cart</span></nav>
+  {% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'CART / CURRENT WORLD' %}{% endif %}
+  <header class="section-heading cart-heading">
+    {% render 'rizo-brand-stamp', variant: 'logo', class: 'section-primary-mark cart-primary-mark' %}
+    <div><p class="eyebrow">YOUR CURRENT WORLD</p><h1>Rizo cart</h1><p class="section-intro">Confirm the piece, option, and quantity. No surprises after this point.</p></div>
+    {% if cart.item_count > 0 %}<span>{{ cart.item_count }} {% if cart.item_count == 1 %}piece{% else %}pieces{% endif %}</span>{% endif %}
+  </header>
+
+  {% if cart.item_count == 0 %}
+    <div class="empty-state cart-empty">
+      <img src="{{ 'rizo-face-variant-blue.png' | asset_url }}" width="533" height="680" alt="" loading="eager">
+      <h2>The bag is quiet.</h2><p>The current signal is still live. Start with the pieces available now.</p>
+      <a class="button button-hot" href="{{ routes.all_products_collection_url }}">SHOP WHAT IS LIVE {% render 'icon', name: 'arrow' %}</a>
+    </div>
+  {% else %}
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <div class="cart-layout">
+        <div class="cart-lines">
+          {% for item in cart.items %}
+            <article class="cart-row">
+              <a class="cart-row-image" href="{{ item.url }}">{% if item.image %}{{ item.image | image_url: width: 420 | image_tag: loading: 'lazy', widths: '160,240,360,420', sizes: '120px', alt: item.image.alt | default: item.product.title }}{% endif %}<span>{{ forloop.index | prepend: '0' }}</span></a>
+              <div class="cart-row-copy">
+                <p class="eyebrow">RIZO PIECE</p><a href="{{ item.url }}"><strong>{{ item.product.title }}</strong></a>
+                {% unless item.product.has_only_default_variant %}<p>{{ item.variant.title }}</p>{% endunless %}
+                {% if item.selling_plan_allocation %}<small>{{ item.selling_plan_allocation.selling_plan.name }}</small>{% endif %}
+                {% for property in item.properties %}{% assign property_first_char = property.first | slice: 0 %}{% unless property.last == blank or property_first_char == '_' %}<small>{{ property.first }}: {{ property.last }}</small>{% endunless %}{% endfor %}
+                {% if item.line_level_discount_allocations.size > 0 %}<ul class="cart-discounts">{% for discount in item.line_level_discount_allocations %}<li>{{ discount.discount_application.title }} (−{{ discount.amount | money }})</li>{% endfor %}</ul>{% endif %}
+                <a class="cart-remove" href="{{ item.url_to_remove }}">Remove piece</a>
+              </div>
+              <div class="quantity-control cart-page-quantity">
+                <button type="button" data-quantity-step="-1" aria-label="Decrease quantity for {{ item.product.title }}">{% render 'icon', name: 'minus' %}</button>
+                <label class="visually-hidden" for="Quantity-{{ forloop.index }}">Quantity for {{ item.product.title }}</label>
+                <input id="Quantity-{{ forloop.index }}" type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric">
+                <button type="button" data-quantity-step="1" aria-label="Increase quantity for {{ item.product.title }}">{% render 'icon', name: 'plus' %}</button>
+              </div>
+              <strong class="cart-row-price">{{ item.final_line_price | money }}</strong>
+            </article>
+          {% endfor %}
+        </div>
+
+        <aside class="cart-summary">
+          <p class="eyebrow">BEFORE YOU LEAVE</p><h2>Cart summary</h2>
+          {% if shipping_threshold > 0 %}<div class="cart-page-progress"><div><span>{% if shipping_remaining > 0 %}{{ shipping_remaining | money }} from free shipping{% else %}Free shipping unlocked{% endif %}</span><b>{{ shipping_percent }}%</b></div><i><span style="width:{{ shipping_percent }}%"></span></i></div>{% endif %}
+          <div class="cart-summary-total"><span>Subtotal</span><strong>{{ cart.total_price | money }}</strong></div>
+          {% if cart.cart_level_discount_applications.size > 0 %}<ul class="cart-discounts">{% for discount in cart.cart_level_discount_applications %}<li>{{ discount.title }} (−{{ discount.total_allocated_amount | money }})</li>{% endfor %}</ul>{% endif %}
+          {% if section.settings.show_note %}<label for="CartNote">Order note</label><textarea id="CartNote" name="note" rows="3" placeholder="Gift note, event pickup detail, or something we should know">{{ cart.note }}</textarea>{% endif %}
+          <div class="cart-checks"><span>{% render 'icon', name: 'check' %} Secure Shopify checkout</span><span>{% render 'icon', name: 'check' %} Size and quantity shown above</span><span>{% render 'icon', name: 'check' %} Shipping cost calculated at checkout</span>{% if shop.refund_policy != blank %}<a href="{{ shop.refund_policy.url }}">{% render 'icon', name: 'check' %} Read the return policy</a>{% endif %}</div>
+          <p>Shipping and taxes are calculated at checkout. Review the order total before payment.</p>
+          <button class="button button-ghost button-full" type="submit" name="update">UPDATE CART</button>
+          <button class="button button-hot button-full" type="submit" name="checkout" data-analytics="checkout_clicked">CHECKOUT {% render 'icon', name: 'arrow' %}</button>
+          <a class="text-link" href="{{ routes.all_products_collection_url }}">KEEP EXPLORING</a>
+        </aside>
+      </div>
+    </form>
+  {% endif %}
+</section>
+{% schema %}{"name":"Main cart","settings":[{"type":"checkbox","id":"show_note","label":"Show order note","default":true}]}{% endschema %}

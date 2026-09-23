@@ -1,0 +1,46 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "secure": {
+          "type": "confidence",
+          "settings": {
+            "text": "Secure Shopify checkout"
+          }
+        },
+        "timing": {
+          "type": "confidence",
+          "settings": {
+            "text": "Shipping cost calculated at checkout"
+          }
+        },
+        "tracked": {
+          "type": "confidence",
+          "settings": {
+            "text": "Tracking sent when the carrier provides it"
+          }
+        }
+      },
+      "block_order": [
+        "secure",
+        "timing",
+        "tracked"
+      ],
+      "settings": {}
+    },
+    "recommendations": {
+      "type": "rizo-product-recommendations",
+      "settings": {}
+    },
+    "recent": {
+      "type": "rizo-recently-viewed",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "recommendations",
+    "recent"
+  ]
+}

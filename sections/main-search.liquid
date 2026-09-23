@@ -1,0 +1,43 @@
+<section class="search-page page-width">
+  <nav class="product-breadcrumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">World</a><span aria-hidden="true">/</span><span aria-current="page">Search</span></nav>
+  {% if settings.heritage_mode %}{% render 'rizo-dateline', label: 'RIZO SEARCH / FIND THE SIGNAL' %}{% endif %}
+  <header class="search-page-header">
+    <div class="section-mark-line">{% render 'rizo-brand-stamp', variant: 'face', class: 'section-secondary-mark search-secondary-mark' %}<p class="eyebrow">FIND YOUR WAY IN</p></div><h1>{% if search.performed %}What surfaced{% else %}Search Rizo{% endif %}</h1>
+    <p class="section-intro">Search by piece, color, collection, story, or whatever you remember.</p>
+    <form class="search-form search-form--page" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="SearchPageInput">Search the store</label>
+      <input id="SearchPageInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Try ‘hoodie’, ‘blue’, or a piece name">
+      <input type="hidden" name="type" value="product,page,collection,article">
+      <button class="button button-hot" type="submit">SEARCH</button>
+    </form>
+  </header>
+
+  {% unless search.performed %}
+    <div class="search-start-grid">
+      <a href="{{ routes.all_products_collection_url }}"><span>01</span><strong>SHOP EVERYTHING LIVE</strong><small>Start with clothing.</small>{% render 'icon', name: 'arrow' %}</a>
+      <a href="{{ routes.collections_url }}"><span>02</span><strong>OPEN THE COLLECTIONS</strong><small>Browse worlds and drops.</small>{% render 'icon', name: 'arrow' %}</a>
+      {% if section.settings.story_link != blank %}<a href="{{ section.settings.story_link }}"><span>03</span><strong>{{ section.settings.story_label }}</strong><small>{{ section.settings.story_note }}</small>{% render 'icon', name: 'arrow' %}</a>{% endif %}
+    </div>
+  {% endunless %}
+
+  {% if search.performed %}
+    {% paginate search.results by 24 %}
+      <div class="search-result-heading"><p><strong>{{ search.results_count }}</strong> results for “{{ search.terms | escape }}”</p><a href="{{ routes.search_url }}">CLEAR SEARCH</a></div>
+      {% if search.results_count > 0 %}
+        <div class="search-results">
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              {% render 'product-card', product: item, show_quick_add: true, show_size_preview: true %}
+            {% else %}
+              <article class="search-result-page"><p class="eyebrow">{{ item.object_type }}</p><h2><a href="{{ item.url }}">{{ item.title }}</a></h2><p>{{ item.content | strip_html | truncatewords: 28 }}</p><a class="text-arrow" href="{{ item.url }}">OPEN {% render 'icon', name: 'arrow' %}</a></article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><img src="{{ 'rizo-face-variant-blue.png' | asset_url }}" width="533" height="680" alt="" loading="lazy"><h2>Nothing answered that signal.</h2><p>Try the piece name, a color, or one wider word. The live shop is still open.</p><a class="button button-hot" href="{{ routes.all_products_collection_url }}">SHOP WHAT IS LIVE</a></div>
+      {% endif %}
+      {% if paginate.pages > 1 %}<nav class="pagination" aria-label="Pagination">{{ paginate | default_pagination }}</nav>{% endif %}
+    {% endpaginate %}
+  {% endif %}
+</section>
+{% schema %}{"name":"Main search","settings":[{"type":"text","id":"story_label","label":"Story path label","default":"MEET RIZO"},{"type":"text","id":"story_note","label":"Story path note","default":"Understand the face behind the flame."},{"type":"url","id":"story_link","label":"Story path link"}]}{% endschema %}

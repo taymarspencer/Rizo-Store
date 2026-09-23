@@ -1,0 +1,52 @@
+{% liquid
+  assign manual_badge = product.metafields.custom.badge.value | default: product.metafields.custom.badge
+  assign badge = manual_badge
+  assign tracked_units = 0
+  assign tracked_variants = 0
+  assign low_stock = false
+  assign low_stock_threshold = settings.low_stock_threshold | default: 5
+
+  for variant in product.variants
+    if variant.available and variant.inventory_management != blank and variant.inventory_policy == 'deny'
+      assign tracked_variants = tracked_variants | plus: 1
+      if variant.inventory_quantity > 0
+        assign tracked_units = tracked_units | plus: variant.inventory_quantity
+      endif
+    endif
+  endfor
+
+  if product.tags contains 'low-stock'
+    assign low_stock = true
+  elsif tracked_variants > 0 and tracked_units > 0 and tracked_units <= low_stock_threshold
+    assign low_stock = true
+  endif
+
+  if product.available == false
+    assign badge = 'SOLD OUT'
+  elsif badge == blank
+    if low_stock
+      assign badge = 'LOW STOCK'
+    elsif product.tags contains 'new-drop' or product.tags contains 'just-entered'
+      assign badge = 'NEW DROP'
+    elsif product.tags contains 'restocked'
+      assign badge = 'RESTOCKED'
+    elsif product.compare_at_price_max > product.price
+      assign badge = 'SALE'
+    elsif product.tags contains 'event-exclusive'
+      assign badge = 'EVENT EXCLUSIVE'
+    elsif product.tags contains 'core-piece'
+      assign badge = 'CORE PIECE'
+    endif
+  endif
+
+  assign badge_label = badge | strip | upcase
+  assign badge_class = ''
+  if badge_label == 'SALE' or badge_label == 'LOW STOCK'
+    assign badge_class = ' product-badge--heat'
+  elsif badge_label == 'NEW DROP' or badge_label == 'RESTOCKED'
+    assign badge_class = ' product-badge--signal'
+  elsif badge_label == 'SOLD OUT'
+    assign badge_class = ' product-badge--muted'
+  endif
+%}
+{% if badge_label != blank %}<span class="product-badge{{ badge_class }}">{{ badge_label }}</span>{% endif %}

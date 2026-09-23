@@ -1,0 +1,41 @@
+{%- comment -%}
+  RIZO EVENT PRESET — Halloween 2026 ("October mode")
+
+  A preset only describes the event. The Event Layer engine does the work.
+  This snippet answers one `key` at a time and is only ever rendered by
+  snippets/rizo-event-value.liquid, which applies theme-setting overrides.
+
+  Everything Halloween-specific lives in files named event-halloween*:
+    snippets/event-halloween.liquid      this file (defaults, assets, modules)
+    assets/event-halloween.css           art-direction tokens (palette, fog layers, flyers)
+    assets/event-halloween.js            bat flight behaviour for the flock module
+    assets/event-halloween-*.svg|webp    replaceable artwork (moon, bats, fog)
+
+  Retire it: Theme settings → Event layer → Active event → Off.
+  Remove it for good: delete those files, the 'halloween' option in
+  config/settings_schema.json and its `when` line in rizo-event-value.liquid.
+{%- endcomment -%}
+{%- case key -%}
+  {%- when 'name' -%}Halloween 2026
+  {%- when 'theme_class' -%}rizo-october
+  {%- when 'modules' -%}night,moon,fog,flock,countdown
+  {%- when 'timezone' -%}America/New_York
+  {%- when 'start' -%}2026-10-01T00:00:00-04:00
+  {%- when 'end' -%}2026-11-01T06:00:00-05:00
+  {%- when 'announcement' -%}
+  {%- when 'countdown_target' -%}2026-10-31T00:00:00-04:00
+  {%- when 'countdown_label' -%}HALLOWEEN IN
+  {%- when 'countdown_expired_label' -%}HALLOWEEN IS HERE
+  {%- when 'countdown_description' -%}Halloween begins
+  {%- when 'stylesheet' -%}event-halloween.css
+  {%- when 'behavior_script' -%}event-halloween.js
+  {%- when 'moon_src' -%}{{ 'event-halloween-moon.svg' | asset_url }}
+  {%- when 'moon_ratio' -%}1
+  {%- when 'fog_src' -%}{{ 'event-halloween-fog.webp' | asset_url }}
+  {%- when 'fog_ratio' -%}5.71
+  {%- when 'hero_fog_layers' -%}3
+  {%- when 'page_fog_layers' -%}2
+  {%- when 'flock_behavior' -%}bats
+  {%- when 'flock_sprites' -%}
+    [{"src":{{ 'event-halloween-bat-1.svg' | asset_url | json }},"pose2":{{ 'event-halloween-bat-1-b.svg' | asset_url | json }},"ratio":2.2},{"src":{{ 'event-halloween-bat-2.svg' | asset_url | json }},"ratio":2}]
+{%- endcase -%}

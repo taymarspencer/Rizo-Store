@@ -1,0 +1,7 @@
+{% assign target = product.selected_or_first_available_variant | default: product %}
+<div class="product-price"{% if context == 'product' %} data-product-price{% endif %}>
+  {% if product.price_varies and context != 'product' %}<span class="price-prefix">From</span>{% endif %}
+  <span>{{ target.price | money }}</span>
+  {% if target.compare_at_price > target.price %}<s{% if context == 'product' %} data-product-compare{% endif %}>{{ target.compare_at_price | money }}</s>{% elsif context == 'product' %}<s data-product-compare hidden></s>{% endif %}
+  {% if context == 'product' %}{{ form | payment_terms }}{% endif %}
+</div>

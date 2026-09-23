@@ -1,0 +1,95 @@
+{%- comment -%}
+  RIZO EVENT LAYER — value resolver (the one place that knows the active event)
+
+  Returns a single value for the active event preset, with theme-setting
+  overrides applied. Outputs nothing when Active event is Off.
+
+    {%- capture label -%}{% render 'rizo-event-value', key: 'countdown_label' %}{%- endcapture -%}
+    {%- capture moon_on -%}{% render 'rizo-event-value', key: 'feature', feature: 'moon' %}{%- endcapture -%}
+
+  key: 'feature' returns "true" when the preset supports the capability AND
+  its theme setting is on (night, moon, fog, page_fog, flock, countdown).
+
+  Adding a preset: create snippets/event-<id>.liquid, add a `when` below and
+  add the option to "Active event" in config/settings_schema.json.
+{%- endcomment -%}
+{%- liquid
+  assign ev_id = settings.event_layer | default: 'off'
+  assign ev_lookup = key
+  if key == 'feature'
+    assign ev_lookup = 'modules'
+  endif
+-%}
+{%- if ev_id != 'off' -%}
+  {%- capture ev_preset -%}
+    {%- case ev_id -%}
+      {%- when 'halloween' -%}{%- render 'event-halloween', key: ev_lookup -%}
+    {%- endcase -%}
+  {%- endcapture -%}
+  {%- liquid
+    assign ev_preset = ev_preset | strip
+    assign ev_override = ''
+    case key
+      when 'id'
+        assign ev_override = ev_id
+      when 'feature'
+        assign ev_modules = ev_preset | split: ','
+        assign ev_module = feature
+        assign ev_toggle = false
+        case feature
+          when 'night'
+            assign ev_toggle = settings.event_night
+          when 'moon'
+            assign ev_toggle = settings.event_moon
+          when 'fog'
+            assign ev_toggle = settings.event_fog
+          when 'page_fog'
+            assign ev_toggle = settings.event_fog_page
+            assign ev_module = 'fog'
+          when 'flock'
+            if settings.event_flock and settings.event_flock_density > 0
+              assign ev_toggle = true
+            endif
+          when 'countdown'
+            assign ev_toggle = settings.event_countdown
+        endcase
+        assign ev_preset = ''
+        if ev_toggle and ev_modules contains ev_module
+          assign ev_preset = 'true'
+        endif
+      when 'start'
+        assign ev_override = settings.event_start | strip
+      when 'end'
+        assign ev_override = settings.event_end | strip
+      when 'announcement'
+        assign ev_override = settings.event_announcement | strip
+      when 'countdown_target'
+        assign ev_override = settings.event_countdown_target | strip
+      when 'countdown_label'
+        assign ev_override = settings.event_countdown_label | strip
+      when 'countdown_expired_label'
+        assign ev_override = settings.event_countdown_expired_label | strip
+      when 'moon_src'
+        if settings.event_moon_image != blank
+          assign ev_override = settings.event_moon_image | image_url: width: 1600
+        endif
+      when 'moon_ratio'
+        if settings.event_moon_image != blank
+          assign ev_override = settings.event_moon_image.aspect_ratio
+        endif
+      when 'fog_src'
+        if settings.event_fog_texture != blank
+          assign ev_override = settings.event_fog_texture | image_url: width: 2400
+        endif
+      when 'fog_ratio'
+        if settings.event_fog_texture != blank
+          assign ev_override = settings.event_fog_texture.aspect_ratio
+        endif
+    endcase
+    if ev_override != blank
+      echo ev_override
+    else
+      echo ev_preset
+    endif
+  -%}
+{%- endif -%}
