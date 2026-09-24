@@ -17,14 +17,6 @@
   const $ = (selector, context = doc) => context.querySelector(selector);
   const $$ = (selector, context = doc) => Array.from(context.querySelectorAll(selector));
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const lowPower = Boolean(
-    connection?.saveData ||
-    (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
-    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
-  );
-
-  if (lowPower) root.dataset.lowPower = 'true';
   const calm = () => reducedMotion || root.dataset.motion === 'calm';
 
   const shopRoot = window.Shopify?.routes?.root || '/';
@@ -63,15 +55,10 @@
   let activeOverlay = null;
 
   /* Header measurement and lightweight scroll state */
+  const nextFrame = (fn) => (window.RizoFrame ? window.RizoFrame.request(fn) : window.requestAnimationFrame(fn));
   const measureHeader = () => {
     const header = $('[data-header-stack]');
     if (header) root.style.setProperty('--header-h', `${Math.ceil(header.getBoundingClientRect().height)}px`);
-    const dock = $('.mobile-dock');
-    const dockVisible = dock && window.getComputedStyle(dock).display !== 'none';
-    const dockHeight = dockVisible ? Math.ceil(dock.getBoundingClientRect().height) : 0;
-    const dockSpace = dockVisible ? Math.ceil(window.innerHeight - dock.getBoundingClientRect().top) : 0;
-    root.style.setProperty('--mobile-dock-height', `${dockHeight}px`);
-    root.style.setProperty('--mobile-dock-space', `${dockSpace}px`);
   };
 
   let scrollTicking = false;
@@ -89,7 +76,7 @@
   window.addEventListener('scroll', () => {
     if (scrollTicking) return;
     scrollTicking = true;
-    window.requestAnimationFrame(updateScrollState);
+    nextFrame(updateScrollState);
   }, { passive: true });
 
   window.addEventListener('resize', measureHeader, { passive: true });
@@ -112,7 +99,7 @@
     $$('[data-filter-toggle][aria-expanded="true"]').forEach((toggle) => toggle.setAttribute('aria-expanded', 'false'));
     $$('.collection-filter-backdrop').forEach((backdrop) => { backdrop.hidden = true; });
     activeOverlay = null;
-    window.requestAnimationFrame(measureHeader);
+    nextFrame(measureHeader);
   }, { passive: true });
 
   /* Accessible overlay manager */
@@ -1250,7 +1237,7 @@
       const move = (event) => {
         point = { x: event.clientX, y: event.clientY };
         host.classList.add('is-looking');
-        if (!frame) frame = window.requestAnimationFrame(paint);
+        if (!frame) frame = nextFrame(paint);
       };
       const leave = () => { point = null; host.classList.remove('is-looking'); };
       host.addEventListener('pointermove', move, { passive: true });

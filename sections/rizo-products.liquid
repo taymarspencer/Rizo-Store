@@ -11,6 +11,7 @@
   assign shown = source.products.size | at_most: limit
 -%}
 <section class="s products" data-surface="{{ section.settings.surface }}" data-space="{{ section.settings.space }}" data-fog="0" data-rizo-event-quiet id="Shop-{{ section.id }}">
+  {% render 'rizo-art', section: section %}
   <div class="wrap wrap--wide">
     <div class="s-head">
       <div>
@@ -51,6 +52,65 @@
     { "type": "checkbox", "id": "show_sizes", "label": "Sizes in stock", "default": false },
     { "type": "select", "id": "surface", "label": "Surface", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "raised", "label": "Raised" }, { "value": "open", "label": "Open sky" }] },
     { "type": "select", "id": "space", "label": "Space", "default": "m", "options": [{ "value": "s", "label": "Tight" }, { "value": "m", "label": "Normal" }, { "value": "l", "label": "Loose" }] }
+  ],
+  "blocks": [
+    {
+      "type": "art",
+      "name": "Art",
+      "limit": 8,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Artwork", "info": "Transparent PNG or WebP works best. Later blocks sit on top of earlier ones." },
+        { "type": "image_picker", "id": "image_mobile", "label": "Phone version", "info": "Optional: a different crop, or a different piece, for phones." },
+        { "type": "header", "content": "Placement" },
+        { "type": "range", "id": "x", "label": "Across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80, "info": "Where the centre of the piece sits, as a share of the section." },
+        { "type": "range", "id": "y", "label": "Down", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 30, "info": "Below 0 or above 100 hangs over the edge of the section." },
+        { "type": "range", "id": "size", "label": "Size", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 22, "info": "Width, as a share of the section's width." },
+        { "type": "range", "id": "rotate", "label": "Turn", "min": -180, "max": 180, "step": 5, "unit": "°", "default": 0 },
+        { "type": "range", "id": "opacity", "label": "Opacity", "min": 5, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "select", "id": "layer", "label": "Layer", "default": "back", "options": [
+          { "value": "back", "label": "Behind the content" },
+          { "value": "front", "label": "In front of the content" },
+          { "value": "back-front", "label": "Behind on desktop, in front on phones" },
+          { "value": "front-back", "label": "In front on desktop, behind on phones" }
+        ] },
+        { "type": "select", "id": "blend", "label": "Blend", "default": "normal", "options": [
+          { "value": "normal", "label": "Normal" },
+          { "value": "screen", "label": "Screen (only lightens)" },
+          { "value": "multiply", "label": "Multiply (only darkens)" },
+          { "value": "overlay", "label": "Overlay" },
+          { "value": "soft-light", "label": "Soft light" },
+          { "value": "difference", "label": "Difference" },
+          { "value": "luminosity", "label": "Luminosity" }
+        ] },
+        { "type": "header", "content": "Phones" },
+        { "type": "select", "id": "show", "label": "Show on", "default": "all", "options": [
+          { "value": "all", "label": "Desktop and phones" },
+          { "value": "desktop", "label": "Desktop only" },
+          { "value": "phone", "label": "Phones only" }
+        ] },
+        { "type": "range", "id": "mobile_x", "label": "Across on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80 },
+        { "type": "range", "id": "mobile_y", "label": "Down on phones", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 20 },
+        { "type": "range", "id": "mobile_size", "label": "Size on phones", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 40 },
+        { "type": "header", "content": "Movement" },
+        { "type": "select", "id": "motion", "label": "Movement", "default": "none", "options": [
+          { "value": "none", "label": "Still" },
+          { "value": "float", "label": "Floats" },
+          { "value": "sway", "label": "Sways from its top edge" },
+          { "value": "depth", "label": "Depth: drifts as the page scrolls" },
+          { "value": "settle", "label": "Settles into place when it appears" },
+          { "value": "shy", "label": "Moves away from the pointer or finger" },
+          { "value": "wobble", "label": "Wobbles when touched" },
+          { "value": "spin", "label": "Spins when touched" }
+        ] },
+        { "type": "range", "id": "strength", "label": "How much", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 50 },
+        { "type": "select", "id": "when", "label": "When", "default": "always", "options": [
+          { "value": "always", "label": "Always" },
+          { "value": "event", "label": "Only while a seasonal event is on" },
+          { "value": "normal", "label": "Only when no event is on" }
+        ] },
+        { "type": "text", "id": "name", "label": "Name for custom CSS", "info": "Optional. Adds data-art=\"name\" to the piece." }
+      ]
+    }
   ],
   "presets": [{ "name": "Products" }]
 }

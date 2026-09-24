@@ -6,7 +6,8 @@
   file is never requested.
 
   Owns the shared pieces every event uses:
-    loop        one requestAnimationFrame loop; runs only while a task needs it
+    loop        one frame task on the theme's shared frame (window.RizoFrame);
+                runs only while a task needs it
     governor    steps weak devices down (lite, then still), never up
     input       passive scroll-velocity and tap observation (never blocks input)
     state       device tier, motion scale, reduced motion, hero/quiet/overlay
@@ -56,11 +57,10 @@
   /* State                                                                   */
   /* ---------------------------------------------------------------------- */
 
+  // data-low-power is decided once in layout/theme.liquid (Save-Data, ≤2 GB,
+  // ≤2 cores) and shared with the art layers.
   const detectTier = () => {
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection?.saveData) return 'lite';
-    if (navigator.deviceMemory && navigator.deviceMemory <= 2) return 'lite';
-    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return 'lite';
+    if (root.dataset.lowPower === 'true') return 'lite';
     return smallQuery.matches || coarseQuery.matches ? 'mobile' : 'desktop';
   };
 
@@ -99,7 +99,7 @@
   };
 
   /* ---------------------------------------------------------------------- */
-  /* Loop: the only requestAnimationFrame in the event layer                  */
+  /* Loop: one frame task, queued on the theme's shared frame              */
   /* ---------------------------------------------------------------------- */
 
   /* Frame-time governor. Sustained frames slower than ~30fps step the layer
@@ -144,11 +144,15 @@
       governor.sample(elapsed);
       request();
     };
+    // The theme's shared frame (layout/theme.liquid) when present, so the
+    // event layer, art layers and header never run separate loops.
+    const shared = window.RizoFrame;
     const request = () => {
-      if (!frame && tasks.size && state.running && !doc.hidden) frame = window.requestAnimationFrame(tick);
+      if (frame || !tasks.size || !state.running || doc.hidden) return;
+      frame = shared ? shared.request(tick) : window.requestAnimationFrame(tick);
     };
     const halt = () => {
-      if (frame) window.cancelAnimationFrame(frame);
+      if (frame) { if (shared) shared.cancel(frame); else window.cancelAnimationFrame(frame); }
       frame = 0;
       last = 0;
     };
@@ -611,7 +615,8 @@
     const tone = (name, fallback) => (style.getPropertyValue(name).trim() || fallback).split(/[\s,]+/).map(Number);
     const colours = { front: tone('--rizo-event-fog-rgb', '176 188 200'), back: tone('--rizo-event-fog-back-rgb', '96 108 122') };
     const share = { back: Number(style.getPropertyValue('--rizo-event-fog-back')) || .7, front: Number(style.getPropertyValue('--rizo-event-fog-front')) || .55 };
-    const intensity = clamp(Number(config.fog?.intensity ?? .6) / .6, 0, 1.7);
+    const phoneScale = config.phone === 'lighter' && smallQuery.matches ? .6 : 1; // theme setting "On phones"
+    const intensity = clamp(Number(config.fog?.intensity ?? .6) / .6, 0, 1.7) * phoneScale;
     const speed = clamp(Number(config.fog?.speed ?? .4), 0, 1);
 
     /* Tileable value-noise fBm → an RGBA canvas of fog. */
@@ -1001,7 +1006,7 @@
   };
   const onResize = () => {
     if (resizeFrame) return;
-    resizeFrame = window.requestAnimationFrame(() => {
+    resizeFrame = (window.RizoFrame || { request: window.requestAnimationFrame.bind(window) }).request(() => {
       resizeFrame = 0;
       state.viewport = { width: window.innerWidth, height: window.innerHeight };
       updateTier();
@@ -1066,6 +1071,7 @@
 
     root.classList.add('rizo-event--ready');
     emit('start', state);
+    doc.dispatchEvent(new CustomEvent('rizo-event:start', { detail: { id: config.id, reason: boot.reason } }));
 
     // One short frame probe once the page has settled, so a weak device steps
     // down even if no bat has flown yet (CSS fog/moon drift is running).

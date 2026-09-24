@@ -11,6 +11,7 @@
      4  Layout            10 Hero                    16 Pages: text, FAQ, contact…
      5  Controls          11 Product cards           17 Motion, view transitions
      6  Sky               12 Story, pocket, gallery  18 Reduced motion
+                                                     19 Art layers
 
    Seasonal art lives in rizo-event-layer.css + event-<id>.css and only
    loads while an event is selected.
@@ -94,6 +95,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden; /* Safari < 16 */
   overflow-x: clip;
 }
 body.is-overlay-open { overflow: hidden; }
@@ -237,7 +239,7 @@ h1, h2, h3, h4, .v-say { font-family: var(--f-text); font-weight: 700; font-stre
    Fixed behind everything. A city sky is never black: it keeps a little
    of the street light at the bottom. Route tokens place the moon.         */
 
-.sky { position: fixed; inset: 0 0 auto 0; height: 100lvh; z-index: 0; pointer-events: none; overflow: hidden; }
+.sky { position: fixed; inset: 0 0 auto 0; height: 100vh; height: 100lvh; z-index: 0; pointer-events: none; overflow: hidden; }
 .sky-tone {
   position: absolute; inset: 0;
   background:
@@ -423,10 +425,12 @@ html:not(.rizo-event) .foot-sky { min-height: clamp(120px, 14vw, 200px); }
 .hero {
   position: relative;
   display: grid; align-items: end;
+  min-height: min(94vh, 980px);
   min-height: min(94svh, 980px);
   margin-top: calc(var(--header-h) * -1);
   padding-top: calc(var(--header-h) + 40px);
   padding-bottom: clamp(44px, 9vh, 104px);
+  overflow-x: hidden; /* Safari < 16 */
   overflow-x: clip; /* the mark may bleed off the edge; phones must not scroll sideways */
 }
 .hero-copy { position: relative; z-index: 2; width: min(100% - var(--edge) * 2, var(--wide)); margin-inline: auto; }
@@ -440,7 +444,8 @@ html:not(.rizo-event) .foot-sky { min-height: clamp(120px, 14vw, 200px); }
 .hero-mark .mk-eyes, .hero-mark .mk-mouth { fill: var(--bone); }
 html.rizo-event--moon .hero-mark { display: none; }
 @media (max-width: 749px) {
-  .hero { min-height: calc(100svh - var(--dock-h)); padding-bottom: 34px; align-items: end; }
+  .hero { min-height: calc(100vh - var(--dock-h)); padding-bottom: 34px; align-items: end; }
+  @supports (height: 1svh) { .hero { min-height: calc(100svh - var(--dock-h)); } }
   .hero-title { font-size: clamp(2.55rem, 13.6vw, 4.6rem); }
   .hero-sub { font-size: 1rem; }
   .hero-actions .btn { min-height: 50px; }
@@ -487,7 +492,7 @@ html.rizo-event--moon .hero-mark { display: none; }
 }
 .card-add .icon { width: 14px; height: 14px; transition: transform var(--mid) var(--ease); }
 .card-add:hover { border-color: var(--bone); color: var(--bone); }
-.card-add:hover .icon { transform: rotate(90deg); }
+@media (hover: hover) { .card-add:hover .icon { transform: rotate(90deg); } }
 .card-add:disabled { opacity: .6; }
 .card-add--off { justify-content: center; color: var(--bone-3); border-style: dashed; cursor: default; }
 .card .form-message { margin-top: 6px; }
@@ -500,7 +505,6 @@ html.rizo-event--moon .hero-mark { display: none; }
   .card-add { font-size: .625rem; letter-spacing: .08em; padding: 0 10px; }
 }
 
-.products-foot { display: flex; justify-content: flex-end; margin-top: clamp(28px, 4vw, 48px); }
 
 /* 12 · Story, pocket, gallery, interlude, signup ------------------------- */
 
@@ -538,8 +542,10 @@ html.rizo-event--moon .hero-mark { display: none; }
 }
 .pocket-sheet img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: 50% 62%; filter: contrast(1.05); mix-blend-mode: multiply; }
 .pocket-tab { position: absolute; left: 7%; bottom: -30px; color: var(--bone-3); font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; transition: color var(--fast) var(--ease); }
-.pocket summary:hover .pocket-sheet { transform: rotate(6deg) translate(-4%, -3%); }
-.pocket summary:hover .pocket-tab { color: var(--bone); }
+@media (hover: hover) {
+  .pocket summary:hover .pocket-sheet { transform: rotate(6deg) translate(-4%, -3%); }
+  .pocket summary:hover .pocket-tab { color: var(--bone); }
+}
 .pocket[open] { z-index: 3; }
 .pocket[open] .pocket-sheet { animation: pocket-out 950ms var(--ease-heavy) both; }
 .pocket[open] .pocket-tab { opacity: 0; }
@@ -625,7 +631,8 @@ html:not(.rizo-event) .interlude { min-height: clamp(120px, 16vh, 200px); }
 .pdp-thumbs { position: sticky; top: calc(var(--header-h) + 20px); display: grid; gap: 8px; }
 .pdp-thumb { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 2px; background: #030405; box-shadow: inset 0 0 0 1px var(--line); opacity: .55; transition: opacity var(--fast) var(--ease); }
 .pdp-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.pdp-thumb[aria-pressed='true'], .pdp-thumb:hover { opacity: 1; }
+.pdp-thumb[aria-pressed='true'] { opacity: 1; }
+@media (hover: hover) { .pdp-thumb:hover { opacity: 1; } }
 .pdp-thumb[aria-pressed='true']::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px var(--bone); border-radius: 2px; }
 .pdp-track { display: grid; gap: 12px; }
 .pdp-media { position: relative; overflow: hidden; border-radius: 2px; background: #030405; }
@@ -633,6 +640,7 @@ html:not(.rizo-event) .interlude { min-height: clamp(120px, 16vh, 200px); }
 .pdp-media video, .pdp-media iframe, .pdp-media model-viewer { width: 100%; aspect-ratio: 1; display: block; }
 .pdp-zoom { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border-radius: 18px; background: rgb(7 9 12 / .72); color: var(--bone-2); font-size: .66rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: 0; transition: opacity var(--fast) var(--ease), color var(--fast) var(--ease); }
 .pdp-media:hover .pdp-zoom, .pdp-zoom:focus-visible { opacity: 1; }
+@media (hover: none) { .pdp-zoom { opacity: 1; } } /* touch: never an invisible button */
 .pdp-zoom:hover { color: var(--bone); }
 .pdp-count { display: none; }
 
@@ -979,6 +987,10 @@ html:not(.rizo-event) .interlude { min-height: clamp(120px, 16vh, 200px); }
   .artifact[data-place='right'] { grid-column: 2 / -1; }
   .artifact[data-place='left'] { grid-column: 1 / span 5; }
   .artifact[data-offset] { margin-top: 0; }
+  .artifact[data-mspan] { grid-column: span var(--mspan); }
+  .artifact[data-mspan][data-place='left'] { grid-column: 1 / span var(--mspan); }
+  .artifact[data-mspan][data-place='right'] { grid-column: span var(--mspan) / -1; }
+  .artifact[data-mspan][data-place='center'] { grid-column: var(--mstart) / span var(--mspan); }
   .lens-host { cursor: auto; }
   .lens { width: 130px; height: 130px; margin: -150px 0 0 -65px; }
 }
@@ -1000,7 +1012,8 @@ html:not(.rizo-event) .interlude { min-height: clamp(120px, 16vh, 200px); }
 .release-clock small { color: var(--bone-3); font-size: var(--t-label); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .release p { color: var(--bone-2); max-width: 40ch; }
 
-.lost { display: grid; align-content: center; min-height: calc(100svh - var(--header-h) - var(--dock-h)); padding-block: var(--pad-s); }
+.lost { display: grid; align-content: center; min-height: calc(100vh - var(--header-h) - var(--dock-h)); padding-block: var(--pad-s); }
+@supports (height: 1svh) { .lost { min-height: calc(100svh - var(--header-h) - var(--dock-h)); } }
 .lost h1 { font-size: var(--t-1); max-width: 12ch; }
 .lost p { margin-top: 16px; max-width: 36ch; color: var(--bone-2); }
 .lost .cluster { margin-top: 28px; }
@@ -1016,9 +1029,6 @@ html:not(.rizo-event) .interlude { min-height: clamp(120px, 16vh, 200px); }
 ::view-transition-old(rizo-moon), ::view-transition-new(rizo-moon) { animation: none; mix-blend-mode: normal; height: 100%; }
 ::view-transition-group(rizo-header) { animation-duration: 0s; }
 
-@media (hover: hover) and (pointer: fine) {
-  .reveal-media img { transition: transform 1100ms var(--ease-heavy); }
-}
 
 /* 18 · Reduced motion ---------------------------------------------------- */
 
@@ -1028,3 +1038,78 @@ html:not(.rizo-event) .interlude { min-height: clamp(120px, 16vh, 200px); }
   .pocket[open] .pocket-sheet { animation: none; transform: translate(-74%, -64%) rotate(-2deg) scale(1.62); }
 }
 html[data-motion='calm'] .card-media img, html[data-motion='calm'] .coll-tile-media img { transition-duration: var(--mid); transform: none !important; }
+
+/* 19 · Art layers ---------------------------------------------------------
+   Pieces placed with the "Art" block (snippets/rizo-art.liquid). Positions
+   are percentages of the host section: --x/--y/--s on desktop, --mx/--my/
+   --ms on phones. The layer clips sideways (a piece may bleed off the edge
+   but the page never scrolls sideways) and not vertically, so a piece can
+   hang over the section above or below.
+     behind    z 0: over the section's own background, under its content
+     in front  z 6: over the content and the next section; still under the
+               sticky buy bar, dock, header, drawers and the event's front fog
+   Placement lives on .art-piece, movement on .art-move, the turn on the
+   image, so the three never fight over one transform.                    */
+
+.pdp { position: relative; }
+.art { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+@supports (overflow: clip) { .art { overflow: visible; overflow-x: clip; } }
+:where(.art ~ *) { position: relative; }
+
+.art-piece {
+  --kk: calc(var(--k, .5) * var(--calm, 1));
+  position: absolute; z-index: 0;
+  left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); width: calc(var(--s) * 1%);
+  transform: translate(-50%, -50%);
+  opacity: var(--o, 1);
+}
+.art-piece[data-layer='front'], .art-piece[data-layer='front-back'] { z-index: 6; }
+.art-piece[data-blend='screen'] { mix-blend-mode: screen; }
+.art-piece[data-blend='multiply'] { mix-blend-mode: multiply; }
+.art-piece[data-blend='overlay'] { mix-blend-mode: overlay; }
+.art-piece[data-blend='soft-light'] { mix-blend-mode: soft-light; }
+.art-piece[data-blend='difference'] { mix-blend-mode: difference; }
+.art-piece[data-blend='luminosity'] { mix-blend-mode: luminosity; }
+.art-move { position: relative; }
+.art-move picture, .art-move img { display: block; width: 100%; height: auto; }
+.art-move img { transform: rotate(var(--r, 0deg)); -webkit-user-select: none; user-select: none; -webkit-user-drag: none; }
+.art-empty { display: grid; place-items: center; aspect-ratio: 1; padding: 8px; border: 1px dashed var(--blue-2); color: var(--blue-2); font-size: .7rem; text-align: center; transform: rotate(var(--r, 0deg)); }
+
+@media (max-width: 749px) {
+  .art-piece { left: calc(var(--mx) * 1%); top: calc(var(--my) * 1%); width: calc(var(--ms) * 1%); }
+  .art-piece[data-layer='back-front'] { z-index: 6; }
+  .art-piece[data-layer='front-back'] { z-index: 0; }
+  .art-piece[data-show='desktop'] { display: none; }
+}
+@media (min-width: 750px) { .art-piece[data-show='phone'] { display: none; } }
+html:not(.rizo-event) .art-piece[data-when='event'], html.rizo-event .art-piece[data-when='normal'] { display: none; }
+html[data-motion='calm'] { --calm: .5; }
+
+/* Movement. Float and sway are CSS (they run on the compositor and pause
+   off-screen); depth and shy are written by assets/rizo-art.js on the
+   shared frame; wobble and spin are one-shot animations on touch. A piece
+   waiting to settle is hidden before first paint (no flash), and shows
+   itself after 4 s if the script never arrives, so art never disappears
+   because JavaScript failed. */
+@keyframes art-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(var(--kk) * -18px); } }
+@keyframes art-sway { 0%, 100% { rotate: calc(var(--kk) * -4deg); } 50% { rotate: calc(var(--kk) * 4deg); } }
+.art-piece[data-motion='float'] .art-move { animation: art-float calc(6s + var(--i, 1) * 1.3s) ease-in-out calc(var(--i, 1) * -2.1s) infinite; }
+.art-piece[data-motion='sway'] .art-move { transform-origin: 50% 0; animation: art-sway calc(5s + var(--i, 1) * .9s) ease-in-out calc(var(--i, 1) * -1.7s) infinite; }
+.art-piece.is-off .art-move { animation-play-state: paused; }
+@keyframes art-failsafe { to { opacity: 1; translate: 0 0; rotate: 0deg; } }
+html.js .art-piece[data-motion='settle'] .art-move { transition: opacity 700ms var(--ease), translate 1300ms var(--ease-heavy), rotate 1300ms var(--ease-heavy); }
+html.js .art-piece[data-motion='settle']:not(.is-in) .art-move { opacity: 0; translate: 0 calc(var(--kk) * 48px); rotate: calc(var(--kk) * -7deg); animation: art-failsafe 1ms 4s forwards; }
+html.rizo-art-ready .art-piece[data-motion='settle']:not(.is-in) .art-move { animation: none; }
+
+/* Focal points from Shopify admin (snippets/rizo-image.liquid): crops keep
+   the chosen spot in frame; a phone version can have its own. */
+img[style*='--focal'] { object-position: var(--focal, 50% 50%); }
+@media (max-width: 749px) { img[style*='--focal-m'] { object-position: var(--focal-m) !important; } }
+
+/* Theme editor: the selected piece holds still and shows its box. */
+.art-piece.is-selected { outline: 1px dashed var(--blue); outline-offset: 6px; }
+.art-piece.is-selected .art-move { animation: none; translate: none; rotate: none; opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .art-move { animation: none !important; translate: none !important; rotate: none !important; opacity: 1 !important; transition: none !important; }
+}

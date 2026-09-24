@@ -6,14 +6,18 @@
   show tonight's moon phase (filled in by the event layer when it's live).
 {%- endcomment -%}
 <section class="s" data-surface="{{ section.settings.surface }}" data-space="{{ section.settings.space }}" data-fog="{{ section.settings.fog | divided_by: 100.0 }}" data-fog-bias="ground">
+  {% render 'rizo-art', section: section %}
   <div class="wrap wrap--wide">
     {%- if section.settings.heading != blank -%}<div class="s-head"><h2 class="s-title t-2">{{ section.settings.heading | escape }}</h2></div>{%- endif -%}
     <div class="artifacts">
-      {%- for block in section.blocks -%}
+      {%- assign objects = section.blocks | where: 'type', 'object' -%}
+      {%- for block in objects -%}
         {%- assign start = 12 | minus: block.settings.span | divided_by: 2 | floor | plus: 1 -%}
-        <figure class="artifact" data-material="{{ block.settings.material }}" data-place="{{ block.settings.place }}" data-offset="{{ block.settings.offset }}" style="--span: {{ block.settings.span }}; --start: {{ start }}; --tilt: {{ block.settings.tilt }}deg" {{ block.shopify_attributes }}>
+        {%- assign mspan = block.settings.mobile_span | plus: 0 -%}
+        {%- assign mstart = 6 | minus: mspan | divided_by: 2 | floor | plus: 1 -%}
+        <figure class="artifact" data-material="{{ block.settings.material }}" data-place="{{ block.settings.place }}" data-offset="{{ block.settings.offset }}"{% if block.settings.mobile_span != 'auto' %} data-mspan{% endif %} style="--span: {{ block.settings.span }}; --start: {{ start }}; --tilt: {{ block.settings.tilt }}deg{% if block.settings.mobile_span != 'auto' %}; --mspan: {{ mspan }}; --mstart: {{ mstart }}{% endif %}" {{ block.shopify_attributes }}>
           <div class="artifact-body{% if block.settings.lens %} lens-host{% endif %}"{% if block.settings.lens %} data-lens{% endif %}>
-            {% render 'rizo-image', image: block.settings.image, builtin: block.settings.builtin_image, sizes: '(min-width: 750px) 50vw, 100vw', alt: block.settings.alt %}
+            {% render 'rizo-image', image: block.settings.image, mobile_image: block.settings.image_mobile, builtin: block.settings.builtin_image, sizes: '(min-width: 750px) 50vw, 100vw', alt: block.settings.alt %}
             {%- if block.settings.lens -%}<span class="lens" aria-hidden="true"></span>{%- endif -%}
           </div>
           {%- if block.settings.title != blank or block.settings.caption != blank or block.settings.moon_phase or block.settings.download_label != blank -%}
@@ -51,6 +55,7 @@
       "name": "Object",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "image_picker", "id": "image_mobile", "label": "Image on phones", "info": "Optional: a different crop or image under 750px wide." },
         { "type": "select", "id": "builtin_image", "label": "Image when none is uploaded", "default": "sketch", "options": [
           { "value": "sketch", "label": "First drawing" }, { "value": "face_white", "label": "The face (light)" }, { "value": "face", "label": "The face (dark, for paper)" }, { "value": "mark_blue", "label": "The flame" }, { "value": "mark_ember", "label": "The flame, red" }, { "value": "mark_shadow", "label": "The flame, dark" },
           { "value": "mark_412", "label": "412" }, { "value": "camo", "label": "Camo" }, { "value": "stadium", "label": "Stadium at night" },
@@ -65,11 +70,72 @@
         { "type": "select", "id": "place", "label": "Placement", "default": "auto", "options": [{ "value": "auto", "label": "Next in line" }, { "value": "left", "label": "Left edge" }, { "value": "center", "label": "Centre" }, { "value": "right", "label": "Right edge" }] },
         { "type": "select", "id": "offset", "label": "Vertical", "default": "none", "options": [{ "value": "none", "label": "In line" }, { "value": "down", "label": "Lower" }, { "value": "up", "label": "Higher" }] },
         { "type": "range", "id": "tilt", "label": "Tilt", "min": -6, "max": 6, "step": 0.5, "unit": "°", "default": 0 },
+        { "type": "select", "id": "mobile_span", "label": "Width on phones", "default": "auto", "options": [
+          { "value": "auto", "label": "Automatic" }, { "value": "2", "label": "A third" }, { "value": "3", "label": "Half" },
+          { "value": "4", "label": "Two thirds" }, { "value": "5", "label": "Most" }, { "value": "6", "label": "Full width" }
+        ] },
         { "type": "text", "id": "title", "label": "Title" },
         { "type": "text", "id": "caption", "label": "Caption" },
         { "type": "checkbox", "id": "lens", "label": "Lens for looking closer", "default": false },
         { "type": "text", "id": "download_label", "label": "Download link label", "info": "Lets people save the image (for example the camo phone wallpaper). Blank hides it." },
         { "type": "checkbox", "id": "moon_phase", "label": "Show tonight's moon phase", "default": false, "info": "Filled in while an event with a moon is live." }
+      ]
+    },
+    {
+      "type": "art",
+      "name": "Art",
+      "limit": 8,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Artwork", "info": "Transparent PNG or WebP works best. Later blocks sit on top of earlier ones." },
+        { "type": "image_picker", "id": "image_mobile", "label": "Phone version", "info": "Optional: a different crop, or a different piece, for phones." },
+        { "type": "header", "content": "Placement" },
+        { "type": "range", "id": "x", "label": "Across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80, "info": "Where the centre of the piece sits, as a share of the section." },
+        { "type": "range", "id": "y", "label": "Down", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 30, "info": "Below 0 or above 100 hangs over the edge of the section." },
+        { "type": "range", "id": "size", "label": "Size", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 22, "info": "Width, as a share of the section's width." },
+        { "type": "range", "id": "rotate", "label": "Turn", "min": -180, "max": 180, "step": 5, "unit": "°", "default": 0 },
+        { "type": "range", "id": "opacity", "label": "Opacity", "min": 5, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "select", "id": "layer", "label": "Layer", "default": "back", "options": [
+          { "value": "back", "label": "Behind the content" },
+          { "value": "front", "label": "In front of the content" },
+          { "value": "back-front", "label": "Behind on desktop, in front on phones" },
+          { "value": "front-back", "label": "In front on desktop, behind on phones" }
+        ] },
+        { "type": "select", "id": "blend", "label": "Blend", "default": "normal", "options": [
+          { "value": "normal", "label": "Normal" },
+          { "value": "screen", "label": "Screen (only lightens)" },
+          { "value": "multiply", "label": "Multiply (only darkens)" },
+          { "value": "overlay", "label": "Overlay" },
+          { "value": "soft-light", "label": "Soft light" },
+          { "value": "difference", "label": "Difference" },
+          { "value": "luminosity", "label": "Luminosity" }
+        ] },
+        { "type": "header", "content": "Phones" },
+        { "type": "select", "id": "show", "label": "Show on", "default": "all", "options": [
+          { "value": "all", "label": "Desktop and phones" },
+          { "value": "desktop", "label": "Desktop only" },
+          { "value": "phone", "label": "Phones only" }
+        ] },
+        { "type": "range", "id": "mobile_x", "label": "Across on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80 },
+        { "type": "range", "id": "mobile_y", "label": "Down on phones", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 20 },
+        { "type": "range", "id": "mobile_size", "label": "Size on phones", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 40 },
+        { "type": "header", "content": "Movement" },
+        { "type": "select", "id": "motion", "label": "Movement", "default": "none", "options": [
+          { "value": "none", "label": "Still" },
+          { "value": "float", "label": "Floats" },
+          { "value": "sway", "label": "Sways from its top edge" },
+          { "value": "depth", "label": "Depth: drifts as the page scrolls" },
+          { "value": "settle", "label": "Settles into place when it appears" },
+          { "value": "shy", "label": "Moves away from the pointer or finger" },
+          { "value": "wobble", "label": "Wobbles when touched" },
+          { "value": "spin", "label": "Spins when touched" }
+        ] },
+        { "type": "range", "id": "strength", "label": "How much", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 50 },
+        { "type": "select", "id": "when", "label": "When", "default": "always", "options": [
+          { "value": "always", "label": "Always" },
+          { "value": "event", "label": "Only while a seasonal event is on" },
+          { "value": "normal", "label": "Only when no event is on" }
+        ] },
+        { "type": "text", "id": "name", "label": "Name for custom CSS", "info": "Optional. Adds data-art=\"name\" to the piece." }
       ]
     }
   ],

@@ -4,15 +4,44 @@
   anything is uploaded, and the owner can swap any photo in the editor.
 
     {% render 'rizo-image', image: section.settings.image, builtin: 'underpass', sizes: '50vw', alt: '…' %}
+
+  Phones: pass mobile_image (and mobile_sizes) for a different crop or a
+  different photo under 750px. It works over an upload or a built-in.
+  Crops follow the focal point set on each image in Shopify admin
+  (--focal / --focal-m, applied in assets/rizo.css §19).
 {%- endcomment -%}
 {%- liquid
   assign img_class = class | default: ''
   assign img_loading = loading | default: 'lazy'
   assign img_sizes = sizes | default: '100vw'
   assign img_priority = fetchpriority | default: 'auto'
+  assign img_alt = alt
+  if img_alt == blank and image != blank
+    assign img_alt = image.alt
+  elsif img_alt == blank and mobile_image != blank
+    assign img_alt = mobile_image.alt
+  endif
+  assign focal = ''
+  if image.presentation.focal_point != blank
+    assign focal = '--focal: ' | append: image.presentation.focal_point | append: ';'
+  endif
+  if mobile_image != blank and mobile_image.presentation.focal_point != blank
+    assign focal = focal | append: ' --focal-m: ' | append: mobile_image.presentation.focal_point | append: ';'
+  endif
 -%}
+{%- if mobile_image != blank -%}
+  {%- capture mobile_srcset -%}
+    {%- for w in (1..4) -%}
+      {%- assign mw = w | times: 360 -%}
+      {%- if mw < mobile_image.width -%}{{ mobile_image | image_url: width: mw }} {{ mw }}w,{%- endif -%}
+    {%- endfor -%}
+    {%- assign mw = mobile_image.width | at_most: 1800 -%}{{ mobile_image | image_url: width: mw }} {{ mw }}w
+  {%- endcapture -%}
+  <picture>
+    <source media="(max-width: 749px)" srcset="{{ mobile_srcset | strip }}" sizes="{{ mobile_sizes | default: '100vw' }}" width="{{ mobile_image.width }}" height="{{ mobile_image.height }}">
+{%- endif -%}
 {%- if image != blank -%}
-  {{ image | image_url: width: 2200 | image_tag: loading: img_loading, fetchpriority: img_priority, widths: '360,540,720,960,1200,1600,2200', sizes: img_sizes, alt: alt | default: image.alt, class: img_class }}
+  {{ image | image_url: width: 2200 | image_tag: loading: img_loading, fetchpriority: img_priority, widths: '360,540,720,960,1200,1600,2200', sizes: img_sizes, alt: img_alt, class: img_class, style: focal }}
 {%- elsif builtin != blank and builtin != 'none' -%}
   {%- liquid
     case builtin
@@ -91,6 +120,9 @@
     endcase
   -%}
   {%- if f != blank -%}
-    <img{% if img_class != blank %} class="{{ img_class }}"{% endif %} src="{{ f | asset_url }}" width="{{ w }}" height="{{ h }}" loading="{{ img_loading }}" decoding="async"{% if img_priority != 'auto' %} fetchpriority="{{ img_priority }}"{% endif %} alt="{{ alt | escape }}">
+    <img{% if img_class != blank %} class="{{ img_class }}"{% endif %} src="{{ f | asset_url }}" width="{{ w }}" height="{{ h }}" loading="{{ img_loading }}" decoding="async"{% if img_priority != 'auto' %} fetchpriority="{{ img_priority }}"{% endif %}{% if focal != blank %} style="{{ focal }}"{% endif %} alt="{{ alt | escape }}">
   {%- endif -%}
+{%- elsif mobile_image != blank -%}
+  {{ mobile_image | image_url: width: 1800 | image_tag: loading: img_loading, widths: '360,720,1080,1440,1800', sizes: img_sizes, alt: img_alt, class: img_class }}
 {%- endif -%}
+{%- if mobile_image != blank -%}</picture>{%- endif -%}

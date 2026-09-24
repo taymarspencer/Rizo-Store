@@ -242,6 +242,50 @@
             "label": "Night sky and countdown only"
           }
         ]
+      },
+      {
+        "type": "select",
+        "id": "event_phone",
+        "label": "On phones",
+        "default": "same",
+        "options": [
+          {
+            "value": "same",
+            "label": "Same as desktop"
+          },
+          {
+            "value": "lighter",
+            "label": "Lighter: less fog, half the bats"
+          },
+          {
+            "value": "off",
+            "label": "Sky, moon and countdown only"
+          }
+        ],
+        "info": "Phones are most visitors. Lighter keeps the mood and saves battery."
+      },
+      {
+        "type": "header",
+        "content": "Colour"
+      },
+      {
+        "type": "paragraph",
+        "content": "Leave blank to use the event's own colours."
+      },
+      {
+        "type": "color",
+        "id": "event_sky_color",
+        "label": "Night sky"
+      },
+      {
+        "type": "color",
+        "id": "event_fog_color",
+        "label": "Fog"
+      },
+      {
+        "type": "color",
+        "id": "event_glow_color",
+        "label": "Moonlight glow"
       }
     ]
   },
@@ -286,7 +330,7 @@
       },
       {
         "type": "paragraph",
-        "content": "Where the moon hangs on each kind of page is art direction in assets/rizo.css (Sky positions)."
+        "content": "Where the moon hangs is set per kind of page in assets/rizo.css (Sky positions). The Hero and Page title sections can place it by hand for their page, separately on phones."
       }
     ]
   },

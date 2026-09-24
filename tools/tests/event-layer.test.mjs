@@ -221,6 +221,44 @@ test('Each module can be switched off on its own', async () => {
   await f.close();
 });
 
+test('On phones: "sky, moon and countdown only" drops fog and bats; "Lighter" halves bats and thins fog', async () => {
+  let t = await open('/?rizo_event=on&set.event_phone=off', PHONE);
+  await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
+  await t.page.waitForTimeout(600);
+  let s = await stats(t.page);
+  const classes = await htmlClasses(t.page);
+  assert(!t.requests.some((url) => /rizo-event-flock|event-halloween\.js/.test(url)), 'bat scripts loaded on a quiet phone');
+  assert(!s.fogCanvases && classes.includes('rizo-event--phone-quiet') && s.moons === 1, 'phone-quiet mode wrong', { s, classes });
+  noErrors(t.errors, 'phone quiet');
+  await t.close();
+
+  t = await open('/?rizo_event=on&set.event_phone=off', DESKTOP);
+  await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
+  await t.page.waitForTimeout(600);
+  s = await stats(t.page);
+  assert(s.fogCanvases > 0 && t.requests.some((url) => /rizo-event-flock/.test(url)), 'desktop lost fog or bats in phone-quiet mode', s);
+  await t.close();
+
+  t = await open('/?rizo_event=on&set.event_phone=lighter&set.event_flock_density=100', PHONE);
+  await waitForFlock(t.page);
+  s = await stats(t.page);
+  assert(s.flockLimit === Math.round(LIMITS.mobile * .5), 'lighter phones should halve the bats', s);
+  note(`Phones: quiet mode → no fog/bats (moon kept); lighter → bat limit ${s.flockLimit} of ${LIMITS.mobile}.`);
+  await t.close();
+});
+
+test('Colour settings override the preset\'s fog, sky and moonlight', async () => {
+  const t = await open('/?rizo_event=on&set.event_fog_color=%23c8b89a&set.event_sky_color=%23080a12&set.event_glow_color=%23ffd9a0', DESKTOP);
+  await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
+  const tokens = await t.page.evaluate(() => { const cs = getComputedStyle(document.documentElement); return ['--rizo-event-fog-rgb', '--rizo-event-sky-top', '--rizo-event-halo-rgb'].map((name) => cs.getPropertyValue(name).trim()); });
+  assert(tokens[0] === '200 184 154' && tokens[1] === '#080a12' && tokens[2] === '255 217 160', 'colour overrides not applied', tokens);
+  const plain = await open('/?rizo_event=on', DESKTOP);
+  const preset = await plain.page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--rizo-event-fog-rgb').trim());
+  assert(preset === '170 183 197', 'preset fog colour changed without a setting', preset);
+  await plain.close();
+  await t.close();
+});
+
 test('Signal bar shows the event message only while the event is live', async () => {
   const message = 'OCTOBER SIGNAL / RIZO AFTER DARK';
   const read = (page) => page.evaluate(() => [...document.querySelectorAll('.notice-copy')].filter((node) => getComputedStyle(node).display !== 'none').map((node) => node.textContent.trim()));
@@ -476,26 +514,27 @@ test('Bats leave and are recycled; the loop sleeps when nothing moves; fog paint
   await f.close();
 });
 
-test('Exactly one animation loop: at most one event-layer rAF request per frame', async () => {
+test('Exactly one animation loop: the whole theme makes at most one rAF request per frame', async () => {
+  // Every real requestAnimationFrame call is counted. The measuring loop below
+  // makes one per frame; everything else (event layer, art layers, header)
+  // must share one more through window.RizoFrame.
   const t = await open('/?rizo_event=on&set.event_flock_density=100&set.event_flock_activity=100', DESKTOP, (page) => page.addInitScript(() => {
     const original = window.requestAnimationFrame.bind(window);
-    window.__eventRaf = 0;
-    window.requestAnimationFrame = (callback) => {
-      if (/rizo-event|event-halloween/.test(new Error().stack || '')) window.__eventRaf += 1;
-      return original(callback);
-    };
+    window.__raf = 0;
+    window.requestAnimationFrame = (callback) => { window.__raf += 1; return original(callback); };
   }));
   await waitForBats(t.page, 1);
   const result = await t.page.evaluate(() => new Promise((resolve) => {
-    const before = window.__eventRaf;
+    const before = window.__raf;
     let frames = 0;
-    const count = () => { frames += 1; if (frames < 90) requestAnimationFrame(count); else resolve({ frames, eventRequests: window.__eventRaf - before }); };
+    const count = () => { frames += 1; if (frames < 90) requestAnimationFrame(count); else resolve({ frames, theme: window.__raf - before - frames, shared: Boolean(window.RizoFrame) }); };
     requestAnimationFrame(count);
     let y = 0;
     const scroller = setInterval(() => { y += 90; window.scrollTo(0, y); if (y > 2000) clearInterval(scroller); }, 30);
   }));
-  assert(result.eventRequests <= result.frames + 2, 'more than one event-layer rAF per frame', result);
-  note(`rAF audit: ${result.eventRequests} event-layer requests over ${result.frames} frames while bats flew and the page scrolled.`);
+  assert(result.shared, 'shared frame missing');
+  assert(result.theme <= result.frames + 2, 'more than one theme rAF per frame', result);
+  note(`rAF audit: ${result.theme} theme requests over ${result.frames} frames while bats flew, fog drifted and the page scrolled (one shared frame).`);
   await t.close();
 });
 

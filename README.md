@@ -6,7 +6,9 @@ Pittsburgh. Online Store 2.0, no build step, no framework.
 The whole site is one design system (`assets/rizo.css`) set against a fixed
 night sky. Seasonal events (Halloween 2026 is the first) are a separate,
 reversible layer on top of that sky: [`docs/EVENT-LAYER.md`](docs/EVENT-LAYER.md).
-What changed in the 2026 overhaul: [`CHANGELOG.md`](CHANGELOG.md).
+Art layers, phone art direction and how to add interactions:
+[`ENGINEERING-NOTES.md`](ENGINEERING-NOTES.md). What changed:
+[`CHANGELOG.md`](CHANGELOG.md).
 
 ## Files
 
@@ -15,6 +17,7 @@ What changed in the 2026 overhaul: [`CHANGELOG.md`](CHANGELOG.md).
 | `layout/theme.liquid` | The page: fonts, sky, header group, `main`, footer group, drawers, dialogs. Sets `data-route` and `--seed` on `body`. |
 | `assets/rizo.css` | The design system: tokens, type voices, surfaces, every component and route. |
 | `assets/rizo.js` | Commerce and small interactions: cart drawer, quick add, variant pickers, search, filters, recommendations, the first drawing, the camo lens, releases. |
+| `assets/rizo-art.js`, `snippets/rizo-art.liquid` | Art layers: the *Art* block every major section accepts. |
 | `sections/rizo-*.liquid` | Building blocks for any page (see below). |
 | `sections/main-*.liquid` | Product, collection, cart, search, page, 404. |
 | `snippets/rizo-sky.liquid` | The fixed sky behind every page. |
@@ -23,7 +26,7 @@ What changed in the 2026 overhaul: [`CHANGELOG.md`](CHANGELOG.md).
 | `docs/` | Event Layer guide, font licences, reference screenshots, last design-check results. |
 | `tools/` | Local Liquid preview, browser tests, Theme Check. Not part of the theme. |
 
-`docs/`, `tools/`, `README.md` and `CHANGELOG.md` are in `.shopifyignore`, so
+`docs/`, `tools/` and the Markdown files at the root are in `.shopifyignore`, so
 `shopify theme push` uploads only the theme.
 
 ## Building a page
@@ -56,6 +59,11 @@ everywhere:
 - **Space** (`data-space`): tight, normal, loose.
 - **Fog** (`data-fog`, 0–100%): how much mist collects there during an event.
 
+Most sections also take **Art** blocks: drawings, stickers, scans or
+textures placed by percentage, behind or in front of the content, with
+their own image, placement and visibility on phones. See
+`ENGINEERING-NOTES.md`.
+
 Two attributes are for hand-written markup: `data-roost="hang"` gives the
 roosting bat somewhere to hang, and `data-rizo-event-quiet` keeps bats and
 front fog away from an area.
@@ -85,7 +93,9 @@ npm run preview:catalog   # http://localhost:9292, real catalog snapshot
 npm test                  # Event Layer and commerce checks in Chromium
 npm run test:design       # layout at 8 screen sizes, every route, the interactions;
                           # writes docs/screens/ and docs/DESIGN-CHECKS.json
-npm run check             # Shopify Theme Check
+                          # (art and phone compositions: ?fixture=art, ?fixture=phone)
+npm run check             # Art block in sync across sections + Shopify Theme Check
+npm run sync:art          # after editing tools/schema/art-block.json
 ```
 
 The preview renders the real Liquid with liquidjs. Cart and checkout are

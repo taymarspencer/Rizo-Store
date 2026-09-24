@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "preview": "node preview/server.mjs",
-    "check": "node tests/theme-check.mjs",
+    "check": "node schema/sync-art.mjs --check && node tests/theme-check.mjs",
     "test": "node tests/event-layer.test.mjs",
     "test:design": "node tests/design.test.mjs",
-    "preview:catalog": "RIZO_PREVIEW_CATALOG=snapshot node preview/server.mjs"
+    "preview:catalog": "RIZO_PREVIEW_CATALOG=snapshot node preview/server.mjs",
+    "sync:art": "node schema/sync-art.mjs"
   },
   "devDependencies": {
     "@shopify/theme-check-node": "^3.29.0",

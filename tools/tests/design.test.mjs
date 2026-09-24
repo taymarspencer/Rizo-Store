@@ -183,6 +183,141 @@ try {
     interactions.push('event off: mark instead of moon, no sideways scroll on phones');
   }
 
+  /* Art layers (fixture: tools/preview/fixtures/art.json). */
+  {
+    const layout = async (width, height, query) => {
+      const page = await newPage(width, height);
+      await page.goto(`${base}/?fixture=art&rizo_event_governor=off&${query}`, { waitUntil: 'networkidle' });
+      const r = await page.evaluate(() => {
+        const piece = (id) => { const el = document.getElementById(id); const cs = getComputedStyle(el); return { shown: cs.display !== 'none', z: cs.zIndex }; };
+        return { overflow: document.documentElement.scrollWidth - innerWidth, face: piece('Art-face'), mark: piece('Art-mark'), phone: piece('Art-phone'), desk: piece('Art-desk'), event: piece('Art-event'), normal: piece('Art-normal'), hidden: [...document.querySelectorAll('.art-piece')].every((el) => el.getAttribute('aria-hidden') === 'true'), src: document.querySelector('#Art-mark img').currentSrc };
+      });
+      assert(page.errors.length === 0, `art ${width}: ${page.errors.join('; ')}`);
+      return { page, r };
+    };
+    let { page, r } = await layout(1440, 900, 'rizo_event=on');
+    assert(r.overflow <= 0 && r.hidden, 'art: overflow or exposed to screen readers', r);
+    assert(r.face.z === '6' && r.mark.z === '0' && r.desk.z === '0' && r.desk.shown && !r.phone.shown, 'art: desktop layers or visibility wrong', r);
+    assert(r.event.shown && !r.normal.shown, 'art: event-only pieces wrong while the event is on', r);
+    // Depth: a piece behind the content lags the scroll.
+    const move = (id) => page.evaluate((id) => getComputedStyle(document.querySelector(`#${id} .art-move`)).translate, id);
+    const before = await move('Art-mark');
+    await page.mouse.wheel(0, 320);
+    await page.waitForTimeout(400);
+    const after = await move('Art-mark');
+    assert(before !== after, 'art: depth piece did not move with scroll', { before, after });
+    // Shy: eases away from a nearby pointer.
+    await page.evaluate(() => document.getElementById('Art-shy').scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(300);
+    const shyBox = await page.locator('#Art-shy').boundingBox();
+    await page.mouse.move(shyBox.x - 40, shyBox.y + shyBox.height / 2, { steps: 4 });
+    await page.waitForTimeout(400);
+    assert(await move('Art-shy') !== 'none', 'art: shy piece ignored the pointer');
+    // Spin reacts to a click and reports it.
+    await page.evaluate(() => document.getElementById('Art-spin').scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(300);
+    const spinBox = await page.locator('#Art-spin').boundingBox();
+    const reported = page.evaluate(() => new Promise((resolve) => document.addEventListener('rizo:art', (event) => resolve(event.detail.kind), { once: true })));
+    await page.mouse.click(spinBox.x + spinBox.width / 2, spinBox.y + spinBox.height / 2);
+    assert(await reported === 'touch', 'art: spin did not react to a click');
+    // Settle: hidden only until seen.
+    await page.evaluate(() => document.getElementById('Art-event').scrollIntoView({ block: 'center' }));
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('#Art-event .art-move')).opacity === '1', null, { timeout: 4000 });
+    await page.screenshot({ path: path.join(out, 'art-1440.png') });
+    await page.close();
+
+    ({ page, r } = await layout(1440, 900, 'set.event_layer=off'));
+    assert(!r.event.shown && r.normal.shown, 'art: event-only pieces wrong with no event', r);
+    await page.close();
+
+    ({ page, r } = await layout(390, 844, 'rizo_event=on'));
+    assert(r.overflow <= 0, 'art: phone overflow', r);
+    assert(r.phone.shown && !r.desk.shown && r.phone.z === '6', 'art: phone visibility wrong', r);
+    assert(/rizo-ember/.test(r.src), 'art: phone version not used on phones', r.src);
+    await page.screenshot({ path: path.join(out, 'art-390.png') });
+    // A tap on the Shop button under a front piece still shops.
+    const overlap = await page.evaluate(() => { const a = document.getElementById('Art-phone').getBoundingClientRect(); const b = document.querySelector('.hero-actions .btn--solid').getBoundingClientRect(); return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top; });
+    assert(overlap, 'art: fixture piece no longer covers the Shop button');
+    const shop = await page.locator('.hero-actions .btn--solid').boundingBox();
+    await Promise.all([page.waitForURL(/\/collections\/all/, { timeout: 5000 }), page.mouse.click(shop.x + 12, shop.y + shop.height / 2)]);
+    await page.close();
+
+    // Reduced motion: nothing moves, everything is visible.
+    page = await newPage(1440, 900, { reducedMotion: 'reduce' });
+    await page.goto(`${base}/?fixture=art&rizo_event=on&rizo_event_governor=off`, { waitUntil: 'networkidle' });
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(400);
+    const still = await page.evaluate(() => [...document.querySelectorAll('.art-move')].every((el) => { const cs = getComputedStyle(el); return cs.translate === 'none' && cs.opacity === '1' && cs.animationName === 'none'; }));
+    assert(still, 'art: moves under reduced motion');
+    await page.close();
+
+    // No JavaScript: every piece is still placed and visible.
+    page = await newPage(1440, 900, { javaScriptEnabled: false });
+    await page.goto(`${base}/?fixture=art&set.event_layer=off`, { waitUntil: 'networkidle' });
+    const noScript = await page.evaluate(() => ({ settle: getComputedStyle(document.querySelector('#Art-event .art-move')).opacity, face: document.getElementById('Art-face').getBoundingClientRect().width }));
+    assert(noScript.face > 0 && noScript.settle === '1', 'art: hidden or unplaced without JavaScript', noScript);
+    await page.close();
+
+    // Theme editor: placeholder, reloads, selection.
+    page = await newPage(1440, 900);
+    await page.goto(`${base}/?fixture=art&design_mode=1&rizo_event_governor=off`, { waitUntil: 'networkidle' });
+    assert(await page.locator('.art-empty').count() === 1, 'art: empty block has no placeholder in the editor');
+    const first = await page.evaluate(() => window.RizoArt.stats().pieces);
+    for (let index = 0; index < 8; index += 1) {
+      await page.evaluate(async () => {
+        const html = await (await fetch('/?fixture=art&design_mode=1&section_id=hero')).text();
+        const old = document.getElementById('shopify-section-hero');
+        old.dispatchEvent(new CustomEvent('shopify:section:unload', { bubbles: true }));
+        const holder = document.createElement('div');
+        holder.innerHTML = html;
+        const fresh = holder.firstElementChild;
+        old.replaceWith(fresh);
+        fresh.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true }));
+      });
+    }
+    assert(await page.evaluate(() => window.RizoArt.stats().pieces) === first, 'art: pieces leaked across editor reloads');
+    await page.evaluate(() => document.getElementById('Art-mark').dispatchEvent(new CustomEvent('shopify:block:select', { bubbles: true })));
+    await page.mouse.wheel(0, 300);
+    await page.waitForTimeout(300);
+    assert(await page.evaluate(() => getComputedStyle(document.querySelector('#Art-mark .art-move')).translate) === 'none', 'art: selected piece keeps moving');
+    assert(page.errors.length === 0, `art editor: ${page.errors.join('; ')}`);
+    await page.close();
+    interactions.push('art: layers per device, event-only pieces, depth, shy, spin, settle, tap-through on phones, reduced motion, no-JS, editor reloads x8 and selection');
+  }
+
+  /* Phone versions of photos, focal points, and Objects widths on phones. */
+  for (const [width, height] of [[1440, 900], [390, 844]]) {
+    const page = await newPage(width, height);
+    await page.goto(`${base}/?fixture=phone&set.event_layer=off`, { waitUntil: 'networkidle' });
+    for (let y = 0; y < 5000; y += 500) { await page.evaluate((to) => window.scrollTo(0, to), y); await page.waitForTimeout(60); }
+    const r = await page.evaluate(() => {
+      const story = document.querySelector('.story-photo img');
+      return { story: story.currentSrc, focal: getComputedStyle(story).objectPosition, gallery: document.querySelector('.gallery-item img').currentSrc, objects: [...document.querySelectorAll('.artifact')].map((el) => Math.round(el.getBoundingClientRect().width)), overflow: document.documentElement.scrollWidth - innerWidth };
+    });
+    if (width < 750) {
+      assert(/circle-pink/.test(r.story) && r.focal === '40% 20%' && /stadium/.test(r.gallery), 'phone versions not used on phones', r);
+      assert(r.objects[0] < r.objects[1] && r.objects[1] < r.objects[2] + 1, 'Objects: phone widths not applied', r);
+    } else {
+      assert(/founder-mural/.test(r.story) && r.focal === '50% 30%' && /underpass/.test(r.gallery), 'desktop photos replaced by phone versions', r);
+    }
+    assert(r.overflow <= 0 && page.errors.length === 0, `phone fixture at ${width}`, r);
+    await page.close();
+  }
+  interactions.push('phone versions: story, photographs, focal points, Objects widths');
+
+  /* The moon placed by hand for one page (Hero → Moon on this page). */
+  {
+    const place = 'section.rizo-hero.moon_custom=true&section.rizo-hero.moon_x=20&section.rizo-hero.moon_y=30&section.rizo-hero.moon_size=20&section.rizo-hero.moon_mobile_x=50&section.rizo-hero.moon_mobile_y=60&section.rizo-hero.moon_mobile_size=40';
+    for (const [width, height, x, y] of [[1440, 900, 20, 30], [390, 844, 50, 60]]) {
+      const page = await newPage(width, height);
+      await page.goto(`${base}/?rizo_event=on&rizo_event_governor=off&set.event_moon_motion=false&${place}`, { waitUntil: 'networkidle' });
+      const at = await page.evaluate(() => { const b = document.querySelector('[data-rizo-event-moon]').getBoundingClientRect(); return [Math.round((b.x + b.width / 2) / innerWidth * 100), Math.round((b.y + b.height / 2) / innerHeight * 100)]; });
+      assert(at[0] === x && at[1] === y, `moon not placed by hand at ${width}`, at);
+      await page.close();
+    }
+    interactions.push('moon placed by hand, separately on phones');
+  }
+
   console.log(`PASS interactions: ${interactions.join('; ')}`);
   fs.writeFileSync(path.join(root, 'docs/DESIGN-CHECKS.json'), JSON.stringify({ checkedAt: new Date().toISOString(), environment: 'Chromium, local Liquid preview, catalog snapshot, simulated commerce', results, interactions }, null, 2) + '\n');
 } finally {

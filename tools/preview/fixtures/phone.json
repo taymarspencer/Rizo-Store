@@ -1,0 +1,28 @@
+{
+  "sections": {
+    "story": {
+      "type": "rizo-story",
+      "settings": { "image": "rizo-founder-mural.webp#50,30", "image_mobile": "rizo-circle-pink.webp#40,20", "show_pocket": false }
+    },
+    "gallery": {
+      "type": "rizo-gallery",
+      "blocks": {
+        "one": { "type": "photo", "settings": { "builtin_image": "underpass", "image_mobile": "rizo-412-stadium.webp" } },
+        "two": { "type": "photo", "settings": { "builtin_image": "circle_night" } }
+      },
+      "block_order": ["one", "two"],
+      "settings": {}
+    },
+    "objects": {
+      "type": "rizo-artifacts",
+      "blocks": {
+        "a": { "type": "object", "settings": { "builtin_image": "sketch", "material": "paper", "span": 5, "place": "left", "mobile_span": "3" } },
+        "b": { "type": "object", "settings": { "builtin_image": "face_white", "material": "object", "span": 3, "place": "center", "mobile_span": "4" } },
+        "c": { "type": "object", "settings": { "builtin_image": "mark_412", "material": "print", "span": 4, "place": "right" } }
+      },
+      "block_order": ["a", "b", "c"],
+      "settings": {}
+    }
+  },
+  "order": ["story", "gallery", "objects"]
+}

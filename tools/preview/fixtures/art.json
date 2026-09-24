@@ -1,0 +1,52 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rizo-hero",
+      "blocks": {
+        "face": { "type": "art", "settings": { "image": "rizo-face-white.png", "x": 14, "y": 24, "size": 12, "rotate": -15, "layer": "front", "motion": "float", "strength": 60, "mobile_x": 18, "mobile_y": 14, "mobile_size": 26, "name": "hero-face" } },
+        "mark": { "type": "art", "settings": { "image": "rizo-412-mark.webp", "image_mobile": "rizo-ember.png", "x": 46, "y": 70, "size": 18, "opacity": 60, "blend": "screen", "motion": "depth", "strength": 80, "mobile_x": 82, "mobile_y": 50, "mobile_size": 34 } },
+        "phone": { "type": "art", "settings": { "image": "rizo-shadow.png", "show": "phone", "mobile_x": 12, "mobile_y": 92, "mobile_size": 30, "rotate": 20, "layer": "front" } },
+        "desk": { "type": "art", "settings": { "image": "rizo-logo.png", "show": "desktop", "x": 92, "y": 90, "size": 6, "layer": "back-front", "motion": "wobble", "strength": 80 } }
+      },
+      "block_order": ["face", "mark", "phone", "desk"],
+      "settings": {}
+    },
+    "story": {
+      "type": "rizo-story",
+      "blocks": {
+        "shy": { "type": "art", "settings": { "image": "rizo-face-white.png", "x": 94, "y": 18, "size": 8, "layer": "front", "motion": "shy", "strength": 100, "mobile_x": 88, "mobile_y": 4, "mobile_size": 18 } },
+        "edge": { "type": "art", "settings": { "image": "rizo-origin-sketch.webp", "x": 50, "y": 104, "size": 30, "rotate": -5, "layer": "front", "mobile_x": 50, "mobile_y": 102, "mobile_size": 60 } }
+      },
+      "block_order": ["shy", "edge"],
+      "settings": { "surface": "solid" }
+    },
+    "interlude": {
+      "type": "rizo-interlude",
+      "blocks": {
+        "event": { "type": "art", "settings": { "image": "rizo-ember.png", "x": 30, "y": 50, "size": 10, "when": "event", "motion": "settle", "strength": 100 } },
+        "normal": { "type": "art", "settings": { "image": "rizo-logo.png", "x": 70, "y": 50, "size": 10, "when": "normal" } }
+      },
+      "block_order": ["event", "normal"],
+      "settings": { "line": "Open sky" }
+    },
+    "gallery": {
+      "type": "rizo-gallery",
+      "blocks": {
+        "one": { "type": "photo", "settings": { "builtin_image": "underpass" } },
+        "spin": { "type": "art", "settings": { "image": "rizo-ember.png", "x": 60, "y": 12, "size": 7, "layer": "front", "motion": "spin", "strength": 50, "mobile_x": 70, "mobile_y": 6, "mobile_size": 16 } },
+        "two": { "type": "photo", "settings": { "builtin_image": "circle_night" } }
+      },
+      "block_order": ["one", "spin", "two"],
+      "settings": { "heading": "The circle" }
+    },
+    "text": {
+      "type": "rizo-text",
+      "blocks": {
+        "empty": { "type": "art", "settings": { "x": 80, "y": 50, "size": 12 } }
+      },
+      "block_order": ["empty"],
+      "settings": { "style": "statement", "body": "<p>Placed, not pasted.</p>" }
+    }
+  },
+  "order": ["hero", "story", "interlude", "gallery", "text"]
+}

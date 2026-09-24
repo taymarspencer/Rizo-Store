@@ -92,7 +92,8 @@
     const limit = () => {
       const base = LIMITS[state.tier] || LIMITS.mobile;
       const degrade = state.degrade >= 2 ? .5 : 1;
-      return density() > 0 ? Math.max(1, Math.round(base * density() * degrade)) : 0;
+      const phone = config.phone === 'lighter' && state.tier !== 'desktop' ? .5 : 1; // "On phones: Lighter"
+      return density() > 0 ? Math.max(1, Math.round(base * density() * degrade * phone)) : 0;
     };
     const paused = () => destroyed || state.reduced || state.overlayOpen || state.motionScale <= 0 || !behavior;
 

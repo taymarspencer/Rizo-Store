@@ -1,0 +1,73 @@
+{%- comment -%}
+  Art layers for a section: uploaded drawings, stickers, scans, textures,
+  torn paper, photos. Each "Art" block in the section becomes one piece,
+  placed by percentage inside the section, separately on desktop and phones.
+
+    {% render 'rizo-art', section: section %}
+
+  Render it as the FIRST child of the section's positioned element. Pieces
+  "behind the content" sit above the section's own background and under
+  its content; pieces "in front" sit over the content and may hang into the
+  next section. Pieces never take clicks or focus (touch reactions are
+  hit-tested in assets/rizo-art.js) and are hidden from screen readers.
+
+  Nothing renders when the section has no art blocks. A piece without an
+  image renders nothing on the live site, and a dashed box in the editor.
+{%- endcomment -%}
+{%- liquid
+  assign art_blocks = section.blocks | where: 'type', 'art'
+  assign art_eager = false
+  if section.index == 1
+    assign art_eager = true
+  endif
+  assign art_widths = '360,540,720,960,1200,1600,2000' | split: ','
+-%}
+{%- if art_blocks.size > 0 -%}
+  <div class="art" data-art-layer>
+    {%- for block in art_blocks -%}
+      {%- liquid
+        assign b = block.settings
+        assign desk = b.image | default: b.image_mobile
+        assign phone = b.image_mobile | default: b.image
+        assign render_piece = true
+        if desk == blank and request.design_mode != true
+          assign render_piece = false
+        endif
+        assign loading = 'lazy'
+        comment
+          Eager only in the first section, and only for pieces every device
+          shows: a hidden lazy image is never downloaded.
+        endcomment
+        if art_eager and b.show == 'all'
+          assign loading = 'eager'
+        endif
+        assign k = b.strength | divided_by: 100.0
+        assign desk_sizes = b.size | append: 'vw'
+        assign both_sizes = '(max-width: 749px) ' | append: b.mobile_size | append: 'vw, ' | append: b.size | append: 'vw'
+      -%}
+      {%- if render_piece -%}
+        <div class="art-piece" id="Art-{{ block.id }}" data-layer="{{ b.layer }}" data-show="{{ b.show }}" data-when="{{ b.when }}" data-motion="{{ b.motion }}"{% if b.blend != 'normal' %} data-blend="{{ b.blend }}"{% endif %}{% if b.name != blank %} data-art="{{ b.name | handle }}"{% endif %} style="--x: {{ b.x }}; --y: {{ b.y }}; --s: {{ b.size }}; --mx: {{ b.mobile_x }}; --my: {{ b.mobile_y }}; --ms: {{ b.mobile_size }}; --r: {{ b.rotate }}deg; --o: {{ b.opacity | divided_by: 100.0 }}; --k: {{ k }}; --i: {{ forloop.index }}" aria-hidden="true" {{ block.shopify_attributes }}>
+          <div class="art-move">
+            {%- if desk == blank -%}
+              <span class="art-empty">Art: choose an image</span>
+            {%- elsif phone.src != desk.src -%}
+              {%- capture phone_srcset -%}
+                {%- for w in art_widths -%}
+                  {%- assign pw = w | plus: 0 -%}
+                  {%- if pw < phone.width -%}{{ phone | image_url: width: pw }} {{ pw }}w,{%- endif -%}
+                {%- endfor -%}
+                {%- if phone.width < 2000 -%}{{ phone | image_url: width: phone.width }} {{ phone.width }}w{%- else -%}{{ phone | image_url: width: 2000 }} 2000w{%- endif -%}
+              {%- endcapture -%}
+              <picture>
+                <source media="(max-width: 749px)" srcset="{{ phone_srcset | strip }}" sizes="{{ b.mobile_size }}vw" width="{{ phone.width }}" height="{{ phone.height }}">
+                {{ desk | image_url: width: 2000 | image_tag: loading: loading, decoding: 'async', widths: '360,540,720,960,1200,1600,2000', sizes: desk_sizes, alt: '', draggable: 'false' }}
+              </picture>
+            {%- else -%}
+              {{ desk | image_url: width: 2000 | image_tag: loading: loading, decoding: 'async', widths: '360,540,720,960,1200,1600,2000', sizes: both_sizes, alt: '', draggable: 'false' }}
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}

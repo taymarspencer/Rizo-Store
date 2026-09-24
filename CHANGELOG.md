@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-09 · Engineering pass: art, phones, events
+
+No visual redesign. Details in `ENGINEERING-NOTES.md`.
+
+- **Art layers:** an *Art* block in 16 sections. Upload, place, turn, fade,
+  blend, put behind or in front of the content; separate image, placement
+  and visibility on phones; float, sway, depth, settle, shy, wobble, spin;
+  show only during (or outside) an event. Never takes a tap, never widens
+  the page.
+- **Phones:** separate images and focal-point crops for Story,
+  Photographs and Objects; Objects width on phones; the moon placed by hand
+  per page, separately on phones.
+- **Event Layer:** *On phones* (lighter, or sky only), colour overrides,
+  the bat sprite from the preset instead of hard-coded, `rizo-event:start`.
+- **Stability:** one `requestAnimationFrame` per frame for the whole
+  theme, one low-power rule (rizo.js used to flag every 4-core device), an
+  editor lifecycle for art, older-Safari fallbacks (the sky disappeared
+  before Safari 15.4), the product zoom button visible on touch (it was an
+  invisible tap target), hover effects that no longer stick after a tap,
+  the uploaded image's own alt text now used as a fallback, dead code removed.
+- **Tests:** 39 Event Layer checks, art/phone/moon checks in the design
+  suite, and `npm run check` fails if a section's Art block drifts.
+
 ## 2026-09 · Creative overhaul
 
 Rizo is now one design system under one living night sky. Every page,

@@ -68,7 +68,7 @@ html.rizo-event--paused .rizo-event-stage--front { opacity: 0; transition: opaci
   position: absolute; left: var(--moon-x); top: var(--moon-y);
   width: var(--moon-size); aspect-ratio: 1;
   translate: calc(var(--rizo-moon-dx, 0) * 1px) calc(var(--rizo-moon-dy, 0) * 1px);
-  transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 30lvh)) scale(calc(1 + var(--rizo-moon-set, 0) * .16));
+  transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 30vh)) scale(calc(1 + var(--rizo-moon-set, 0) * .16));
   will-change: transform;
   view-transition-name: rizo-moon;
 }
@@ -83,7 +83,16 @@ html.rizo-event--paused .rizo-event-stage--front { opacity: 0; transition: opaci
   background: radial-gradient(closest-side, rgb(var(--rizo-event-halo-rgb) / var(--rizo-moon-halo, .12)), rgb(var(--rizo-event-halo-rgb) / 0) 100%);
 }
 @media (max-width: 749px) {
-  .rizo-event-moon { transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 22lvh)) scale(calc(1 + var(--rizo-moon-set, 0) * .12)); }
+  .rizo-event-moon { transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 22vh)) scale(calc(1 + var(--rizo-moon-set, 0) * .12)); }
+}
+/* lvh (Safari 15.4+) keeps the set steady while the toolbar collapses. A
+   plain fallback line can't work here: with var() in the value the older
+   browser only fails after cascade, so the newer unit sits behind @supports. */
+@supports (height: 1lvh) {
+  .rizo-event-moon { transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 30lvh)) scale(calc(1 + var(--rizo-moon-set, 0) * .16)); }
+  @media (max-width: 749px) {
+    .rizo-event-moon { transform: translate(-50%, -50%) translateY(calc(var(--rizo-moon-set, 0) * 22lvh)) scale(calc(1 + var(--rizo-moon-set, 0) * .12)); }
+  }
 }
 
 /* 6 · Fog --------------------------------------------------------------------

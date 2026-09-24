@@ -1,4 +1,4 @@
-// Rizo Portal — local preview harness.
+// Rizo — local preview harness.
 //
 // Renders the real theme files (layout, JSON templates, sections, snippets)
 // with liquidjs plus a small set of Shopify filters/tags, and mocks the
@@ -17,7 +17,12 @@
 //   ?design_mode=1              render as the theme editor would (request.design_mode)
 //   ?section_id=<id>            Section Rendering API: return one section's HTML
 //   ?sections=<type>,<type>     render an ad-hoc page from section types (schema
-//                               defaults), e.g. ?sections=rizo-live-hero,rizo-live-products
+//                               defaults), e.g. ?sections=rizo-hero,rizo-story
+//   ?fixture=<name>             render tools/preview/fixtures/<name>.json instead
+//                               of the route's template (e.g. ?fixture=art).
+//                               Image pickers take theme asset file names:
+//                               "rizo-ember.png" or "rizo-ember.png#30,70"
+//                               (with a focal point).
 
 import http from 'node:http';
 import fs from 'node:fs';
@@ -47,8 +52,39 @@ const image = (file, width, height, alt = '') => ({
   height,
   aspect_ratio: width / height,
   alt,
+  presentation: { focal_point: '50.0% 50.0%' },
   toString() { return this.src; }
 });
+
+/* Shopify colour settings are objects: {{ c }} prints hex, c.red etc. */
+const colour = (hex) => {
+  const value = hex.replace('#', '');
+  const [red, green, blue] = [0, 2, 4].map((i) => parseInt(value.slice(i, i + 2), 16) || 0);
+  return { red, green, blue, alpha: 1, hex: `#${value}`, toString() { return this.hex; } };
+};
+
+/* Real pixel size of a theme asset (PNG or WebP), so image pickers in the
+   preview behave like uploads. Anything else falls back to 800x800. */
+const assetSize = (file) => {
+  try {
+    const data = fs.readFileSync(path.join(THEME, 'assets', file));
+    if (data.toString('ascii', 1, 4) === 'PNG') return [data.readUInt32BE(16), data.readUInt32BE(20)];
+    if (data.toString('ascii', 0, 4) === 'RIFF' && data.toString('ascii', 8, 12) === 'WEBP') {
+      const chunk = data.toString('ascii', 12, 16);
+      if (chunk === 'VP8X') return [1 + data.readUIntLE(24, 3), 1 + data.readUIntLE(27, 3)];
+      if (chunk === 'VP8 ') return [data.readUInt16LE(26) & 0x3fff, data.readUInt16LE(28) & 0x3fff];
+      if (chunk === 'VP8L') { const bits = data.readUInt32LE(21); return [1 + (bits & 0x3fff), 1 + ((bits >> 14) & 0x3fff)]; }
+    }
+  } catch (error) { /* not an asset */ }
+  return [800, 800];
+};
+// Image picker values in fixtures: "file.png" or "file.png#30,70" (focal point %).
+const pickedImage = (raw) => {
+  const [file, focal] = String(raw).split('#');
+  const picked = image(file, ...assetSize(file), '');
+  if (focal) { const [x, y] = focal.split(','); picked.presentation = { focal_point: `${Number(x).toFixed(1)}% ${Number(y).toFixed(1)}%` }; }
+  return picked;
+};
 
 const PHOTOS = [
   image('rizo-founder-full-fit.webp', 900, 1200, 'Model wearing a black Rizo fit'),
@@ -274,7 +310,8 @@ const coerce = (definition, raw) => {
     case 'checkbox': return raw === true || raw === 'true' || raw === '1';
     case 'range':
     case 'number': return Number(raw);
-    case 'image_picker': return raw ? image(String(raw), 800, 800, '') : null;
+    case 'image_picker': return raw ? (typeof raw === 'object' ? raw : pickedImage(raw)) : null;
+    case 'color': return raw ? colour(String(raw)) : null;
     case 'link_list': return menu(String(raw)) || null;
     case 'collection': return raw ? COLLECTION_ALL : null;
     case 'product': return raw ? productByHandle(raw) || null : null;
@@ -341,7 +378,7 @@ engine.registerFilter('image_tag', (src, ...args) => {
     const base = String(src).split('?')[0];
     attrs.push(`srcset="${String(out.widths).split(',').map((w) => `${base}?width=${w.trim()} ${w.trim()}w`).join(', ')}"`);
   }
-  for (const key of ['sizes', 'loading', 'fetchpriority', 'class', 'width', 'height', 'id']) if (out[key] !== undefined && out[key] !== null) attrs.push(`${key}="${escapeAttr(out[key])}"`);
+  for (const [key, value] of Object.entries(out)) if (!['widths', 'alt', 'preload'].includes(key) && value !== undefined && value !== null) attrs.push(`${key}="${escapeAttr(value)}"`);
   attrs.push(`alt="${escapeAttr(out.alt ?? '')}"`);
   return `<img ${attrs.join(' ')}>`;
 });
@@ -354,6 +391,13 @@ engine.registerFilter('money_with_currency', (cents) => `$${(Number(cents || 0) 
 engine.registerFilter('money_without_currency', (cents) => (Number(cents || 0) / 100).toFixed(2));
 const handleize = (value) => String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 engine.registerFilter('handle', handleize);
+const shift = (value, amount) => {
+  const c = typeof value === 'object' && value ? value : colour(String(value || '#000000'));
+  const to = (n) => Math.max(0, Math.min(255, Math.round(n + 2.55 * amount))).toString(16).padStart(2, '0');
+  return `#${to(c.red)}${to(c.green)}${to(c.blue)}`;
+};
+engine.registerFilter('color_lighten', (value, amount) => shift(value, Number(amount) || 0));
+engine.registerFilter('color_darken', (value, amount) => shift(value, -(Number(amount) || 0)));
 engine.registerFilter('handleize', handleize);
 engine.registerFilter('default_errors', () => 'Please check the form and try again.');
 engine.registerFilter('default_pagination', () => '');
@@ -499,7 +543,7 @@ class RequestContext {
     this.globals = globals;
   }
 
-  async renderSection(id, type, data) {
+  async renderSection(id, type, data, index = null) {
     if (!exists(`sections/${type}.liquid`)) return `<!-- missing section ${type} -->`;
     const schema = sectionSchema(type);
     const blockOrder = data.block_order || Object.keys(data.blocks || {});
@@ -513,7 +557,7 @@ class RequestContext {
       const prefix = `section.${type}.`;
       if (key.startsWith(prefix)) values[key.slice(prefix.length)] = value;
     }
-    const section = { id, settings: withDefaults(schema.settings, values), blocks, index: 1 };
+    const section = { id, settings: withDefaults(schema.settings, values), blocks, index };
     const html = await engine.parseAndRender(read(`sections/${type}.liquid`), { section }, { globals: { ...this.globals, __request: this } });
     const tag = schema.tag || 'div';
     return `<${tag} id="shopify-section-${id}" class="shopify-section${schema.class ? ` ${schema.class}` : ''}">${html}</${tag}>`;
@@ -530,12 +574,14 @@ class RequestContext {
     const adHoc = this.url.searchParams.get('sections');
     const template = adHoc
       ? { sections: Object.fromEntries(adHoc.split(',').map((type, index) => [`adhoc-${index}`, { type: type.trim(), settings: type.trim() === 'rizo-live-products' ? { collection: 'all' } : {} }])), order: adHoc.split(',').map((_, index) => `adhoc-${index}`) }
-      : readJSON(`templates/${this.template}.json`);
+      : this.fixture ? JSON.parse(fs.readFileSync(path.join(HERE, 'fixtures', `${this.fixture}.json`), 'utf8')) : readJSON(`templates/${this.template}.json`);
     const out = [];
+    let index = 0;
     for (const id of template.order) {
       if (template.sections[id].disabled) continue;
+      index += 1;
       if (onlyId && id !== onlyId) continue;
-      out.push(await this.renderSection(id, template.sections[id].type, template.sections[id]));
+      out.push(await this.renderSection(id, template.sections[id].type, template.sections[id], index));
     }
     return out.join('\n');
   }
@@ -685,6 +731,10 @@ const server = http.createServer(async (req, res) => {
       current_page: 1
     };
     const request = new RequestContext({ url, sid, pageType: route.pageType, template: templateName, globals });
+    // ?fixture=name renders tools/preview/fixtures/name.json in place of the
+    // route's template (test compositions that don't belong in the theme).
+    const fixture = url.searchParams.get('fixture');
+    if (fixture && /^[a-z0-9-]+$/.test(fixture) && fs.existsSync(path.join(HERE, 'fixtures', `${fixture}.json`))) request.fixture = fixture;
 
     const sectionId = url.searchParams.get('section_id');
     if (sectionId) return send(res, 200, await request.renderTemplateSections(sectionId));

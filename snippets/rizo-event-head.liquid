@@ -22,6 +22,7 @@
   {%- capture ev_flock_behavior -%}{% render 'rizo-event-value', key: 'flock_behavior' %}{%- endcapture -%}
   {%- capture ev_flock_sprites -%}{% render 'rizo-event-value', key: 'flock_sprites' %}{%- endcapture -%}
   {%- capture ev_roost_sprite -%}{% render 'rizo-event-value', key: 'roost_sprite' %}{%- endcapture -%}
+  {%- capture ev_flyer_sheet -%}{% render 'rizo-event-value', key: 'flyer_sheet' %}{%- endcapture -%}
   {%- capture ev_night -%}{% render 'rizo-event-value', key: 'feature', feature: 'night' %}{%- endcapture -%}
   {%- capture ev_moon -%}{% render 'rizo-event-value', key: 'feature', feature: 'moon' %}{%- endcapture -%}
   {%- capture ev_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'fog' %}{%- endcapture -%}
@@ -40,18 +41,37 @@
   {%- if ev_stylesheet != blank %}
   {{ ev_stylesheet | asset_url | stylesheet_tag }}
   {%- endif %}
+  {%- assign ev_flyer_sheet = ev_flyer_sheet | strip -%}
+  {%- assign ev_roost_sprite = ev_roost_sprite | strip -%}
   <style>
     html.rizo-event {
       --rizo-event-night: {{ settings.event_night_intensity | divided_by: 100.0 }};
       --rizo-event-motion: {{ settings.event_motion | divided_by: 100.0 }};
-      {%- if ev_flock_on and ev_flock_sprites != '[]' %}
-      --rizo-flyer-sheet: url("{{ 'event-halloween-bat-a.svg' | asset_url }}");
+      {%- if ev_flock_on and ev_flyer_sheet != blank %}
+      --rizo-flyer-sheet: url("{{ ev_flyer_sheet }}");
       {%- endif %}
-      {%- assign ev_roost_sprite = ev_roost_sprite | strip -%}
       {%- if ev_roost_sprite != blank %}
       --rizo-roost-sheet: url("{{ ev_roost_sprite }}");
       {%- endif %}
     }
+    {%- comment -%} Editor colour overrides beat the preset's own tokens (same specificity, later). {%- endcomment -%}
+    {%- if settings.event_sky_color != blank or settings.event_fog_color != blank or settings.event_glow_color != blank %}
+    html.rizo-event[data-rizo-event] {
+      {%- if settings.event_sky_color != blank %}
+      --rizo-event-sky-top: {{ settings.event_sky_color }};
+      --rizo-event-sky-low: {{ settings.event_sky_color | color_lighten: 6 }};
+      {%- endif %}
+      {%- if settings.event_fog_color != blank %}
+      {%- assign fog = settings.event_fog_color %}
+      --rizo-event-fog-rgb: {{ fog.red }} {{ fog.green }} {{ fog.blue }};
+      --rizo-event-fog-back-rgb: {{ fog.red | times: 0.54 | round }} {{ fog.green | times: 0.56 | round }} {{ fog.blue | times: 0.6 | round }};
+      {%- endif %}
+      {%- if settings.event_glow_color != blank %}
+      {%- assign glow = settings.event_glow_color %}
+      --rizo-event-halo-rgb: {{ glow.red }} {{ glow.green }} {{ glow.blue }};
+      {%- endif %}
+    }
+    {%- endif %}
   </style>
   <script type="application/json" id="RizoEventConfig">
     {
@@ -95,6 +115,7 @@
         "sprites": {{ ev_flock_sprites }},
         "roostSprite": {{ ev_roost_sprite | json }}
       },
+      "phone": {{ settings.event_phone | default: 'same' | json }},
       "quietSelectors": "[data-rizo-event-quiet], .pdp, .cart-page",
       "scripts": {
         "engine": {{ 'rizo-event-layer.js' | asset_url | json }},
@@ -172,6 +193,10 @@
         root.setAttribute('data-rizo-event', config.id);
         load(config.scripts.engine);
         var reduced = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        /* "On phones: sky, moon and countdown only" drops fog and bats before
+           anything loads; the engine reads the same flag for fog. */
+        var phoneQuiet = config.phone === 'off' && win.matchMedia && win.matchMedia('(max-width: 749px)').matches;
+        if (phoneQuiet) { config.features.fog = false; config.features.flock = false; root.classList.add('rizo-event--phone-quiet'); }
         if (config.features.flock && !reduced && config.motion.intensity > 0) config.scripts.flock.forEach(load);
         boot.flockLoaded = config.features.flock && !reduced && config.motion.intensity > 0;
       }

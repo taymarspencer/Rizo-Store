@@ -25,12 +25,21 @@ mark where the moon would be.
 | **Start / End** | ISO date/time. Blank = the preset's own window. Halloween: **Sep 23 2026 12:00 AM → Nov 1 2026 6:00 AM, New York time.** A value without an offset is read in the event's timezone, never the visitor's. |
 | **Always preview in the theme editor** | The editor shows the event even outside its window. Customers still follow the schedule. |
 | **Announcement during the event** | A line above the header, only while the event is live. |
+| **On phones** | *Same as desktop*; *Lighter* (half the bats, 60% of the fog); *Sky, moon and countdown only* (bat scripts are never requested, no fog). |
+| **Colour** | Night sky, Fog, Moonlight glow. Blank uses the preset's colours (`assets/event-<id>.css`). |
 
 Preview in a normal tab: `?rizo_event=on` (persists for the tab), `?rizo_event=off`,
 `?rizo_event=clear` (back to the schedule).
 
 Every module has its own switch (night sky, moon, fog, bats, countdown).
 Fog density 0% or bat count 0% remove those modules too.
+
+**Moon on one page:** the Hero and Page title sections have *Moon on this
+page → Place the moon by hand* (desktop and phones separately). It
+overrides the route position below for that page only.
+
+**Art for the event:** any Art block (see `ENGINEERING-NOTES.md`) can be set
+to *When: only while a seasonal event is on* or *only when no event is on*.
 
 ---
 
@@ -95,7 +104,12 @@ Art direction lives in `assets/event-<id>.css` as custom properties on
 
 Where the moon hangs: `--moon-x`, `--moon-y`, `--moon-size` per route in
 `assets/rizo.css` (§6 Sky positions). Pages made in Shopify admin vary
-automatically with the page id (`--seed`).
+automatically with the page id (`--seed`). A section can override it for its
+page (`snippets/rizo-moon-place.liquid`).
+
+The three colour settings write `--rizo-event-sky-top/-low`,
+`--rizo-event-fog-rgb` (and a darker `-fog-back-rgb`) and
+`--rizo-event-halo-rgb` after the preset's stylesheet.
 
 Per-section fog: every section has a **Fog** setting in the editor
 (`data-fog`), and *Open sky* has **Where fog collects** (`data-fog-bias`).
@@ -107,7 +121,7 @@ Per-section fog: every section has a **Fog** setting in the editor
 | Art | File | Notes |
 |---|---|---|
 | Moon | `event-halloween-moon.webp` (or *Moon artwork* setting) | Square, transparent, disc filling the frame (centre 488, radius 487 of 1000 — the phase mask assumes this). No baked glow. |
-| Bats | `event-halloween-bat-a.svg`, `-bat-b.svg` | Flight sheets: 4 frames of 120×84 side by side (wings up → level → down → level). Listed in `snippets/event-halloween.liquid → flock_sprites` with `"frames"` and `"ratio"`. |
+| Bats | `event-halloween-bat-a.svg`, `-bat-b.svg` | Flight sheets: 4 frames of 120×84 side by side (wings up → level → down → level). Listed in `snippets/event-halloween.liquid → flock_sprites` with `"frames"` and `"ratio"`; `flyer_sheet` names the one the roosting bat arrives on. |
 | Roost | `event-halloween-bat-roost.svg` | 3 frames of 64×96: wrapped (the folded wing edges cross into an X), looking, stretching. Hangs from its top edge. |
 
 The bats were drawn from one skeleton (shoulder, elbow, wrist, three finger
@@ -130,7 +144,8 @@ is a mirror of the other. A thin moonlit edge sits on the leading edge only.
    scatter) or `RizoEventLayer.define(name, factory)` for a module.
 
 Pool, limits, input safety, reduced motion, quiet zones, the sky, the fog
-field and cleanup come from the engine.
+field and cleanup come from the engine. Code outside the layer can listen
+for `rizo-event:start` and `rizo-event:end` on `document`.
 
 ---
 
@@ -139,13 +154,17 @@ field and cleanup come from the engine.
 - **Off:** zero event bytes, markup or script.
 - **Selected, outside the window:** ~7 KB inline boot/config plus the two
   event stylesheets (~11 KB). The runtime is never requested.
-- **Live:** ~382 KB uncompressed, of which the moon is 281 KB (cached across
+- **Live:** ~384 KB uncompressed, of which the moon is 281 KB (cached across
   pages). Scripts are async.
-- One `requestAnimationFrame` loop. It sleeps when nothing moves (no bats,
-  fog still or off, no scroll). Fog repaints every other frame at ~1/5
+- One frame task on the theme's shared frame (`window.RizoFrame`, inline in
+  `layout/theme.liquid`), which the art layers and header also use: the
+  whole theme makes one `requestAnimationFrame` request per frame (tested).
+  It sleeps when nothing moves (no bats, fog still or off, no scroll).
+- Weak devices (`html[data-low-power]`: Save-Data, ≤2 GB, ≤2 cores; decided
+  once in the head) start at the lite tier. Fog repaints every other frame at ~1/5
   resolution: about 0.1 megapixels of canvas on a 1440×900 screen.
 - Headless Chromium (CPU compositing, no GPU), scrolling the homepage:
-  desktop 60.5 fps off / 53.3 fps on; phone 60.5 / 60.3. The previous build
+  desktop 60.5 fps off / 57.8 fps on; phone 60.5 / 60.3. The previous build
   measured 51.8 / 20.5 on desktop in the same harness. Real devices composite
   on the GPU; check a physical iPhone before launch.
 
@@ -161,9 +180,9 @@ readers. Reduced motion is honoured live.
 ```
 cd tools && npm ci
 npm run preview:catalog   # http://localhost:9292/?rizo_event=on (real catalog snapshot)
-npm test                  # 37 event-layer checks
-npm run test:design       # hero at 8 sizes, every route, drawing, roost, moon, event off
-npm run check             # Shopify Theme Check (0 offenses)
+npm test                  # 39 event-layer checks
+npm run test:design       # hero at 8 sizes, every route, drawing, roost, moon, art layers, phone images
+npm run check             # Art block in sync + Shopify Theme Check (0 offenses)
 ```
 
 Preview helpers: `?set.<setting>=<value>`, `?section.<type>.<setting>=<value>`,
