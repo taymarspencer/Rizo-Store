@@ -1,0 +1,67 @@
+Rizo.game v85 — Handmade / Lame Test final verification
+Build: v85-handmade
+
+PHASE 1 — LAME TEST
+- Ember Beat retained as quality bar/headliner.
+- Power Tape rebuilt around called techniques + timing + restraint.
+- Spark Stash rebuilt around unbanked risk, manual BANK, spill risk, Spark Rush.
+- Forest Lunch rebuilt around growing tickets and Picnic Panic bursts.
+- Rizo Courier rebuilt around carry/clear/deliver package pressure.
+- Lost Signal rebuilt around transformable/stacked corruption rules.
+- Skybound deepened with Draft -> Thermal Burst precision loop.
+- Ember Forge rebuilt with authored wall patterns + functional Core collapse.
+- Rizo Runaway deepened with learned movement-habit ambush behavior.
+- Rain Walk and Defense retained because their existing exploration/strategy identities already justify themselves.
+- Player-facing patch-history labels removed.
+
+PHASE 2 — HANDMADE UI
+- Generic Tamagotchi/mobile-app shell replaced by field-unit / zine / back-room arcade grammar.
+- Hard-edge UI rule established; curves reserved for world art where appropriate.
+- Den becomes keeper camera; needs become instrument strip; care becomes physical keys.
+- Arcade becomes curated poster wall with Ember Beat headliner hierarchy.
+- Journal and House moved into the same authored material system.
+- Generic backup/modal furniture was caught during manual screenshot QA and rebuilt.
+- Final DOM roundness audit leaves large curves only in world/decor elements on inspected Home/Arcade/Journal/House surfaces.
+- New v84/v85 CSS layers contain zero !important declarations.
+- New CSS is part of the service worker's REQUIRED_SHELL so logic and art direction update atomically offline.
+
+FINAL VERIFICATION MATRIX
+- defense-core.test.js: 29/29
+- service-worker-policy.test.js: 4/4
+- static-defense-audit.py: 80/80
+- browser-launch-recovery.py: 5/5
+- browser-phase7-art.py: 43/43
+- browser-phase8-final.py: 17/17
+- browser-v74-route-fidelity.py: 19/19
+- browser-v75-arcade.py: 17/17
+- browser-v75-arcade-surfaces.py: 66/66
+- browser-v76-rhythm-engine.py: 14/14
+- browser-v77-feel-pass.py: 33/33
+- browser-v78-canvas-flow.py: 11/11
+- browser-v79-consumer-pass.py: 20/20
+- browser-v80-strategy-feel.py: 17/17
+- browser-v82-arcade-soul.py: 25/25
+- browser-v82-arcade-surfaces.py: 99/99
+- browser-v83-player-pressure.py: 27/27
+- browser-defense-integration.py: 77/77
+- browser-defense-surfaces.py: 76/76
+- browser-v84-lame-test.py: 34/34
+- browser-v85-handmade.py: 33/33
+
+TOTAL: 746/746 checks green across 21 suites.
+
+Final visual captures:
+- reports/v85-final/gallery/home-320x568.png
+- reports/v85-final/gallery/home-390x844.png
+- reports/v85-final/gallery/home-844x390.png
+- reports/v85-final/gallery/arcade-320x568.png
+- reports/v85-final/gallery/arcade-390x844.png
+- reports/v85-final/gallery/arcade-844x390.png
+- reports/v85-final/gallery/journal-390x844.png
+- reports/v85-final/gallery/house-390x844.png
+- reports/v85-final/gallery/backup-modal-390x844.png
+- reports/v85-final/gallery/mini-power-390x844.png
+- reports/v85-final/gallery/mini-spark-390x844.png
+- reports/v85-final/gallery/mini-memory-390x844.png
+- reports/v85-final/gallery/mini-breaker-390x844.png
+- reports/v85-final/gallery/mini-maze-390x844.png

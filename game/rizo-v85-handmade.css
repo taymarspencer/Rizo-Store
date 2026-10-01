@@ -1,0 +1,510 @@
+/* =====================================================================
+   RIZO.GAME v85 — HANDMADE UI / FIELD UNIT
+   Design language: streetwear field manual + battered handheld + zine.
+   The point is deliberate authorship: hard edges, serial marks, editorial
+   hierarchy and asymmetry instead of generic rounded app-card grammar.
+   ===================================================================== */
+
+body.rizo-handmade{
+  --paper:#e9e2d1;
+  --ink:#080a0d;
+  --panel:#10151b;
+  --panel-2:#151c24;
+  --field:#111820;
+  --blue:#1fc8f2;
+  --acid:#d8ec52;
+  --warning:#f25757;
+  --faded:#77818e;
+  background-color:#090d12;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.013) 1px,transparent 1px);
+  background-size:17px 17px,17px 17px;
+}
+body.rizo-handmade .screen-grain{opacity:.2;mix-blend-mode:soft-light}
+body.rizo-handmade .game-shell{padding-left:10px;padding-right:10px;max-width:520px}
+
+/* ---------- shell / maker's mark ---------- */
+body.rizo-handmade .game-header{
+  height:58px;margin-bottom:8px;padding:0 2px 7px;border-bottom:1px solid #2b333c;
+  position:relative;
+}
+body.rizo-handmade .game-header:after{
+  content:"FIELD UNIT 01";position:absolute;right:1px;bottom:-5px;padding-left:7px;
+  background:#090d12;color:#59636e;font:800 6px/1 "JetBrains Mono",monospace;letter-spacing:.14em;
+}
+body.rizo-handmade .brand-button{gap:7px}
+body.rizo-handmade .brand-button img{width:34px;height:34px;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.55))}
+body.rizo-handmade .brand-button em{font-style:normal;color:var(--blue);font:800 6px/1 "JetBrains Mono",monospace;letter-spacing:.15em}
+body.rizo-handmade .brand-button strong{font:900 17px/.95 Anton,Impact,sans-serif;letter-spacing:.12em;margin-top:3px}
+body.rizo-handmade .brand-button small{font:700 6px/1 "JetBrains Mono",monospace;margin-top:5px;letter-spacing:.1em}
+body.rizo-handmade .header-right{gap:4px}
+body.rizo-handmade .currency-pill,
+body.rizo-handmade .daily-gift,
+body.rizo-handmade .store-pill{
+  height:34px;border-radius:2px;border:1px solid #39434e;background:#10151b;box-shadow:2px 2px 0 #030507;
+  backdrop-filter:none;
+}
+body.rizo-handmade .store-pill{display:grid;place-items:center;padding:0 9px;text-decoration:none;font:900 7px/1 "JetBrains Mono",monospace;letter-spacing:.08em}
+body.rizo-handmade .currency-pill{padding:0 8px}
+body.rizo-handmade .ember-coin{border-radius:2px;background:#e1be3a;box-shadow:none;border:1px solid #090a0c}
+
+/* ---------- home: keeper camera, not toy dashboard ---------- */
+body.rizo-handmade .habitat-card{
+  position:relative;padding:6px 6px 0;border:1px solid #39434d;border-left:4px solid var(--blue);
+  border-radius:2px;background:#0b1015;box-shadow:5px 6px 0 #040608;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 13px,100% 100%,0 100%);
+}
+body.rizo-handmade .habitat-card:before{
+  content:"CAM 01 // DEN";position:absolute;z-index:25;left:9px;top:9px;padding:3px 5px;background:#090d12;color:#a7b2bc;
+  font:800 6px/1 "JetBrains Mono",monospace;letter-spacing:.14em;pointer-events:none;
+}
+body.rizo-handmade .habitat-card:after{
+  content:"REC";position:absolute;z-index:25;right:14px;top:11px;color:#e76161;font:900 6px/1 "JetBrains Mono",monospace;letter-spacing:.13em;pointer-events:none;
+}
+body.rizo-handmade .habitat-scene{
+  height:404px;border-radius:0;border:1px solid #050709;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,0 100%);
+}
+body.rizo-handmade .mood-chip{border-radius:1px;padding:5px 7px;background:rgba(236,230,211,.87);box-shadow:2px 2px 0 rgba(0,0,0,.28);font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .scene-menu-button{border-radius:1px;background:rgba(10,13,16,.72);color:#ece6d8;border-color:rgba(235,229,214,.4)}
+body.rizo-handmade .scene-bottomline{left:9px;right:9px;bottom:7px;align-items:end}
+body.rizo-handmade .scene-bottomline>div:first-child{
+  padding:6px 8px;background:rgba(232,226,211,.82);border-left:4px solid #0c1217;box-shadow:3px 3px 0 rgba(0,0,0,.25);transform:rotate(-.6deg)
+}
+body.rizo-handmade .scene-bottomline strong{font-family:Anton,Impact,sans-serif;letter-spacing:.07em}
+body.rizo-handmade .level-badge{border-radius:1px;background:#dcd6c6;border:1px solid #10151a;box-shadow:2px 2px 0 rgba(0,0,0,.25)}
+body.rizo-handmade .progress-wrap{padding:8px 3px 7px;border-bottom:1px solid #29323b}
+body.rizo-handmade .progress-copy{font-family:"JetBrains Mono",monospace;letter-spacing:.1em}
+body.rizo-handmade .progress-track{height:5px;border-radius:0;background:#202831}
+body.rizo-handmade .progress-track i{border-radius:0;background:var(--blue)}
+
+/* Four vitals read like one instrument strip instead of four cards. */
+body.rizo-handmade .need-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:0;margin:0 -6px;border-top:1px solid #2c3640;background:#0d1218;
+}
+body.rizo-handmade .need-card{
+  min-width:0;min-height:53px;border:0;border-right:1px solid #29333d;border-radius:0;background:transparent;padding:7px 6px 6px;
+  display:grid;grid-template-columns:15px 1fr;gap:3px 4px;box-shadow:none;
+}
+body.rizo-handmade .need-card:last-child{border-right:0}
+body.rizo-handmade .need-card>span{font:900 11px/1 "JetBrains Mono",monospace;place-items:start;color:var(--paper)}
+body.rizo-handmade .need-card>div{grid-template-columns:1fr;align-items:start;gap:1px}
+body.rizo-handmade .need-card small{font:800 6px/1 "JetBrains Mono",monospace;letter-spacing:.08em;color:#76828e}
+body.rizo-handmade .need-card b{font:900 11px/1 Anton,Impact,sans-serif;text-align:left}
+body.rizo-handmade .need-card>i{grid-column:1/-1;height:3px;border-radius:0;background:#27313b}
+body.rizo-handmade .need-card>i u{border-radius:0;background:var(--acid)}
+
+/* Care keys are physical keys, not cards. */
+body.rizo-handmade .care-panel,
+body.rizo-handmade .memory-strip,
+body.rizo-handmade .high-score-card,
+body.rizo-handmade .profile-card{
+  margin-top:12px;border-radius:2px;border:1px solid #303a44;background:#0e1319;box-shadow:4px 4px 0 #05070a;padding:11px;
+}
+body.rizo-handmade .care-panel{border-left:4px solid #d8ec52}
+body.rizo-handmade .section-heading{margin-bottom:8px;align-items:center}
+body.rizo-handmade .section-heading small,
+body.rizo-handmade .view-hero small,
+body.rizo-handmade .game-card small,
+body.rizo-handmade .quest-copy small,
+body.rizo-handmade .profile-card small,
+body.rizo-handmade .high-score-card small{font-family:"JetBrains Mono",monospace;color:var(--blue);letter-spacing:.12em}
+body.rizo-handmade .section-heading h2{font:900 13px/1 Anton,Impact,sans-serif;letter-spacing:.045em}
+body.rizo-handmade .text-button{border:1px solid #36414c;border-radius:1px;padding:6px 8px;background:#151b22;color:#aab4be;font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .care-actions{gap:5px;grid-template-columns:repeat(4,1fr)}
+body.rizo-handmade .care-action{
+  min-width:0;min-height:66px;border:1px solid #353f49;border-radius:1px;background:#151b22;box-shadow:0 4px 0 #05070a;
+  display:grid;place-items:center;align-content:center;gap:4px;padding:6px;text-align:center;
+}
+body.rizo-handmade .care-action:nth-child(1){transform:rotate(-.5deg)}
+body.rizo-handmade .care-action:nth-child(3){transform:rotate(.45deg)}
+body.rizo-handmade .care-action:active{transform:translateY(3px);box-shadow:0 1px 0 #05070a}
+body.rizo-handmade .care-icon{width:auto;height:auto;border-radius:0;background:transparent;font:900 17px/1 "JetBrains Mono",monospace;color:var(--paper)}
+body.rizo-handmade .care-action b{font:900 11px/1 Anton,Impact,sans-serif;letter-spacing:.06em}
+body.rizo-handmade .care-action small{font:700 6px/1 "JetBrains Mono",monospace;color:#707b86}
+
+/* Utility strips */
+body.rizo-handmade .quest-card,
+body.rizo-handmade .season-card,
+body.rizo-handmade .genetics-card,
+body.rizo-handmade .brand-drop-card,
+body.rizo-handmade .real-shop-banner,
+body.rizo-handmade .expedition-card{
+  border-radius:2px;background:#11171e;border:1px solid #303a44;box-shadow:3px 3px 0 #05070a;
+}
+body.rizo-handmade .quest-card{border-left:4px solid #e5be3c}
+body.rizo-handmade .quest-icon{border-radius:1px;background:#e5be3c;box-shadow:none}
+body.rizo-handmade .quest-track,
+body.rizo-handmade .season-track{border-radius:0}
+body.rizo-handmade .quest-card>button,
+body.rizo-handmade .season-card button{border-radius:1px}
+body.rizo-handmade .season-card{background:#101820;border-left:4px solid var(--blue)}
+body.rizo-handmade .season-card:after{content:"R";font-family:Anton,Impact,sans-serif;opacity:.7}
+body.rizo-handmade .season-track i{background:var(--blue);box-shadow:none}
+
+/* ---------- editorial view language ---------- */
+body.rizo-handmade .view-hero{
+  min-height:158px;margin-top:2px;border:0;border-left:6px solid var(--blue);border-bottom:1px solid #313b46;border-radius:0;
+  padding:20px 17px 18px;background:#10151b;box-shadow:none;overflow:visible;clip-path:polygon(0 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%);
+}
+body.rizo-handmade .view-hero:before{
+  content:"";position:absolute;right:17px;top:16px;width:54px;height:54px;border:1px solid #313b46;transform:rotate(8deg);opacity:.55;
+}
+body.rizo-handmade .view-hero h1{font:900 38px/.82 Anton,Impact,sans-serif;letter-spacing:-.025em;margin:11px 0 13px;text-transform:uppercase}
+body.rizo-handmade .view-hero p{font:700 8px/1.55 "JetBrains Mono",monospace;color:#909aa5;max-width:350px}
+body.rizo-handmade .arcade-hero{background:#141016;border-left-color:#f05b63}
+body.rizo-handmade .closet-hero{background:#141017;border-left-color:#e174b7}
+body.rizo-handmade .journal-hero{background:#0e161c;border-left-color:var(--blue)}
+body.rizo-handmade .arcade-hero-stamp{
+  position:absolute;right:9px;bottom:15px;padding:4px 6px;border:1px solid #e4d9c1;color:#e4d9c1;background:#141016;
+  font:800 6px/1 "JetBrains Mono",monospace;letter-spacing:.11em;transform:rotate(-4deg)
+}
+
+/* ---------- ARCADE: poster wall, not app-store list ---------- */
+body.rizo-handmade #viewArcade{counter-reset:cabinet}
+body.rizo-handmade .game-card{
+  --cab:#7f8993;counter-increment:cabinet;position:relative;margin-top:10px;min-height:116px;display:grid;grid-template-columns:82px minmax(0,1fr) 58px;gap:10px;align-items:center;
+  padding:10px 9px 10px 10px;border:1px solid #303944;border-left:5px solid var(--cab);border-radius:0;background:#0f141a;box-shadow:4px 4px 0 #050608;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);
+}
+body.rizo-handmade .game-card:before{
+  content:"0" counter(cabinet);position:absolute;left:-1px;top:-1px;z-index:5;padding:3px 5px;background:var(--cab);color:#080a0d;
+  font:900 7px/1 "JetBrains Mono",monospace;letter-spacing:.06em;
+}
+body.rizo-handmade .game-card:nth-of-type(even){transform:translateX(3px)}
+body.rizo-handmade .game-card:nth-of-type(3n){transform:translateX(-2px) rotate(-.16deg)}
+body.rizo-handmade .game-card .game-art{
+  height:92px;border-radius:0;border:1px solid #0a0d11;background:#1a2028;overflow:hidden;clip-path:polygon(0 7px,7px 0,100% 0,100% 100%,0 100%);
+}
+body.rizo-handmade .game-card .game-art:after{content:"RIZO";position:absolute;left:4px;bottom:3px;color:rgba(255,255,255,.5);font:800 5px/1 "JetBrains Mono",monospace;letter-spacing:.12em}
+body.rizo-handmade .game-art img{width:82px;height:82px;filter:drop-shadow(4px 5px 0 rgba(0,0,0,.35))}
+body.rizo-handmade .game-art span{right:3px;top:4px;font:900 18px/1 "JetBrains Mono",monospace;color:var(--cab);text-shadow:1px 1px 0 #000}
+body.rizo-handmade .game-card h2{font:900 18px/.95 Anton,Impact,sans-serif;letter-spacing:.035em;margin:5px 0 5px;color:#eee9dc}
+body.rizo-handmade .game-card p{font:700 7.2px/1.45 "JetBrains Mono",monospace;color:#89949e;margin:0}
+body.rizo-handmade .game-card>button{
+  align-self:stretch;min-width:0;border:1px solid #090b0e;border-radius:1px;padding:6px 3px;background:var(--cab);color:#090b0e;box-shadow:2px 2px 0 #040608;
+  font:900 8px/1.05 Anton,Impact,sans-serif;letter-spacing:.055em;writing-mode:vertical-rl;transform:rotate(180deg);
+}
+body.rizo-handmade .game-card>button:disabled{background:#202730;color:#68737e;border-color:#343f49;box-shadow:none;opacity:1}
+body.rizo-handmade .game-card.power-card{--cab:#f26363}
+body.rizo-handmade .game-card.spark-card{--cab:#55d9f1}
+body.rizo-handmade .game-card.forage-card{--cab:#9fce66}
+body.rizo-handmade .game-card.rush-card{--cab:#ef8a4e}
+body.rizo-handmade .game-card.walk-card{--cab:#73a7c5}
+body.rizo-handmade .game-card.rhythm-card{--cab:#d678dd}
+body.rizo-handmade .game-card.memory-card{--cab:#a5d28a}
+body.rizo-handmade .game-card.glide-card{--cab:#82d9e8}
+body.rizo-handmade .game-card.breaker-card{--cab:#ffb056}
+body.rizo-handmade .game-card.maze-card{--cab:#d6dbdf}
+body.rizo-handmade .game-card.defense-card{--cab:#e6c34e}
+body.rizo-handmade .game-card.power-card .game-art,
+body.rizo-handmade .game-card.spark-card .game-art,
+body.rizo-handmade .game-card.forage-card .game-art{background:#171d24}
+body.rizo-handmade .arcade-headliner{
+  min-height:154px;grid-template-columns:112px minmax(0,1fr) 64px;border-width:2px 1px 2px 6px;background:#17111a;margin-top:14px;transform:rotate(-.25deg)
+}
+body.rizo-handmade .arcade-headliner .game-art{height:128px}
+body.rizo-handmade .arcade-headliner .game-art img{width:112px;height:112px}
+body.rizo-handmade .arcade-headliner h2{font-size:25px}
+body.rizo-handmade .arcade-headliner:after{
+  content:"HOUSE FAVORITE";position:absolute;right:68px;top:-7px;padding:3px 6px;background:#e9dfc7;color:#111;font:900 6px/1 "JetBrains Mono",monospace;letter-spacing:.1em;transform:rotate(2deg)
+}
+
+/* Arcade secondary sections become ticket/ledger objects. */
+body.rizo-handmade .expedition-card{margin-top:14px;border-left:5px solid #72a7c2;padding:12px}
+body.rizo-handmade .expedition-options{gap:5px}
+body.rizo-handmade .expedition-options button,
+body.rizo-handmade .expedition-claim{border-radius:1px;background:#172029;border:1px solid #394651;box-shadow:0 3px 0 #05080b;font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .high-score-card{border-left:5px solid #e6c34e}
+body.rizo-handmade .score-grid{grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #2d3740;margin-top:10px}
+body.rizo-handmade .score-grid div{border:0;border-right:1px solid #2b343e;border-bottom:1px solid #2b343e;border-radius:0;background:#0a0f14;padding:8px 4px;text-align:left}
+body.rizo-handmade .score-grid b{font:900 15px/1 Anton,Impact,sans-serif}
+body.rizo-handmade .score-grid span{font:700 5.8px/1 "JetBrains Mono",monospace;letter-spacing:.05em}
+
+/* ---------- closet / journal / dynamic panels ---------- */
+body.rizo-handmade .closet-preview{border-radius:0;border:1px solid #35404b;border-left:5px solid #e174b7;background:#111820;box-shadow:4px 4px 0 #05070a}
+body.rizo-handmade .closet-glow{border-radius:0;transform:rotate(45deg);opacity:.5}
+body.rizo-handmade .shop-tabs,
+body.rizo-handmade .journal-tabs{
+  gap:0;padding:0;border-radius:0;border:1px solid #333d48;background:#0b1015;box-shadow:3px 3px 0 #05070a;
+}
+body.rizo-handmade .shop-tabs button,
+body.rizo-handmade .journal-tabs button{border-right:1px solid #303944;border-radius:0;padding:10px 4px;font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .shop-tabs button:last-child,
+body.rizo-handmade .journal-tabs button:last-child{border-right:0}
+body.rizo-handmade .shop-tabs button.active,
+body.rizo-handmade .journal-tabs button.active{background:#e5dfcf;color:#0b0d10;box-shadow:none}
+body.rizo-handmade .profile-card{border-left:5px solid var(--blue);grid-template-columns:64px 1fr auto}
+body.rizo-handmade .profile-avatar{border-radius:0;background:#0c1218;border:1px solid #35404b;clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%)}
+body.rizo-handmade .profile-card>button{border-radius:1px;background:#1a222b}
+body.rizo-handmade .stat-board,
+body.rizo-handmade .settings-board,
+body.rizo-handmade .memory-card,
+body.rizo-handmade .collection-card,
+body.rizo-handmade .badge-card,
+body.rizo-handmade .stat-tile{
+  border-radius:1px;background:#0f151b;border-color:#303a44;box-shadow:none;
+}
+body.rizo-handmade .stat-board,
+body.rizo-handmade .settings-board,
+body.rizo-handmade .memory-card,
+body.rizo-handmade .collection-card,
+body.rizo-handmade .badge-card{border-left:4px solid #46525d}
+body.rizo-handmade .vital-row i{border-radius:0}
+
+/* House inherits the same material language without erasing its rooms. */
+body.rizo-handmade .house-section,
+body.rizo-handmade .house-lock-screen{font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .house-den-shell,
+body.rizo-handmade .house-locked-scene,
+body.rizo-handmade .house-adoption-card,
+body.rizo-handmade .house-property-card,
+body.rizo-handmade .house-stat-row,
+body.rizo-handmade .capsule-machine{
+  border-radius:1px;box-shadow:4px 4px 0 #05070a;
+}
+body.rizo-handmade .house-room-chip{border-radius:1px}
+
+/* ---------- sheets / modal furniture ---------- */
+body.rizo-handmade .sheet-backdrop{backdrop-filter:none;background:rgba(0,0,0,.74)}
+body.rizo-handmade .bottom-sheet{
+  border-radius:0;background:#0d1218;border:1px solid #3a4550;border-top:4px solid var(--blue);box-shadow:0 -16px 0 rgba(0,0,0,.28);padding-top:8px;
+}
+body.rizo-handmade .sheet-handle{width:78px;height:3px;border-radius:0;background:#58636e;margin-bottom:9px}
+body.rizo-handmade .bottom-sheet header>button{border-radius:1px;background:#181f27}
+body.rizo-handmade .sheet-body{gap:5px}
+body.rizo-handmade .sheet-card{
+  grid-template-columns:42px 1fr auto;gap:9px;border-radius:0;background:#121820;border:1px solid #303a44;border-left:4px solid #45515c;padding:9px;box-shadow:2px 2px 0 #05070a;
+}
+body.rizo-handmade .sheet-card:nth-child(3n+1){border-left-color:#d9eb57}
+body.rizo-handmade .sheet-card:nth-child(3n+2){border-left-color:#1fc8f2}
+body.rizo-handmade .sheet-card-icon{width:40px;height:40px;border-radius:0;background:#0c1116;border:1px solid #303943;font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .sheet-card h3{font:900 12px/1 Anton,Impact,sans-serif;letter-spacing:.04em}
+body.rizo-handmade .sheet-card p{font:700 6.7px/1.4 "JetBrains Mono",monospace}
+body.rizo-handmade .sheet-card button{border-radius:1px;background:#e2dccd;color:#0b0d10;border-color:#0b0d10;box-shadow:2px 2px 0 #05070a;font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .sheet-note{border-radius:0;border-style:solid;border-left:4px solid #626f7a;text-align:left;background:#0a0f14}
+body.rizo-handmade .input-row input,
+body.rizo-handmade .input-row button{border-radius:1px}
+
+/* ---------- navigation: device rail, not floating iOS pill ---------- */
+body.rizo-handmade .bottom-nav{
+  left:50%;bottom:var(--safe-bottom);width:min(100%,520px);height:64px;border:0;border-top:1px solid #3a444f;border-radius:0;background:#090e13;padding:0;box-shadow:0 -10px 28px rgba(0,0,0,.48);backdrop-filter:none;
+}
+body.rizo-handmade .bottom-nav:before{
+  content:"RIZO // NAV";position:absolute;left:7px;top:-7px;padding:1px 4px;background:#090e13;color:#59636d;font:800 5px/1 "JetBrains Mono",monospace;letter-spacing:.1em;
+}
+body.rizo-handmade .bottom-nav button{position:relative;border-right:1px solid #252d35;border-radius:0;gap:3px;color:#66727e;background:transparent}
+body.rizo-handmade .bottom-nav button:last-child{border-right:0}
+body.rizo-handmade .bottom-nav button span{font-family:"JetBrains Mono",monospace;font-size:14px}
+body.rizo-handmade .bottom-nav button b{font-family:"JetBrains Mono",monospace;font-size:5.7px;letter-spacing:.08em}
+body.rizo-handmade .bottom-nav button.active{background:#171e25;color:#f0eadc;box-shadow:inset 0 3px 0 var(--blue)}
+body.rizo-handmade .bottom-nav button.active:after{content:"";position:absolute;width:3px;height:3px;right:7px;top:7px;background:var(--acid)}
+
+/* ---------- install / boot surfaces inherit authored system ---------- */
+body.rizo-handmade .install-card,
+body.rizo-handmade .rizo-boot-card{border-radius:1px;border-left:5px solid var(--blue);background:#0f151b;box-shadow:7px 7px 0 #030507}
+body.rizo-handmade .install-primary,
+body.rizo-handmade .install-secondary,
+body.rizo-handmade .rizo-boot-actions button{border-radius:1px;font-family:"JetBrains Mono",monospace}
+
+/* ---------- short phones ---------- */
+@media(max-width:360px){
+  body.rizo-handmade .game-shell{padding-left:7px;padding-right:7px}
+  body.rizo-handmade .game-header{height:49px}
+  body.rizo-handmade .brand-button img{width:29px;height:29px}
+  body.rizo-handmade .brand-button strong{font-size:14px}
+  body.rizo-handmade .brand-button em{font-size:5px}
+  body.rizo-handmade .store-pill{display:none}
+  body.rizo-handmade .currency-pill,body.rizo-handmade .daily-gift{height:31px}
+  body.rizo-handmade .habitat-scene{height:315px}
+  body.rizo-handmade .need-card{min-height:45px;padding:5px 4px}
+  body.rizo-handmade .need-card small{font-size:5.3px}
+  body.rizo-handmade .care-action{min-height:58px}
+  body.rizo-handmade .care-action small{display:none}
+  body.rizo-handmade .view-hero{min-height:132px;padding:16px 14px}
+  body.rizo-handmade .view-hero h1{font-size:31px;margin:8px 0 9px}
+  body.rizo-handmade .view-hero p{font-size:6.8px}
+  body.rizo-handmade .game-card{grid-template-columns:68px minmax(0,1fr) 49px;min-height:100px;gap:7px;padding:8px 7px}
+  body.rizo-handmade .game-card .game-art{height:76px}
+  body.rizo-handmade .game-art img{width:68px;height:68px}
+  body.rizo-handmade .game-card h2{font-size:15px}
+  body.rizo-handmade .game-card p{font-size:6.2px;line-height:1.34}
+  body.rizo-handmade .game-card small{font-size:5.6px}
+  body.rizo-handmade .arcade-headliner{grid-template-columns:82px minmax(0,1fr) 52px;min-height:119px}
+  body.rizo-handmade .arcade-headliner .game-art{height:94px}
+  body.rizo-handmade .arcade-headliner .game-art img{width:82px;height:82px}
+  body.rizo-handmade .arcade-headliner h2{font-size:20px}
+  body.rizo-handmade .score-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ---------- landscape: rail stays compact, content gets breathing room ---------- */
+@media(orientation:landscape) and (max-height:500px){
+  body.rizo-handmade .game-shell{max-width:760px;padding-bottom:66px}
+  body.rizo-handmade .game-header{height:43px;margin-bottom:5px}
+  body.rizo-handmade .view-hero{min-height:104px;padding:12px 16px}
+  body.rizo-handmade .view-hero h1{font-size:29px;margin:7px 0}
+  body.rizo-handmade .view-hero p{max-width:520px}
+  body.rizo-handmade #viewArcade.active{display:grid;grid-template-columns:1fr 1fr;gap:7px 9px;align-items:start}
+  body.rizo-handmade #viewArcade>.arcade-hero,
+  body.rizo-handmade #viewArcade>.expedition-card,
+  body.rizo-handmade #viewArcade>.high-score-card,
+  body.rizo-handmade #viewArcade>.ad-slot{grid-column:1/-1}
+  body.rizo-handmade #viewArcade>.game-card{margin-top:0;min-height:103px;grid-template-columns:72px 1fr 48px;transform:none}
+  body.rizo-handmade #viewArcade>.arcade-headliner{min-height:118px;grid-template-columns:86px 1fr 52px}
+  body.rizo-handmade .habitat-scene{height:290px}
+  body.rizo-handmade .bottom-nav{height:55px}
+}
+
+/* ---------- live cabinet frame: same physical language as shell ---------- */
+body.rizo-handmade .minigame-overlay{background:rgba(5,8,11,.975);padding-left:8px;padding-right:8px}
+body.rizo-handmade .minigame-shell{width:min(100%,500px);position:relative}
+body.rizo-handmade .minigame-shell header{
+  min-height:54px;margin-bottom:6px;padding:7px 1px 6px;border-bottom:1px solid #34404a;align-items:center;
+}
+body.rizo-handmade .minigame-shell header:after{content:"LIVE CABINET";position:absolute;right:0;top:2px;color:#4e5b66;font:800 5px/1 "JetBrains Mono",monospace;letter-spacing:.12em}
+body.rizo-handmade .minigame-shell header h2{font:900 21px/.95 Anton,Impact,sans-serif;letter-spacing:.055em}
+body.rizo-handmade .minigame-shell header b{font-family:Anton,Impact,sans-serif;letter-spacing:.04em}
+body.rizo-handmade .mini-arena{
+  border-radius:1px;border:1px solid #45515c;border-left:4px solid var(--blue);box-shadow:4px 4px 0 #030507,inset 0 0 36px rgba(0,0,0,.36);
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+}
+body.rizo-handmade .minigame-shell>p{font:700 7px/1.45 "JetBrains Mono",monospace;text-align:left;padding:0 4px;color:#7f8a94}
+body.rizo-handmade .minigame-shell .ghost-button{border-radius:1px;border:1px solid #36414b;background:#0e141a;box-shadow:2px 2px 0 #030507;font-family:"JetBrains Mono",monospace;letter-spacing:.09em}
+
+/* ---------- House is architecture, not another rounded pet card ---------- */
+body.rizo-handmade .house-den-shell{border-radius:1px;border-left:4px solid var(--blue);padding:6px;background:#0b1015}
+body.rizo-handmade .house-scene{border-radius:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+body.rizo-handmade .house-scene-top>span{border-radius:1px;backdrop-filter:none}
+body.rizo-handmade .house-scene-arrow{border-radius:1px;backdrop-filter:none}
+body.rizo-handmade .house-scene-bottom{border-radius:1px;backdrop-filter:none;border-left:4px solid #3a4650}
+body.rizo-handmade .house-room-rail{border-radius:1px;gap:0;padding:0;background:#0a0f14;box-shadow:3px 3px 0 #05070a}
+body.rizo-handmade .house-room-chip{border-radius:0;border-right:1px solid #2d3741;min-height:62px}
+body.rizo-handmade .house-room-chip.active{box-shadow:inset 0 3px 0 var(--blue);background:#151d24}
+body.rizo-handmade .house-adoption-card,
+body.rizo-handmade .house-expand-card{border-radius:1px;background:#10161d;border-left:4px solid #46535e;box-shadow:3px 3px 0 #05070a}
+body.rizo-handmade .house-adoption-card button,
+body.rizo-handmade .house-expand-card button{border-radius:1px;box-shadow:2px 2px 0 #040608}
+body.rizo-handmade .house-hint{text-align:left;padding-left:8px;border-left:2px solid #394550}
+
+@media(max-width:360px){
+  body.rizo-handmade .game-card p{font-size:7.2px;line-height:1.38}
+  body.rizo-handmade .game-card small{font-size:6px}
+  body.rizo-handmade .minigame-shell>p{font-size:7px}
+}
+@media(orientation:landscape) and (max-height:500px){
+  body.rizo-handmade .game-shell{width:min(100%,760px);max-width:760px}
+  body.rizo-handmade .bottom-nav{width:min(100%,760px)}
+}
+
+/* ---------- v85 final survivor sweep: no generic app furniture ---------- */
+/* Functional surfaces are hard; curves belong to the illustrated world, not UI chrome. */
+body.rizo-handmade .growth-overview,
+body.rizo-handmade .keeper-path-preview{
+  border-radius:1px;background:#0f151b;border:1px solid #34404a;border-left:4px solid var(--blue);
+  box-shadow:3px 3px 0 #040608;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);
+}
+body.rizo-handmade .growth-overview:before{width:3px}
+body.rizo-handmade .skill-mini-row{border-radius:1px;background:#0a0f14;border-color:#303a44;box-shadow:3px 3px 0 #040608}
+body.rizo-handmade .skill-mini-row i{border-radius:0;background:#232c35}
+body.rizo-handmade .real-shop-banner a{border-radius:1px;border:1px solid #3b4650;background:#111820;box-shadow:3px 3px 0 #040608;font-family:"JetBrains Mono",monospace}
+
+body.rizo-handmade .keeper-path-head>span,
+body.rizo-handmade .evolution-head>span{
+  border-radius:1px;border:1px solid #3b4650;background:#131a21;padding:6px 8px;box-shadow:2px 2px 0 #040608;
+  font-family:"JetBrains Mono",monospace;
+}
+body.rizo-handmade .keeper-path-track,
+body.rizo-handmade .alignment-track,
+body.rizo-handmade .aptitude-row div>i{border-radius:0;background:#232c35}
+body.rizo-handmade .keeper-path-track i,
+body.rizo-handmade .aptitude-row div>i>u{border-radius:0}
+body.rizo-handmade .path-step,
+body.rizo-handmade .aptitude-row{
+  border-radius:0;background:#0d1319;border:1px solid #303a44;border-left:4px solid #46525d;box-shadow:2px 2px 0 #05070a;
+}
+body.rizo-handmade .path-step.done{background:#101813;border-left-color:#9fce66;border-color:#34453a}
+body.rizo-handmade .path-step strong{border-radius:1px;background:#182029;border:1px solid #34404a}
+body.rizo-handmade .path-step.done strong{background:#17251b}
+body.rizo-handmade .aptitude-row:nth-child(1){border-left-color:#36a9ce}
+body.rizo-handmade .aptitude-row:nth-child(2){border-left-color:#d75b62}
+body.rizo-handmade .aptitude-row:nth-child(3){border-left-color:#ab83d1}
+body.rizo-handmade .aptitude-row:nth-child(4){border-left-color:#7bb9cd}
+body.rizo-handmade .aptitude-row:nth-child(5){border-left-color:#dfbd4d}
+
+body.rizo-handmade .house-stat-row{gap:0;border:1px solid #303a44;box-shadow:3px 3px 0 #05070a}
+body.rizo-handmade .house-stat-row span{border-radius:0;border:0;border-right:1px solid #303a44;background:#0d1319;padding:8px 5px}
+body.rizo-handmade .house-stat-row span:last-child{border-right:0}
+body.rizo-handmade .wide-button,
+body.rizo-handmade .settings-actions button,
+body.rizo-handmade .ghost-button,
+body.rizo-handmade .house-section button:not(.house-scene-arrow):not(.house-room-chip){
+  border-radius:1px;box-shadow:2px 2px 0 #040608;font-family:"JetBrains Mono",monospace;
+}
+
+/* All generic modal furniture now belongs to the same field-unit system. */
+body.rizo-handmade .modal-overlay{background:rgba(3,6,9,.9);backdrop-filter:none;padding:14px}
+body.rizo-handmade .modal-card{
+  width:min(100%,440px);border-radius:1px;border:1px solid #3a4650;border-left:5px solid var(--blue);background:#0e141a;
+  box-shadow:8px 8px 0 #030507;padding:16px;text-align:left;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);
+}
+body.rizo-handmade .modal-card>small{display:inline-block;color:var(--blue);font:800 7px/1 "JetBrains Mono",monospace;letter-spacing:.13em}
+body.rizo-handmade .modal-card .modal-art{
+  width:54px;height:54px;margin:10px 0 7px;border:1px solid #34404a;border-radius:0;background:#0a0f14;
+  display:grid;place-items:center;font-size:31px;box-shadow:3px 3px 0 #030507;
+}
+body.rizo-handmade .modal-card h2{font:900 27px/.9 Anton,Impact,sans-serif;letter-spacing:.035em;margin:10px 0 11px;text-transform:uppercase}
+body.rizo-handmade .modal-card p{font:700 8px/1.5 "JetBrains Mono",monospace;color:#8b96a0;margin:0 0 12px;max-width:38em}
+body.rizo-handmade .modal-card .big-line{font:800 11px/1.4 "JetBrains Mono",monospace;color:#eee8d9;min-height:0}
+body.rizo-handmade .modal-buttons{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:13px}
+body.rizo-handmade .modal-buttons button{min-height:42px;border-radius:1px;border:1px solid #3b4650;background:#171f27;box-shadow:2px 2px 0 #030507;font:900 8px/1 "JetBrains Mono",monospace;letter-spacing:.05em}
+body.rizo-handmade .modal-buttons button.primary{background:var(--blue);border-color:#0a1116;color:#071016}
+body.rizo-handmade .modal-buttons button.danger{background:#32191d;border-color:#8b3b44;color:#ff9fa7}
+body.rizo-handmade .modal-card.secret-reveal{border-radius:1px}
+
+@media(max-width:360px){
+  body.rizo-handmade .modal-card{padding:13px}
+  body.rizo-handmade .modal-card h2{font-size:23px}
+  body.rizo-handmade .modal-buttons{grid-template-columns:1fr 1fr}
+}
+body.rizo-handmade .brand-drop-card a{border-radius:1px;box-shadow:2px 2px 0 #040608;font-family:"JetBrains Mono",monospace}
+body.rizo-handmade .trophy-room-head>span{border-radius:1px;border:1px solid #3b4650;background:#131a21;box-shadow:2px 2px 0 #040608;font-family:"JetBrains Mono",monospace}
+/* Cabinet copy is flavor, but it still has to survive a real 320px phone. */
+body.rizo-handmade .game-card p{font-size:8px;line-height:1.42}
+@media(max-width:360px){
+  body.rizo-handmade .view-hero p{font-size:7.4px;line-height:1.48}
+  body.rizo-handmade .game-card p{font-size:7.6px;line-height:1.36}
+  body.rizo-handmade .bottom-nav button b{font-size:6.2px}
+}
+/* Defense has its own dense but already-authored HUD grammar; keep its proven type floors. */
+body.rizo-handmade :is(.defense-world-lobby,.defense-records-modal,.defense-field-guide) :is(p,small,em){font-size:var(--def-size-small);line-height:1.4}
+body.rizo-handmade :is(.defense-world-lobby,.defense-records-modal,.defense-field-guide) :is(button,a){font-size:var(--def-size-button);min-height:44px}
+body.rizo-handmade :is(.defense-world-lobby,.defense-records-modal,.defense-field-guide) h2{font:900 clamp(1.05rem,4vw,1.45rem)/1 var(--def-font-display)}
+body.rizo-handmade :is(.defense-world-lobby,.defense-records-modal,.defense-field-guide) h3{font:900 var(--def-size-title-small)/1.05 var(--def-font-display)}
+
+/* ---------- care residue: the sprite carries the state ---------- */
+.rizo-grime{--care-grime-opacity:0;position:absolute;inset:12% 16% 11%;z-index:4;display:block;pointer-events:none;opacity:var(--care-grime-opacity);transform-origin:50% 84%;transition:opacity .22s ease;filter:drop-shadow(1px 1px 0 rgba(20,13,11,.2))}
+.rizo-grime::before,.rizo-grime::after{content:"";position:absolute;display:block;background:#5d3a27;border:1px solid rgba(27,17,13,.65);box-shadow:inset 1px 1px 0 rgba(255,219,157,.18)}
+.rizo-grime::before{left:22%;top:33%;width:13%;height:8%;border-radius:58% 42% 55% 45%;transform:rotate(-18deg);box-shadow:inset 1px 1px 0 rgba(255,219,157,.18),145% 235% 0 -1px #68402b}
+.rizo-grime::after{right:19%;bottom:22%;width:10%;height:7%;border-radius:41% 59% 48% 52%;transform:rotate(23deg);box-shadow:inset 1px 1px 0 rgba(255,219,157,.18),-170% -510% 0 -1px #4f3125}
+.grime-light .rizo-grime{--care-grime-opacity:.36}.grime-dirty .rizo-grime{--care-grime-opacity:.68}.grime-filthy .rizo-grime{--care-grime-opacity:.94;filter:drop-shadow(1px 1px 0 rgba(20,13,11,.42))}
+.care-washing .rizo-grime{animation:care-grime-rinse .9s ease-out forwards}
+@keyframes care-grime-rinse{0%,24%{opacity:var(--care-grime-opacity);transform:translateX(-1px)}48%{opacity:calc(var(--care-grime-opacity) - .15);transform:translateX(2px) translateY(1px)}100%{opacity:0;transform:translateY(7px) rotate(9deg)}}
+
+.pet-actor.behavior-scrub .rizo-motion-shell,.mini-pet.behavior-scrub .rizo-motion-shell{animation:care-scrub .22s ease-in-out 4}
+.pet-actor.behavior-shake .rizo-motion-shell,.mini-pet.behavior-shake .rizo-motion-shell{animation:care-shake .16s linear 4}
+.pet-actor.behavior-wake-grump .rizo-motion-shell,.mini-pet.behavior-wake-grump .rizo-motion-shell{animation:care-wake-grump 1.2s cubic-bezier(.22,.75,.28,1)}
+.pet-actor.behavior-food-stare .rizo-motion-shell,.mini-pet.behavior-food-stare .rizo-motion-shell{animation:care-food-stare 1.35s ease-in-out}
+.pet-actor.behavior-snack-happy .rizo-motion-shell,.mini-pet.behavior-snack-happy .rizo-motion-shell{animation:care-snack-happy .48s ease-in-out 2}
+.pet-actor.behavior-recover .rizo-motion-shell,.mini-pet.behavior-recover .rizo-motion-shell{animation:care-recover 1.5s ease-out}
+.pet-actor.behavior-afterglow .rizo-motion-shell,.mini-pet.behavior-afterglow .rizo-motion-shell{animation:care-afterglow 1.8s ease-in-out infinite}
+@keyframes care-scrub{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-5px) rotate(-3deg)}75%{transform:translateX(5px) rotate(3deg)}}
+@keyframes care-shake{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-6px) rotate(-4deg)}75%{transform:translateX(6px) rotate(4deg)}}
+@keyframes care-wake-grump{0%{transform:translateY(6px) scale(1.03,.9)}35%{transform:translateY(-4px) rotate(-4deg)}66%{transform:translateX(4px) rotate(3deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes care-food-stare{0%,100%{transform:translateX(0)}35%,70%{transform:translateX(-9px) rotate(-3deg)}}
+@keyframes care-snack-happy{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.06,.94)}}
+@keyframes care-recover{0%{filter:saturate(.35) brightness(.82);transform:translateY(5px)}55%{filter:saturate(1.2) brightness(1.08);transform:translateY(-7px) scale(1.035)}100%{filter:none;transform:translateY(0)}}
+@keyframes care-afterglow{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-8px) rotate(1.5deg) scale(1.025)}}
+
+.den-care-trace{position:absolute;z-index:12;left:13px;top:54px;max-width:132px;padding:4px 5px;border:1px solid rgba(12,17,20,.55);background:rgba(243,235,210,.86);box-shadow:2px 2px 0 rgba(10,16,19,.28);color:#10191d;font:800 5.6px/1 "JetBrains Mono",monospace;letter-spacing:.08em;transform:rotate(-2deg);pointer-events:none}
+.den-care-trace::before{content:"R";display:inline-grid;place-items:center;width:10px;height:10px;margin-right:4px;border:1px solid #151b1d;background:#d8ec52;color:#101719;font:900 7px/1 Anton,Impact,sans-serif;vertical-align:middle}
+@media(max-width:360px){.den-care-trace{top:49px;max-width:116px;font-size:5px}}

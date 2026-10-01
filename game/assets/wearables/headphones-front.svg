@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Original Rizo.game artwork, final fit pass v18. No external source. -->
+
+<path d="M78 366 C78 343 94 329 116 330 L146 336 C158 340 165 351 165 365 L165 442 C165 456 155 468 141 472 L114 478 C91 480 76 465 76 443 Z" fill="#ff65b9" stroke="#080b0f" stroke-width="10" stroke-linejoin="round"/>
+<path d="M355 365 C355 351 363 340 376 336 L405 331 C427 330 443 344 443 367 L445 443 C445 465 429 480 407 478 L379 472 C365 468 355 456 355 442 Z" fill="#ff65b9" stroke="#080b0f" stroke-width="10" stroke-linejoin="round"/>
+<path d="M98 361 C108 355 128 356 142 363 L142 445 C129 453 109 454 98 446 Z" fill="#18212e" stroke="#080b0f" stroke-width="6"/>
+<path d="M378 363 C392 356 412 355 422 362 L423 446 C411 454 391 453 378 445 Z" fill="#18212e" stroke="#080b0f" stroke-width="6"/>
+<path d="M161 369 L178 378 M359 370 L342 379" fill="none" stroke="#080b0f" stroke-width="9" stroke-linecap="round"/>
+<rect x="110" y="390" width="21" height="27" rx="5" fill="#16c8ff" stroke="#080b0f" stroke-width="4"/>
+<rect x="390" y="390" width="21" height="27" rx="5" fill="#16c8ff" stroke="#080b0f" stroke-width="4"/>
+<path d="M114 402 l4 5 8-10 M394 402 l4 5 8-10" fill="none" stroke="#080b0f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Rizo.game wearable artwork. Adapted from backpack. See ASSET-CREDITS.md. -->
+<rect x="382" y="415" width="61" height="45" rx="9" fill="#16c8ff" stroke="#080b0f" stroke-width="7" paint-order="stroke fill" transform="rotate(5 412 438)"/><g transform="translate(412 443) rotate(5) scale(0.28)" stroke="#080b0f" fill="#080b0f" stroke-linecap="round">
+      <ellipse cx="-31" cy="-10" rx="5.5" ry="7"/><ellipse cx="31" cy="-9" rx="5" ry="6.5"/>
+      <g fill="none" stroke-width="4.5">
+        <path d="M-34 8l10 12m0-12l-10 12"/><path d="M-19 5l10 12m0-12l-10 12"/>
+        <path d="M-4 3L6 15M6 3L-4 15"/><path d="M11 5l10 12m0-12L11 17"/>
+        <path d="M26 8l10 12m0-12L26 20"/>
+      </g></g>
+</svg>

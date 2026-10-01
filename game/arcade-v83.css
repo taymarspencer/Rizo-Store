@@ -1,0 +1,52 @@
+/* Rizo.game v83 — Arcade Stress Pass
+   Consumer/game-feel layer only. Defense simulation and v81 art remain untouched. */
+
+/* Cabinet shelf */
+.maze-art{background:linear-gradient(135deg,#25183a,#0d1e2a);position:relative}
+.maze-art::before{content:"";position:absolute;inset:10px;border-radius:9px;background:linear-gradient(#6c8cff 2px,transparent 2px),linear-gradient(90deg,#6c8cff 2px,transparent 2px);background-size:18px 18px;opacity:.38}
+.game-card.maze-card{border-color:#5e54a4;background:linear-gradient(145deg,#19162a,#101319)}
+.game-card.maze-card::after{content:"NEW";position:absolute;right:8px;top:8px;padding:4px 6px;border-radius:999px;background:#8b73ff;color:#fff;font:1000 6px/1 Inter,sans-serif;letter-spacing:.12em;box-shadow:0 0 16px rgba(139,115,255,.35)}
+
+/* Power Tap gets a readable anti-mash feint. */
+.power-dx .training-bag.guard{filter:brightness(.72) saturate(.65);animation:powerGuard .16s steps(2) infinite}
+.power-dx .training-bag.guard::after{content:"HOLD";position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);padding:5px 7px;border-radius:7px;background:#171018;color:#ff8a96;border:2px solid #ff5c6c;font:1000 7px/1 Inter,sans-serif;letter-spacing:.09em;z-index:8}
+@keyframes powerGuard{50%{transform:rotate(2deg) scale(.98)}}
+
+/* Spark Catch earns a short high-speed payoff every six clean reads. */
+.spark-world.frenzy{box-shadow:inset 0 0 0 3px rgba(255,213,74,.34),inset 0 0 38px rgba(255,116,57,.16)}
+.spark-world.frenzy .spark-orb{animation:sparkRushPulse .24s ease-in-out infinite alternate;box-shadow:0 0 18px rgba(255,213,74,.8),0 0 34px rgba(22,200,255,.4)}
+.spark-world.frenzy #sparkRule{color:#ffd54a}
+@keyframes sparkRushPulse{to{transform:scale(1.12) rotate(5deg)}}
+
+/* Forage now produces real lane decisions: the wrong edible is a miss. */
+.forage-order.wrong{animation:forageOrderWrong .22s ease-out}
+@keyframes forageOrderWrong{50%{transform:translateX(5px);filter:saturate(.25) brightness(1.35)}}
+
+/* Breaker second power-up: piercing ember ball. */
+.breaker-block.ember{background:radial-gradient(circle,#fff1a5 0 12%,#ff8a3d 15% 47%,#672619 50%);border-color:#2b1009;box-shadow:0 0 14px rgba(255,120,60,.65)}
+.breaker-world.fireball .breaker-ball{background:#fff4b8;color:#fff;border-color:#ff7d3b;box-shadow:0 0 8px #fff,0 0 24px #ff6c35;animation:breakerFire .2s ease-in-out infinite alternate}
+@keyframes breakerFire{to{transform:scale(1.16)}}
+
+/* Skybound art fix: variant-level idle animations must not replace flight transform. */
+.mini-pet.glide-rizo.retro{animation:none}
+.mini-pet.glide-rizo .rizo-motion-shell{width:100%;height:100%;display:grid;place-items:center;transform-origin:50% 55%}
+.mini-pet.glide-rizo .rizo-motion-shell>img{width:100%;height:100%;object-fit:contain}
+
+/* Rizo Runaway — bounded DOM maze chase. */
+.maze-world{background:radial-gradient(circle at 50% 35%,rgba(139,115,255,.15),transparent 38%),#070914;isolation:isolate;touch-action:none}
+.maze-world::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(22,200,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(22,200,255,.035) 1px,transparent 1px);background-size:18px 18px;pointer-events:none}
+.maze-hud{position:absolute;left:9px;right:9px;top:8px;z-index:40;display:flex;justify-content:space-between;gap:5px;pointer-events:none}
+.maze-hud span{padding:6px 7px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(5,8,15,.78);color:#c7d2df;font:1000 6px/1 Inter,sans-serif;letter-spacing:.08em}
+.maze-hud span:first-child{color:#ff6677;font-size:9px}.maze-hud b{color:#fff;font-size:9px}
+.maze-board{--maze-cols:15;--maze-rows:17;position:absolute;left:50%;top:47%;width:min(92%,390px);aspect-ratio:15/17;transform:translate(-50%,-50%);display:grid;grid-template-columns:repeat(var(--maze-cols),1fr);grid-template-rows:repeat(var(--maze-rows),1fr);border:2px solid #201a48;border-radius:10px;overflow:hidden;background:#090b17;box-shadow:0 12px 28px rgba(0,0,0,.35),inset 0 0 28px rgba(92,74,210,.08)}
+.maze-board>i{position:relative;min-width:0;min-height:0}.maze-wall{background:#24205a;box-shadow:inset 0 0 0 1px #493e9c}.maze-floor{background:#0b0e1b}.maze-floor b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#ffb56b;font:1000 10px/1 Inter,sans-serif;text-shadow:0 0 8px rgba(255,138,60,.7)}.maze-floor.power b{color:#bdf7ff;font-size:11px;text-shadow:0 0 12px #16c8ff;animation:mazePrism .7s ease-in-out infinite alternate}
+.maze-rizo{position:absolute;width:8%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:15;transition:left .09s linear,top .09s linear;pointer-events:none}.maze-rizo>.mini-pet{position:absolute!important;inset:-52%!important;width:205%!important;height:205%!important;left:0!important;top:0!important;bottom:auto!important;transform:none!important;animation:none!important}.maze-rizo .mini-pet-shadow{display:none}.maze-rizo.hurt{filter:brightness(1.8);animation:mazeHurt .5s steps(2)}
+.maze-hunter{position:absolute;width:6.2%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:14;border-radius:48% 48% 42% 42%;background:#7f58d9;border:2px solid #d1bdff;box-shadow:0 0 10px rgba(128,86,220,.55);display:grid;place-items:center;transition:left .11s linear,top .11s linear;color:#fff}.maze-hunter i{position:absolute;left:20%;right:20%;top:25%;height:22%;border-radius:50%;background:linear-gradient(90deg,#fff 0 38%,transparent 39% 61%,#fff 62%)}.maze-hunter b{font-size:7px;margin-top:35%;opacity:.8}.hunter-1{background:#c44f84;border-color:#ffc0db}.hunter-2{background:#3b84a8;border-color:#bdf7ff}
+.maze-world.hunt .maze-hunter{background:#e8faff;border-color:#16c8ff;color:#14213b;box-shadow:0 0 16px #16c8ff;animation:mazeHunterPanic .25s steps(2) infinite}.maze-world.hunt .maze-floor.power b{opacity:.3}
+.maze-callout{position:absolute;left:50%;bottom:62px;transform:translateX(-50%);z-index:35;max-width:74%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:6px 9px;border-radius:9px;background:rgba(4,8,14,.8);border:1px solid rgba(255,255,255,.1);color:#b9c8d4;font:1000 6px/1 Inter,sans-serif;letter-spacing:.08em;pointer-events:none}
+.maze-controls{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:38;display:grid;grid-template-columns:repeat(4,42px);gap:5px}.maze-controls button{width:42px;height:42px;padding:0;border:1px solid #3a4261;border-radius:10px;background:#161b29;color:#dce8ef;font-size:13px;font-weight:1000;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.maze-controls button:active{transform:translateY(2px);background:#252d43}
+@keyframes mazePrism{to{transform:translate(-50%,-50%) scale(1.25);filter:brightness(1.4)}}@keyframes mazeHurt{50%{opacity:.25}}@keyframes mazeHunterPanic{50%{filter:brightness(.65)}}
+
+body.reduce-motion .spark-world.frenzy .spark-orb,body.reduce-motion .power-dx .training-bag.guard,body.reduce-motion .breaker-world.fireball .breaker-ball,body.reduce-motion .maze-floor.power b,body.reduce-motion .maze-world.hunt .maze-hunter{animation:none}
+@media(max-height:700px){.maze-board{width:min(79%,330px);top:44%}.maze-callout{bottom:55px}.maze-controls{bottom:5px;grid-template-columns:repeat(4,38px)}.maze-controls button{width:38px;height:38px}}
+@media(orientation:landscape) and (max-height:520px){.maze-board{height:82%;width:auto;top:50%;left:43%}.maze-controls{left:auto;right:8px;bottom:50%;transform:translateY(50%);grid-template-columns:repeat(2,44px)}.maze-callout{left:auto;right:8px;bottom:9px;transform:none;max-width:34%}}

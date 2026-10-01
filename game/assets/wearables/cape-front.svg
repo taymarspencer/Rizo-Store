@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Rizo.game wearable artwork. Adapted from cape. See ASSET-CREDITS.md. -->
+<ellipse cx="410" cy="430" rx="25" ry="25" fill="#ffd45a" stroke="#080b0f" stroke-width="8" paint-order="stroke fill" /><g transform="translate(410 436) rotate(0) scale(0.2)" stroke="#080b0f" fill="#080b0f" stroke-linecap="round">
+      <ellipse cx="-31" cy="-10" rx="5.5" ry="7"/><ellipse cx="31" cy="-9" rx="5" ry="6.5"/>
+      <g fill="none" stroke-width="4.5">
+        <path d="M-34 8l10 12m0-12l-10 12"/><path d="M-19 5l10 12m0-12l-10 12"/>
+        <path d="M-4 3L6 15M6 3L-4 15"/><path d="M11 5l10 12m0-12L11 17"/>
+        <path d="M26 8l10 12m0-12L26 20"/>
+      </g></g>
+</svg>

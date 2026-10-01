@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta content="ca-pub-3212890596786480" name="google-adsense-account"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#090b0f" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Rizo.game" name="apple-mobile-web-app-title"/>
+<meta name="rizo-build" content="v87-first-ten-visual-nuance"/>
+<style id="rizo-boot-critical">
+/* This shell is intentionally inline and dependency-free. If every external
+   stylesheet/script fails, the player still gets a dark, actionable surface. */
+html,body{background:#07090d;color:#fff}
+#rizoBootShell{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:#07090d;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#rizoBootShell .rizo-boot-card{width:min(100%,430px);border:2px solid #24212a;border-radius:18px;background:#17141c;padding:18px;box-shadow:0 7px 0 #09080b}
+#rizoBootShell small{font-weight:900;letter-spacing:.11em;color:#68cfff}
+#rizoBootShell h1{font-size:22px;line-height:1.05;margin:8px 0 9px}
+#rizoBootShell p{font-size:14px;line-height:1.45;color:#d8d1df;margin:0}
+#rizoBootShell .rizo-boot-pulse{width:100%;height:5px;margin:16px 0 0;border-radius:99px;overflow:hidden;background:#28232f}
+#rizoBootShell .rizo-boot-pulse i{display:block;width:38%;height:100%;border-radius:inherit;background:#68cfff;animation:rizoBootMove 1s ease-in-out infinite alternate}
+#rizoBootShell .rizo-boot-actions{display:none;gap:9px;margin-top:15px}
+#rizoBootShell.is-recovery .rizo-boot-pulse{display:none}
+#rizoBootShell.is-recovery .rizo-boot-actions{display:grid}
+#rizoBootShell button{min-height:48px;border:2px solid #17151b;border-radius:12px;font:900 13px system-ui,-apple-system,sans-serif;color:#17151b}
+#rizoBootShell [data-rizo-reload]{background:#73e890}
+#rizoBootShell [data-rizo-reset-cache]{background:#ffd95b}
+#rizoBootShell.is-repairing button{opacity:.55;pointer-events:none}
+@keyframes rizoBootMove{to{transform:translateX(164%)}}
+@media(prefers-reduced-motion:reduce){#rizoBootShell .rizo-boot-pulse i{animation:none;width:100%}}
+
+</style>
+<script id="rizo-boot-inline">
+(() => {
+  "use strict";
+  const expected = "v87-first-ten-visual-nuance";
+  const problems = [];
+  let ready = false;
+  let recoveryVisible = false;
+  let timer = 0;
+
+  const cleanText = value => String(value || "").replace(/[<>&]/g, "").slice(0, 320);
+  function recordProblem(value) {
+    const text = cleanText(value);
+    if (text && !problems.includes(text)) problems.push(text);
+    return text;
+  }
+  function shell() { return document.getElementById("rizoBootShell"); }
+  function reasonNode() { return shell()?.querySelector("[data-rizo-boot-reason]"); }
+  function titleNode() { return shell()?.querySelector("[data-rizo-boot-title]"); }
+
+  function forceDarkCanvas() {
+    const root = document.documentElement;
+    root.style.backgroundColor = "#07090d";
+    if (document.body) {
+      document.body.style.backgroundColor = "#07090d";
+      // A synchronous layout read gives WebKit a concrete paint opportunity after
+      // returning from a killed/backgrounded standalone session without moving UI.
+      void document.body.offsetHeight;
+    }
+  }
+
+  function showRecovery(reason, force = false) {
+    if (ready && !force) return false;
+    const node = shell();
+    if (!node) {
+      document.addEventListener("DOMContentLoaded", () => showRecovery(reason, force), { once: true });
+      return false;
+    }
+    ready = false;
+    recoveryVisible = true;
+    forceDarkCanvas();
+    node.hidden = false;
+    node.classList.add("is-recovery");
+    if (titleNode()) titleNode().textContent = "RIZO.GAME NEEDS A CLEAN RELOAD";
+    const detail = recordProblem(reason) || problems[0] || "The game runtime did not finish loading.";
+    if (reasonNode()) reasonNode().textContent = detail;
+    return true;
+  }
+
+  function recoveryUrl() {
+    const url = new URL(location.href);
+    url.searchParams.set("rizoRecovery", String(Date.now()));
+    return url.href;
+  }
+
+  async function resetOfflineCache() {
+    if (shell()) shell().classList.add("is-repairing");
+    try {
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations
+          .filter(reg => !reg.scope || reg.scope.startsWith(location.origin))
+          .map(reg => reg.unregister().catch(() => false)));
+      }
+      if ("caches" in window) {
+        const names = await caches.keys();
+        await Promise.all(names.filter(name => name.startsWith("rizo-game-")).map(name => caches.delete(name)));
+      }
+    } catch (error) {
+      recordProblem(error?.message || error);
+    }
+    location.replace(recoveryUrl());
+  }
+
+  function arm(delay = 6500) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (!ready) showRecovery(problems[0] || "A stale, incomplete, or blocked game file prevented startup.");
+    }, delay);
+  }
+
+  function visibleSurfaceExists() {
+    const candidates = [
+      document.getElementById("originScreen"),
+      document.getElementById("gameShell"),
+      document.getElementById("miniGameOverlay")
+    ];
+    return candidates.some(node => {
+      if (!node || node.hidden) return false;
+      const style = getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return false;
+      const rect = node.getBoundingClientRect();
+      return rect.width > 1 && rect.height > 1;
+    });
+  }
+
+  function verifySurface(reason = "resume") {
+    forceDarkCanvas();
+    if (!ready) { arm(1800); return false; }
+    // Give the runtime's own pageshow/visibility handler time to restore overlays,
+    // viewport variables and paused Defense state before judging the surface.
+    setTimeout(() => {
+      if (!visibleSurfaceExists()) showRecovery(`The app resumed without a visible game surface (${reason}).`, true);
+    }, 420);
+    return true;
+  }
+
+  window.addEventListener("error", event => {
+    const target = event.target;
+    if (target && target !== window && (target.src || target.href)) {
+      recordProblem(`Failed to load ${target.src || target.href}`);
+      return;
+    }
+    const message = event?.error?.message || event?.message;
+    if (message) recordProblem(message);
+  }, true);
+  window.addEventListener("unhandledrejection", event => {
+    const message = event?.reason?.message || event?.reason;
+    if (message) recordProblem(message);
+  });
+  document.addEventListener("click", event => {
+    if (event.target.closest("[data-rizo-reload]")) location.replace(recoveryUrl());
+    if (event.target.closest("[data-rizo-reset-cache]")) resetOfflineCache();
+  });
+  window.addEventListener("pageshow", () => verifySurface("pageshow"), { capture: true });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) verifySurface("visible"); });
+
+  forceDarkCanvas();
+  arm();
+
+  window.__RIZO_BUILD__ = expected;
+  window.RizoBoot = Object.freeze({
+    expected,
+    ready(actualBuild) {
+      const actual = String(actualBuild || "");
+      if (actual && actual !== expected) {
+        showRecovery(`Mixed build detected: page ${expected}, runtime ${actual}.`, true);
+        return false;
+      }
+      // Do not dismiss the dependency-free boot shell merely because JS reached
+      // the end of boot(). iOS/WebKit can finish script execution before the
+      // actual app surface has survived a paint/resume cycle. Keep the shell up
+      // until a real primary surface is measurable across two paint turns.
+      recoveryVisible = false;
+      clearTimeout(timer);
+      forceDarkCanvas();
+      const node = shell();
+      if (node) {
+        node.classList.remove("is-recovery", "is-repairing");
+        node.hidden = false;
+      }
+      const afterPaint = callback => {
+        if (typeof requestAnimationFrame === "function") {
+          requestAnimationFrame(() => requestAnimationFrame(callback));
+        } else setTimeout(callback, 40);
+      };
+      afterPaint(() => {
+        forceDarkCanvas();
+        if (!visibleSurfaceExists()) {
+          showRecovery("The runtime loaded but no playable surface survived startup.", true);
+          return;
+        }
+        ready = true;
+        const live = shell();
+        if (live) live.hidden = true;
+      });
+      // Arm a final fail-visible watchdog. A launch is never allowed to become blank.
+      timer = setTimeout(() => {
+        if (!ready) showRecovery(problems[0] || "Rizo.game could not finish its first visible paint.", true);
+      }, 2200);
+      return true;
+    },
+    heartbeat(reason = "runtime") { return verifySurface(reason); },
+    showRecovery: (reason, force = true) => showRecovery(reason, force),
+    resetOfflineCache,
+    status() { return { expected, ready, recoveryVisible, problems: [...problems] }; }
+  });
+})();
+
+</script>
+<style>
+:root{
+  --bg:#07090d;
+  --panel:#10141b;
+  --panel-2:#151a23;
+  --panel-3:#1b222d;
+  --line:#2a3340;
+  --line-soft:#202732;
+  --cream:#f7f2e7;
+  --muted:#9ba5b6;
+  --cyan:#16c8ff;
+  --cyan-deep:#067b9f;
+  --lime:#9eff75;
+  --pink:#ff68bd;
+  --gold:#ffd45a;
+  --red:#ff5c6c;
+  --blue:#6c8cff;
+  --shadow:0 24px 70px rgba(0,0,0,.5);
+  --safe-top:max(12px,env(safe-area-inset-top));
+  --safe-bottom:max(14px,env(safe-area-inset-bottom));
+  --radius:24px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--cream);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+body{min-height:100dvh;overflow-x:hidden;overscroll-behavior:none;background:
+  radial-gradient(circle at 18% -10%,rgba(22,200,255,.11),transparent 34%),
+  radial-gradient(circle at 100% 10%,rgba(255,104,189,.08),transparent 28%),
+  linear-gradient(180deg,#0b0e14,#06070a 72%)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+[hidden]{display:none!important}
+.screen-grain{position:fixed;inset:0;z-index:500;pointer-events:none;opacity:.055;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E")}
+.rain-layer{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.rain-drop{position:absolute;top:-18vh;width:1px;height:56px;background:linear-gradient(transparent,rgba(213,242,255,.5));transform:rotate(11deg);animation:rainFall linear infinite}
+
+/* ORIGIN */
+.origin-screen{position:fixed;inset:0;z-index:300;overflow:hidden;background:#06090e;isolation:isolate}
+.origin-sky{position:absolute;inset:0;background:
+  radial-gradient(circle at 73% 18%,rgba(196,232,255,.12),transparent 15%),
+  linear-gradient(180deg,#111a29 0%,#0d1420 48%,#091016 100%)}
+.origin-sky:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.2),transparent 40%,rgba(0,0,0,.2));animation:skyPulse 5s ease-in-out infinite}
+.moon{position:absolute;right:14%;top:12%;width:66px;height:66px;border-radius:50%;background:#d9e5df;box-shadow:0 0 38px rgba(200,235,255,.25);opacity:.65}
+.moon:after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:rgba(47,62,76,.22);left:14px;top:18px;box-shadow:26px 12px 0 rgba(47,62,76,.17),8px 32px 0 rgba(47,62,76,.12)}
+.forest{position:absolute;left:-5%;right:-5%;bottom:0;background-repeat:repeat-x;transform-origin:bottom}
+.forest:before,.forest:after{content:"";position:absolute;inset:0;background-repeat:repeat-x}
+.forest-far{height:62%;opacity:.38;background-image:repeating-linear-gradient(115deg,transparent 0 44px,#101a24 45px 62px,transparent 63px 96px)}
+.forest-far:after{background-image:repeating-linear-gradient(72deg,transparent 0 68px,#14212b 69px 90px,transparent 91px 134px)}
+.forest-mid{height:54%;opacity:.76;background-image:repeating-linear-gradient(104deg,transparent 0 72px,#091017 73px 98px,transparent 99px 148px)}
+.forest-mid:before{background-image:repeating-linear-gradient(81deg,transparent 0 91px,#0b1219 92px 119px,transparent 120px 173px)}
+.forest-near{height:42%;background:linear-gradient(180deg,transparent 0 46%,#070b0e 47% 100%)}
+.forest-near:before{background-image:repeating-linear-gradient(102deg,transparent 0 92px,#070b0e 93px 130px,transparent 131px 206px);bottom:22%;height:110%}
+.ground-mist{position:absolute;left:-10%;right:-10%;bottom:0;height:34%;background:radial-gradient(ellipse at center,rgba(111,153,164,.22),transparent 55%);filter:blur(15px);animation:mistMove 8s ease-in-out infinite alternate}
+.origin-path{position:absolute;left:50%;bottom:-10%;width:58%;height:52%;transform:translateX(-50%) perspective(350px) rotateX(55deg);background:linear-gradient(90deg,transparent,rgba(117,123,108,.25) 36%,rgba(150,145,118,.22) 50%,rgba(117,123,108,.25) 64%,transparent);filter:blur(2px)}
+.found-egg{position:absolute;left:50%;bottom:27%;transform:translateX(-50%);width:150px;height:170px;border:0;background:transparent;padding:0;z-index:6}
+.egg-shell{position:absolute;left:50%;top:50%;width:76px;height:100px;transform:translate(-50%,-50%);border:4px solid #0a1015;border-radius:50% 50% 46% 46%/58% 58% 42% 42%;background:linear-gradient(135deg,#fffdf4,#b7ccd0);box-shadow:0 16px 0 rgba(0,0,0,.25),inset -10px -9px 0 rgba(0,0,0,.08);animation:originEggFloat 2.4s ease-in-out infinite}
+.egg-shell:before,.egg-shell:after{content:"";position:absolute;border-radius:50%;background:var(--cyan);box-shadow:0 0 16px rgba(22,200,255,.75)}
+.egg-shell:before{width:20px;height:31px;left:12px;top:36px;transform:rotate(17deg)}
+.egg-shell:after{width:29px;height:18px;right:8px;top:23px;transform:rotate(-18deg)}
+.egg-glow{position:absolute;inset:-28px;border-radius:50%;border:1px solid rgba(22,200,255,.24);box-shadow:0 0 55px rgba(22,200,255,.32);animation:eggGlow 2.3s ease-in-out infinite}
+.egg-pulse{position:absolute;left:50%;top:50%;width:92px;height:92px;border:2px solid rgba(22,200,255,.28);border-radius:50%;transform:translate(-50%,-50%);animation:pulseOut 2s ease-out infinite}
+.origin-ui{position:absolute;left:0;right:0;bottom:0;padding:18px max(14px,calc((100vw - 520px)/2 + 14px)) calc(20px + env(safe-area-inset-bottom));z-index:20;background:linear-gradient(transparent,rgba(4,6,9,.76) 18%,rgba(4,6,9,.96) 56%)}
+.origin-tag{width:max-content;margin:0 0 8px;padding:5px 8px;background:var(--cyan);color:#061117;border:2px solid #071016;font-size:8px;font-weight:1000;letter-spacing:.13em;box-shadow:4px 4px 0 rgba(0,0,0,.4)}
+.story-box{width:min(100%,520px);margin:auto;border:2px solid #e9f5f5;background:rgba(10,14,20,.94);padding:16px 16px 13px;box-shadow:8px 8px 0 rgba(0,0,0,.5),inset 0 0 0 3px #202b38;min-height:142px;position:relative}
+.story-box:before{content:"";position:absolute;left:7px;right:7px;top:7px;height:1px;background:#394553}
+.speaker{font-size:9px;color:var(--cyan);letter-spacing:.12em;font-weight:1000;margin:2px 0 8px}
+.story-box p{font-size:13px;line-height:1.55;margin:0;min-height:45px;color:#f7f2e7}
+.story-next{margin:11px 0 0 auto;display:flex;align-items:center;gap:12px;border:1px solid #3b4858;background:#171e28;padding:9px 10px;font-size:9px;font-weight:1000;letter-spacing:.09em}
+.story-next span{font-size:18px;line-height:.5;color:var(--cyan)}
+.story-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.story-choice{border:1px solid #475263;background:#151c25;padding:11px 9px;font-size:9px;font-weight:1000;letter-spacing:.07em;box-shadow:0 4px 0 #040609}
+.story-choice.primary{background:var(--cyan);color:#061117;border-color:#bff3ff}
+.skip-origin{position:absolute;top:calc(13px + env(safe-area-inset-top));right:13px;z-index:30;border:1px solid rgba(255,255,255,.26);background:rgba(4,7,10,.52);padding:8px 10px;font-size:8px;color:#c3ccd7;letter-spacing:.08em}
+
+/* APP SHELL */
+.game-shell{width:min(100%,520px);min-height:100dvh;margin:0 auto;padding:var(--safe-top) 12px calc(92px + var(--safe-bottom));position:relative;z-index:5}
+.game-header{height:52px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.brand-button{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:0;text-align:left}
+.brand-button img{width:37px;height:37px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(22,200,255,.2))}
+.brand-button strong{display:block;font-size:14px;letter-spacing:.13em;line-height:1}
+.brand-button small{display:block;font-size:7px;color:var(--muted);letter-spacing:.12em;margin-top:5px}.brand-button small b{color:var(--cyan)}
+.header-right{display:flex;align-items:center;gap:7px}
+.currency-pill,.daily-gift{height:35px;border:1px solid var(--line);background:rgba(17,21,28,.9);border-radius:999px;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 7px 20px rgba(0,0,0,.24)}
+.currency-pill{padding:0 11px}.currency-pill b{font-size:11px}
+.ember-coin{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:1000;background:linear-gradient(145deg,#ffef9d,#db9e00);color:#171008;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+.daily-gift{min-width:42px;padding:0 8px}.daily-gift span{color:var(--gold);font-size:13px}.daily-gift b{font-size:9px}
+.view{display:none;animation:viewIn .24s ease-out}.view.active{display:block}
+.tutorial-banner{display:grid;grid-template-columns:30px 1fr 28px;align-items:center;gap:9px;background:linear-gradient(90deg,#122c36,#151923);border:1px solid #1c6e85;border-radius:15px;padding:9px;margin-bottom:9px;box-shadow:0 8px 22px rgba(0,0,0,.22)}
+.tutorial-banner>span{width:29px;height:29px;border-radius:9px;background:var(--cyan);color:#061117;display:grid;place-items:center;font-size:10px;font-weight:1000}.tutorial-banner p{margin:0;font-size:9px;line-height:1.35}.tutorial-banner button{border:0;background:transparent;font-size:21px;color:var(--muted)}
+
+/* HABITAT */
+.habitat-card{background:linear-gradient(145deg,#191f29,#0f131a);border:1px solid #2b3440;border-radius:27px;padding:9px;box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05)}
+.habitat-scene{position:relative;height:420px;border-radius:20px;overflow:hidden;border:2px solid #040609;background:#10222a;color:#071014;isolation:isolate;box-shadow:inset 0 0 0 3px rgba(255,255,255,.09)}
+.habitat-sky{position:absolute;inset:0;background:linear-gradient(180deg,#82d7e8 0%,#9be3ed 60%,#bacfbd 60.5%,#8a836b 100%);transition:.6s}
+.habitat-stars{position:absolute;inset:0;opacity:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:41px 41px;transition:.6s}
+.habitat-window{position:absolute;right:18px;top:52px;width:86px;height:106px;border:8px solid rgba(13,25,29,.38);border-radius:38px 38px 8px 8px;background:linear-gradient(#20335a,#465376);box-shadow:inset 0 0 0 3px rgba(255,255,255,.09),0 8px 0 rgba(0,0,0,.08);overflow:hidden}
+.habitat-window:after{content:"";position:absolute;left:0;right:0;top:51%;height:6px;background:rgba(8,15,19,.4)}
+.habitat-window i{position:absolute;width:1px;height:32px;background:rgba(205,235,255,.55);transform:rotate(12deg);animation:windowRain 1s linear infinite}.habitat-window i:nth-child(1){left:14px;top:-22px}.habitat-window i:nth-child(2){left:38px;top:4px;animation-delay:.3s}.habitat-window i:nth-child(3){left:62px;top:-12px;animation-delay:.6s}.habitat-window i:nth-child(4){left:74px;top:38px;animation-delay:.15s}
+.habitat-shelf{position:absolute;left:18px;top:96px;width:105px;height:8px;background:#384c50;border:2px solid rgba(0,0,0,.26);box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.habitat-shelf:before{content:"";position:absolute;left:12px;bottom:8px;width:22px;height:36px;border:3px solid rgba(8,17,19,.58);background:#eef2e8;border-radius:5px 5px 2px 2px;box-shadow:35px 10px 0 -3px #14bce9,35px 10px 0 0 rgba(8,17,19,.58)}
+.habitat-shelf span{position:absolute;top:7px;width:6px;height:30px;background:#344548}.habitat-shelf span:first-child{left:13px}.habitat-shelf span:last-child{right:13px}
+.habitat-floor{position:absolute;left:0;right:0;bottom:0;height:34%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 62px),linear-gradient(180deg,#a79b78,#756f5e);border-top:5px solid rgba(10,22,24,.15)}
+.habitat-floor:after{content:"";position:absolute;left:14%;right:14%;bottom:19px;height:77px;border-radius:50%;background:radial-gradient(ellipse,#ca5f77 0 24%,#ec8ca0 25% 41%,#b14f67 42% 55%,transparent 56%);opacity:.7;transform:scaleY(.42)}
+.habitat-toys{position:absolute;inset:0}.toy-ball{position:absolute;left:32px;bottom:48px;width:28px;height:28px;border-radius:50%;background:linear-gradient(45deg,var(--pink) 0 50%,#fff 50%);border:3px solid rgba(0,0,0,.35);transform:rotate(12deg)}.toy-box{position:absolute;right:28px;bottom:32px;width:55px;height:43px;background:#1c8aac;border:4px solid rgba(0,0,0,.35);transform:skew(-2deg);box-shadow:inset 0 -12px 0 rgba(0,0,0,.12)}
+.weather-fx{position:absolute;inset:0;pointer-events:none}.weather-fx .dust{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.5);animation:dustFloat 4s ease-in-out infinite}
+.scene-topline,.scene-bottomline{position:absolute;left:12px;right:12px;z-index:12;display:flex;justify-content:space-between;align-items:center}.scene-topline{top:12px}.scene-bottomline{bottom:11px;color:#081217}
+.mood-chip{display:flex;align-items:center;gap:7px;background:rgba(248,246,235,.89);border:1px solid rgba(5,16,19,.38);padding:6px 8px;border-radius:8px;box-shadow:3px 3px 0 rgba(0,0,0,.13);font-size:8px;font-weight:1000;letter-spacing:.08em;backdrop-filter:blur(6px)}.mood-chip i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 2px rgba(0,0,0,.1)}
+.scene-menu-button{width:34px;height:30px;border:1px solid rgba(5,16,19,.34);border-radius:9px;background:rgba(248,246,235,.87);color:#081217;font-weight:1000;letter-spacing:.1em}
+.thought-bubble{position:absolute;z-index:16;left:50%;top:55px;transform:translate(-50%,-7px);max-width:78%;background:#fffdf4;border:2px solid #081217;color:#081217;border-radius:12px;padding:9px 11px;font-size:9px;font-weight:1000;line-height:1.35;text-align:center;box-shadow:4px 4px 0 rgba(0,0,0,.16);opacity:0;pointer-events:none;transition:.2s}.thought-bubble.show{opacity:1;transform:translate(-50%,0)}.thought-bubble:after{content:"";position:absolute;left:50%;bottom:-8px;width:12px;height:12px;background:#fffdf4;border-right:2px solid #081217;border-bottom:2px solid #081217;transform:translateX(-50%) rotate(45deg)}
+.pet-tap-target{position:absolute;inset:48px 15px 50px;border:0;background:transparent;padding:0;display:grid;place-items:center;z-index:8;touch-action:manipulation}
+.egg-actor{position:absolute;left:50%;top:50%;right:auto;bottom:auto;width:155px;height:195px;margin:0;transform:translate(-50%,-50%);display:grid;place-items:center}.egg-motion-shell{position:relative;width:155px;height:195px;display:grid;place-items:center;animation:eggIdle 2.1s ease-in-out infinite}.egg-main{position:relative;width:112px;height:145px;border-radius:50% 50% 46% 46%/58% 58% 42% 42%;border:5px solid #0a1115;background:linear-gradient(140deg,#fffdf5,#c8d9d7);box-shadow:inset -13px -11px 0 rgba(0,0,0,.07)}.egg-main:before,.egg-main:after{content:"";position:absolute;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px rgba(22,200,255,.55)}.egg-main:before{width:28px;height:41px;left:19px;top:58px;transform:rotate(18deg)}.egg-main:after{width:39px;height:25px;right:13px;top:35px;transform:rotate(-19deg)}.egg-shadow{position:absolute;width:110px;height:25px;border-radius:50%;background:rgba(4,15,16,.17);bottom:11px;filter:blur(2px)}.egg-crack{position:absolute;inset:0;display:grid;place-items:center;font-size:0;color:#101820;font-weight:1000;transition:.2s}.egg-actor.cracking .egg-crack{font-size:52px;animation:crackShake .35s steps(2) infinite}
+.pet-actor{position:relative;width:292px;height:282px;display:grid;place-items:center;transform-origin:50% 78%;transition:filter .3s,transform .3s}.pet-actor img{position:relative;z-index:4;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 13px 0 rgba(6,21,22,.15));animation:rizoIdle 2.35s ease-in-out infinite}.body-shadow{position:absolute;z-index:0;left:18%;right:18%;bottom:22px;height:34px;border-radius:50%;background:rgba(6,21,22,.17);filter:blur(3px)}.aura-ring{position:absolute;z-index:1;inset:30px;border:1px solid rgba(255,255,255,.18);border-radius:50%;opacity:0;animation:auraPulse 2s ease-out infinite}.pet-actor.stage-spark{transform:scale(.68)}.pet-actor.stage-kid{transform:scale(.79)}.pet-actor.stage-teen{transform:scale(.91)}.pet-actor.stage-beast{transform:scale(1.02)}.pet-actor.stage-legend{transform:scale(1.09)}.pet-actor.stage-legend .aura-ring,.pet-actor.golden .aura-ring{opacity:1}.pet-actor.sleeping{transform:translateY(19px) scale(.83) rotate(-6deg);filter:saturate(.6) brightness(.78)}.pet-actor.sleeping img{animation:sleepBreathe 2.8s ease-in-out infinite}.pet-actor.sad{filter:grayscale(.35) saturate(.65);transform:translateY(7px) scale(.88)}.pet-actor.sick{filter:hue-rotate(62deg) saturate(.55)}.pet-actor.boing{animation:boing .22s ease-out}
+.face-fx,.status-fx,.accessory-layer{position:absolute;z-index:8;inset:0;pointer-events:none}.face-fx.tears:before,.face-fx.tears:after{content:"";position:absolute;top:57%;width:9px;height:22px;background:#55cfff;border-radius:50% 50% 58% 58%}.face-fx.tears:before{left:35%}.face-fx.tears:after{right:35%}.status-fx.hearts:before{content:"♥  ♥  ♥";position:absolute;left:50%;top:12%;transform:translateX(-50%);color:#ff4d91;font-size:22px;letter-spacing:8px;animation:heartFloat 1.4s ease-out forwards}.status-fx.zzz:before{content:"Z z z";position:absolute;right:6%;top:18%;font-size:22px;font-weight:1000;color:#20325b;transform:rotate(-13deg);animation:zzzFloat 2s ease-in-out infinite}.status-fx.sparkles:before{content:"✦  ✧  ✦";position:absolute;left:50%;top:12%;transform:translateX(-50%);color:#fff;font-size:21px;letter-spacing:6px;animation:sparkleSpin 1s ease-out forwards}
+/* ===== ACCESSORY ANCHOR SYSTEM =====
+   Every accessory is a CSS pseudo-element positioned as a % of the pet's
+   own bounding box (the .accessory-layer span shares the pet-actor/mini-pet
+   box exactly, inset:0), so it scales and moves with the sprite for free —
+   no per-item JS positioning needed. New accessories should pick ONE of
+   these anchor bands so items stay visually consistent as a set:
+     HEAD        top: 3%-16%,  left: 24%-45% wide   (crown, beanie, cap, halo, horns)
+     FACE        top: 35%-45%, left: 22%-52% wide   (shades, goggles, mask, eyepatch, visor)
+     NECK        bottom/top ~24-32%, spanning center (bandana, scarf, chain)
+     ABOVE-HEAD  top: -5%-6%                        (antenna, halo, starclip)
+     BACK        z-index:-1, right/left 0-7%         (cape, backpack, wings)
+     LEFT/RIGHT  mirrored :before/:after pairs        (bow, horns, wings, earmuffs)
+     BODY-CENTER left: 25%-50%, top: 30%-60%         (headphones straps, misc)
+   Variant PNGs are normalized to a shared 520x670 canvas and visible-alpha
+   box (46,52-463,622). Keep future exports on that contract; accessories stay
+   a separate layer and should not need per-variant runtime offsets. */
+.accessory-layer.rarity-rare{filter:drop-shadow(0 0 4px rgba(22,200,255,.55))}
+.accessory-layer.rarity-epic{filter:drop-shadow(0 0 7px rgba(255,104,189,.6)) saturate(1.15)}
+.accessory-layer.rarity-legendary{filter:drop-shadow(0 0 9px rgba(255,212,90,.75)) saturate(1.25);animation:accessoryLegendaryGlow 2.6s ease-in-out infinite}
+@keyframes accessoryLegendaryGlow{0%,100%{filter:drop-shadow(0 0 9px rgba(255,212,90,.75)) saturate(1.25)}50%{filter:drop-shadow(0 0 15px rgba(255,212,90,1)) saturate(1.4)}}
+.accessory-layer.accessory-reveal{animation:accessoryReveal .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes accessoryReveal{0%{transform:scale(.4) rotate(-8deg);opacity:0}55%{transform:scale(1.16) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+.reduce-motion .accessory-layer.rarity-legendary{animation:none;filter:drop-shadow(0 0 9px rgba(255,212,90,.75)) saturate(1.25)}
+.reduce-motion .accessory-layer.accessory-reveal{animation:none}
+.rarity-tag{display:inline-block;font-size:9px;letter-spacing:.06em;font-weight:1000;padding:2px 6px;border-radius:5px;vertical-align:middle;margin-left:4px}
+.rarity-tag-common{background:rgba(158,255,117,.16);color:#9eff75}
+.rarity-tag-rare{background:rgba(22,200,255,.16);color:#16c8ff}
+.rarity-tag-epic{background:rgba(255,104,189,.18);color:#ff68bd}
+.rarity-tag-legendary{background:rgba(255,212,90,.2);color:#ffd45a}
+.shop-item.rarity-card-rare{box-shadow:inset 3px 0 0 #16c8ff}
+.shop-item.rarity-card-epic{box-shadow:inset 3px 0 0 #ff68bd}
+.shop-item.rarity-card-legendary{box-shadow:inset 3px 0 0 #ffd45a}
+/* Each minigame's result screen borrows the accent color of its own world,
+   so the ending screen still feels like "that game" instead of one shared
+   generic modal for all five activities. */
+.modal-card.minigame-result-power{box-shadow:inset 0 3px 0 #ff5c6c,var(--shadow)}
+.modal-card.minigame-result-spark{box-shadow:inset 0 3px 0 #16c8ff,var(--shadow)}
+.modal-card.minigame-result-forage{box-shadow:inset 0 3px 0 #9eff75,var(--shadow)}
+.modal-card.minigame-result-rush{box-shadow:inset 0 3px 0 #ffd45a,var(--shadow)}
+.modal-card.minigame-result-walk{box-shadow:inset 0 3px 0 #6c8cff,var(--shadow)}
+.accessory-layer.shades:before{content:"";position:absolute;left:26%;top:43%;width:48%;height:16%;border:8px solid #08090b;border-radius:9px;background:linear-gradient(90deg,#07090d 0 42%,transparent 42% 58%,#07090d 58%);box-shadow:inset 0 3px 0 rgba(255,255,255,.18)}.accessory-layer.chain:before{content:"";position:absolute;left:28%;bottom:19%;width:44%;height:18%;border:8px solid #f7cf48;border-top:0;border-radius:0 0 50% 50%;filter:drop-shadow(0 3px 0 #815e00)}.accessory-layer.crown:before{content:"";position:absolute;left:32%;top:3%;width:37%;height:28%;background:#ffd64e;clip-path:polygon(0 100%,0 35%,24% 62%,42% 6%,63% 61%,100% 26%,91% 100%);filter:drop-shadow(0 5px 0 #7a5500)}.accessory-layer.bandana:before{content:"";position:absolute;left:25%;top:32%;width:51%;height:12%;background:#ff4e62;border:5px solid #0a1115;border-radius:50%;transform:rotate(-2deg);box-shadow:18px 20px 0 -4px #ff4e62,18px 20px 0 0 #0a1115}
+.tap-combo{position:absolute;right:14px;top:67%;z-index:15;color:#071217;font-size:15px;font-weight:1000;transform:rotate(-8deg) scale(.7);opacity:0;text-shadow:2px 2px 0 #fff;transition:.16s}.tap-combo.show{opacity:1;transform:rotate(-8deg) scale(1.05)}
+.scene-bottomline>div:first-child{display:grid;gap:2px}.scene-bottomline strong{font-size:14px;letter-spacing:.07em;max-width:270px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.scene-bottomline span{font-size:7px;font-weight:1000;letter-spacing:.09em;opacity:.67}.level-badge{width:42px;height:42px;border-radius:12px;background:rgba(248,246,235,.86);border:1px solid rgba(5,16,19,.34);display:grid;place-items:center;align-content:center;box-shadow:3px 3px 0 rgba(0,0,0,.12)}.level-badge span{font-size:6px}.level-badge b{font-size:15px;line-height:1}
+.theme-midnight .habitat-sky{background:linear-gradient(180deg,#111a3b,#242a53 60%,#34343f 60.5%,#272631)}.theme-midnight .habitat-stars{opacity:.72}.theme-midnight .habitat-window{background:radial-gradient(circle at 70% 25%,#fff2c2 0 14px,transparent 15px),linear-gradient(#101a38,#28324e)}.theme-neon .habitat-sky{background:radial-gradient(circle at 50% 35%,rgba(22,200,255,.26),transparent 32%),linear-gradient(180deg,#191424,#271934 60%,#17151e 60.5%,#101015)}.theme-neon .habitat-floor{background:repeating-linear-gradient(90deg,rgba(22,200,255,.15) 0 1px,transparent 1px 48px),linear-gradient(#191524,#0c0b10)}.theme-neon .habitat-window{background:linear-gradient(135deg,#ff67bd,#16c8ff);box-shadow:0 0 24px rgba(22,200,255,.35)}.theme-golden .habitat-sky{background:linear-gradient(180deg,#f7d87e,#f5e4b1 60%,#b9843f 60.5%,#855726)}.theme-golden .habitat-floor{background:repeating-linear-gradient(90deg,rgba(255,255,255,.1) 0 1px,transparent 1px 48px),linear-gradient(#b27933,#6f431e)}
+.progress-wrap{padding:11px 7px 4px}.progress-copy{display:flex;justify-content:space-between;align-items:center;font-size:8px;letter-spacing:.08em}.progress-copy span{color:var(--muted)}.progress-copy b{font-size:9px}.progress-track{height:10px;border-radius:999px;background:#252d39;border:1px solid #35404f;overflow:hidden;margin-top:6px}.progress-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#83e7ff);border-right:2px solid #d5f7ff;transition:width .35s}
+.need-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px 3px 2px}.need-card{border:1px solid #2c3542;background:#131821;border-radius:13px;padding:8px;display:grid;grid-template-columns:25px 1fr;gap:7px;text-align:left;position:relative;min-height:54px}.need-card>span{font-size:18px;display:grid;place-items:center}.need-card>div{display:grid;grid-template-columns:1fr auto;align-items:end;gap:5px}.need-card small{font-size:7px;color:var(--muted);letter-spacing:.08em}.need-card b{font-size:10px}.need-card>i{grid-column:1/-1;height:5px;background:#252d38;border-radius:99px;overflow:hidden}.need-card>i u{display:block;height:100%;width:100%;background:var(--lime);text-decoration:none;transition:width .3s,background .3s}
+
+/* CARE + CARDS */
+.care-panel,.memory-strip,.high-score-card,.profile-card{margin-top:11px;border:1px solid var(--line);background:linear-gradient(145deg,#151a22,#0f1218);border-radius:20px;padding:13px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+.section-heading{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}.section-heading small,.view-hero small,.game-card small,.quest-copy small,.profile-card small,.high-score-card small,.bottom-sheet header small,.minigame-shell header small{font-size:7px;color:var(--cyan);font-weight:1000;letter-spacing:.14em}.section-heading h2{font-size:12px;margin:3px 0 0;letter-spacing:.04em}.section-heading h2 span{color:var(--cyan)}.section-heading.compact{margin-bottom:6px}.text-button{border:0;background:transparent;color:var(--muted);font-size:8px;font-weight:1000;letter-spacing:.08em;padding:6px}
+.care-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.care-action{min-height:68px;border:1px solid #323c49;border-radius:15px;background:linear-gradient(145deg,#212834,#171c25);box-shadow:0 5px 0 #080a0e;display:flex;align-items:center;gap:8px;padding:9px;text-align:left;transition:transform .08s}.care-action:active{transform:translateY(4px);box-shadow:0 1px 0 #080a0e}.care-action:disabled{opacity:.34;filter:grayscale(1)}.care-icon{width:37px;height:37px;border-radius:12px;background:#2c3440;display:grid;place-items:center;font-size:20px}.care-action span:last-child{display:grid;gap:3px}.care-action b{font-size:10px}.care-action small{font-size:7px;color:var(--muted)}.care-action.feed .care-icon{background:#573b2c}.care-action.play .care-icon{background:#154255}.care-action.clean .care-icon{background:#284034}.care-action.sleep .care-icon{background:#2d3157}
+.quest-card{margin-top:11px;border:1px solid #3a4350;background:linear-gradient(120deg,#19222b,#11151c);border-radius:19px;padding:11px;display:grid;grid-template-columns:39px 1fr auto;gap:10px;align-items:center}.quest-icon{width:39px;height:39px;border-radius:12px;background:var(--gold);color:#191109;display:grid;place-items:center;font-size:20px;font-weight:1000;box-shadow:inset 0 0 0 3px rgba(255,255,255,.25)}.quest-copy{display:grid;gap:3px}.quest-copy b{font-size:9px}.quest-copy span{font-size:7px;color:var(--muted)}.quest-track{height:5px;background:#303846;border-radius:99px;overflow:hidden}.quest-track i{display:block;height:100%;width:0;background:var(--gold)}.quest-card>button{border:1px solid #705d1e;background:#463b19;border-radius:10px;padding:9px 8px;font-size:8px;font-weight:1000;color:#ffe67e}.quest-card>button:not(:disabled){background:var(--gold);color:#171008;animation:claimPulse 1.4s infinite}.quest-card>button:disabled{opacity:.45}
+.memory-strip p{margin:0;color:var(--muted);font-size:9px;line-height:1.48}.ad-slot{margin:12px 0;border:1px dashed #3d4653;background:rgba(20,25,33,.6);border-radius:15px;padding:17px;text-align:center;color:#657082}.ad-slot span{display:block;font-size:8px;font-weight:1000;letter-spacing:.1em}.ad-slot small{display:block;font-size:7px;margin-top:5px}
+
+/* SECONDARY VIEWS */
+.view-hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:23px;padding:22px 18px 20px;background:#151a22;min-height:166px;box-shadow:var(--shadow)}.view-hero h1{font-size:29px;line-height:.97;letter-spacing:-.045em;margin:8px 0 10px;position:relative;z-index:2}.view-hero p{position:relative;z-index:2;margin:0;max-width:330px;color:var(--muted);font-size:9px;line-height:1.5}.arcade-hero{background:radial-gradient(circle at 85% 15%,rgba(255,93,110,.25),transparent 32%),linear-gradient(140deg,#20151c,#121720 64%)}.closet-hero{background:radial-gradient(circle at 80% 16%,rgba(255,104,189,.25),transparent 32%),linear-gradient(140deg,#201522,#121720 64%)}.journal-hero{background:radial-gradient(circle at 82% 12%,rgba(22,200,255,.22),transparent 32%),linear-gradient(140deg,#12212a,#121720 64%)}.farm-hero{background:radial-gradient(circle at 83% 14%,rgba(158,255,117,.22),transparent 32%),linear-gradient(140deg,#161f16,#121720 64%)}
+.game-card{margin-top:11px;display:grid;grid-template-columns:92px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:19px;padding:11px;background:linear-gradient(145deg,#171d26,#101319)}.game-art{height:88px;border-radius:14px;position:relative;overflow:hidden;display:grid;place-items:center}.game-art img{width:84px;height:84px;object-fit:contain;filter:drop-shadow(0 7px 0 rgba(0,0,0,.18))}.game-art span{position:absolute;right:4px;top:3px;font-size:23px}.power-art{background:linear-gradient(145deg,#6d2934,#241419)}.spark-art{background:linear-gradient(145deg,#1a5367,#111d24)}.forage-art{background:linear-gradient(145deg,#325722,#172016)}.game-card h2{font-size:13px;margin:4px 0 5px}.game-card p{font-size:8px;line-height:1.4;color:var(--muted);margin:0}.game-card>button{border:1px solid #3c4754;background:#252c37;border-radius:11px;padding:10px 8px;font-size:8px;font-weight:1000}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.score-grid div{background:#0c0f14;border:1px solid #252d38;border-radius:12px;padding:10px;text-align:center}.score-grid b{display:block;font-size:18px}.score-grid span{font-size:7px;color:var(--muted)}
+.closet-preview{height:260px;margin-top:11px;border:1px solid var(--line);border-radius:21px;background:radial-gradient(circle at 50% 46%,rgba(22,200,255,.18),transparent 35%),linear-gradient(180deg,#19212a,#0d1015);position:relative;overflow:hidden;display:grid;place-items:center;padding-bottom:34px}.closet-preview:before{content:"";position:absolute;left:14%;right:14%;bottom:40px;height:28px;border-radius:50%;background:rgba(0,0,0,.25);filter:blur(5px)}.closet-glow{position:absolute;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 70px rgba(22,200,255,.12)}.preview-actor{width:220px;height:210px;z-index:2}.closet-preview>div:last-child{position:absolute;left:14px;right:14px;bottom:12px;display:flex;justify-content:space-between;align-items:end}.closet-preview strong{font-size:13px}.closet-preview span{font-size:8px;color:var(--muted)}
+.shop-tabs,.journal-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:11px;padding:5px;background:#10141a;border:1px solid var(--line-soft);border-radius:14px}.journal-tabs{grid-template-columns:repeat(4,1fr)}.shop-tabs button,.journal-tabs button{border:0;border-radius:9px;background:transparent;padding:9px 4px;font-size:8px;font-weight:1000;color:var(--muted)}.shop-tabs button.active,.journal-tabs button.active{background:#232a35;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.shop-list{display:grid;gap:8px;margin-top:9px}.shop-item{display:grid;grid-template-columns:49px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:#131820;border-radius:15px;padding:9px}.shop-item-icon{width:48px;height:48px;border-radius:13px;background:#252d38;display:grid;place-items:center;font-size:24px}.shop-item h3{font-size:10px;margin:0 0 4px}.shop-item p{font-size:7px;color:var(--muted);line-height:1.35;margin:0}.shop-item button{border:1px solid #3a4654;background:#232b36;border-radius:10px;padding:9px 8px;min-width:65px;font-size:8px;font-weight:1000}.shop-item button.owned{background:#0d5166;border-color:#137b99}.shop-item button:disabled{opacity:.36}
+.profile-card{display:grid;grid-template-columns:68px 1fr auto;align-items:center;gap:10px}.profile-avatar{width:68px;height:68px;border-radius:18px;background:radial-gradient(circle,rgba(22,200,255,.25),transparent 70%),#0d1117;border:1px solid #2d3744;display:grid;place-items:center}.profile-avatar img{width:67px;height:67px;object-fit:contain}.profile-card h2{font-size:14px;margin:4px 0}.profile-card p{font-size:8px;color:var(--muted);line-height:1.35;margin:0}.profile-card>button{border:1px solid #3a4654;background:#222a35;border-radius:10px;padding:9px 7px;font-size:7px;font-weight:1000}
+.journal-panel{margin-top:9px;display:grid;gap:8px}.stat-board,.settings-board,.memory-card,.collection-card,.badge-card{border:1px solid var(--line);background:#131820;border-radius:16px;padding:12px}.stat-board h3,.settings-board h3{font-size:10px;margin:0 0 10px}.stat-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}.stat-tile{background:#0c1015;border:1px solid #242c37;border-radius:12px;padding:10px}.stat-tile b{font-size:17px;display:block}.stat-tile span{font-size:7px;color:var(--muted)}.pet-vitals{display:grid;gap:7px;margin-top:10px}.vital-row{display:grid;grid-template-columns:84px 1fr 34px;gap:7px;align-items:center;font-size:8px}.vital-row i{height:7px;background:#252d38;border-radius:99px;overflow:hidden}.vital-row i u{display:block;height:100%;background:var(--cyan);text-decoration:none}.vital-row b{text-align:right}
+.collection-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.collection-card{position:relative;min-height:150px;padding:9px;text-align:center;overflow:hidden}.collection-card img{width:100px;height:100px;object-fit:contain}.collection-card.locked img{filter:brightness(0);opacity:.24}.collection-card strong{display:block;font-size:9px}.collection-card span{font-size:7px;color:var(--muted)}.rarity-pill{position:absolute;right:6px;top:6px;font-size:6px;padding:4px 5px;border-radius:99px;background:#252d38}
+.memory-list,.badge-list{display:grid;gap:8px}.memory-card{display:grid;grid-template-columns:40px 1fr;gap:10px}.memory-icon{width:40px;height:40px;border-radius:12px;background:#252d38;display:grid;place-items:center;font-size:20px}.memory-card h3,.badge-card h3{font-size:9px;margin:0 0 4px}.memory-card p,.badge-card p{font-size:7px;color:var(--muted);line-height:1.4;margin:0}.memory-card time{display:block;font-size:6px;color:#657082;margin-top:5px}.badge-card{display:grid;grid-template-columns:42px 1fr;gap:10px;align-items:center;opacity:.4}.badge-card.unlocked{opacity:1;border-color:#385767}.badge-icon{width:42px;height:42px;border-radius:13px;background:#222b36;display:grid;place-items:center;font-size:21px}
+.settings-board{display:grid;gap:7px}.setting-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #252d37;padding:10px 0}.setting-row:last-child{border-bottom:0}.setting-row span{font-size:8px}.setting-row small{font-size:7px;color:var(--muted);display:block;margin-top:3px}.toggle{appearance:none;width:44px;height:25px;background:#343d49;border-radius:999px;position:relative;transition:.2s}.toggle:after{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.toggle:checked{background:#0e8bae}.toggle:checked:after{left:22px}.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.settings-actions button,.wide-button,.ghost-button{border:1px solid #36414f;background:#202732;border-radius:12px;padding:11px;font-size:8px;font-weight:1000}.wide-button{width:100%;margin-top:8px}.wide-button.danger{border-color:#692c35;background:#25161a;color:#ff8995}.keeper-code{font-size:11px;letter-spacing:.12em;color:var(--cyan);word-break:break-all}
+
+/* NAV + SHEETS */
+.bottom-nav{position:fixed;z-index:90;left:50%;bottom:var(--safe-bottom);transform:translateX(-50%);width:min(calc(100% - 24px),496px);height:67px;border:1px solid #2a3340;background:rgba(13,16,22,.92);border-radius:21px;display:grid;grid-template-columns:repeat(5,1fr);padding:6px;box-shadow:0 20px 55px rgba(0,0,0,.55);backdrop-filter:blur(18px)}.bottom-nav button{border:0;border-radius:14px;background:transparent;color:#717b8b;display:grid;place-items:center;align-content:center;gap:4px}.bottom-nav button span{font-size:17px;line-height:1}.bottom-nav button b{font-size:6.4px;letter-spacing:.06em}.bottom-nav button.active{background:#202732;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:120;opacity:0;pointer-events:none;transition:.22s;backdrop-filter:blur(4px)}.sheet-backdrop.show{opacity:1;pointer-events:auto}.bottom-sheet{position:fixed;z-index:121;left:50%;bottom:0;transform:translate(-50%,104%);width:min(100%,520px);max-height:min(82dvh,760px);overflow:auto;background:#10141b;border:1px solid #303a47;border-radius:27px 27px 0 0;padding:9px 14px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -30px 80px rgba(0,0,0,.65);transition:transform .3s cubic-bezier(.2,.82,.2,1)}.bottom-sheet.show{transform:translate(-50%,0)}.sheet-handle{width:46px;height:5px;border-radius:99px;background:#343e4b;margin:0 auto 11px}.bottom-sheet header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.bottom-sheet header h2{font-size:18px;margin:4px 0 0}.bottom-sheet header>button{width:36px;height:36px;border:1px solid #333e4a;border-radius:11px;background:#1c222c;font-size:20px}.sheet-body{display:grid;gap:8px}.sheet-card{display:grid;grid-template-columns:49px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:#171c24;border-radius:15px;padding:10px}.sheet-card-icon{width:48px;height:48px;border-radius:13px;background:#262f3a;display:grid;place-items:center;font-size:24px}.sheet-card h3{font-size:10px;margin:0 0 4px}.sheet-card p{font-size:7px;color:var(--muted);line-height:1.35;margin:0}.sheet-card button{border:1px solid #3d4856;background:#252d38;border-radius:10px;padding:9px 8px;font-size:8px;font-weight:1000;min-width:65px}.sheet-card button:disabled{opacity:.34}.sheet-section-title{font-size:7px;color:var(--muted);letter-spacing:.14em;margin:8px 2px 0}.sheet-note{border:1px dashed #3c4652;border-radius:14px;padding:13px;color:var(--muted);font-size:8px;line-height:1.45;text-align:center}.input-row{display:flex;gap:8px}.input-row input{min-width:0;flex:1;border:1px solid #35404e;background:#0b0f14;border-radius:11px;padding:11px}.input-row button{border:1px solid #3c4754;background:#222a35;border-radius:11px;padding:0 12px;font-size:8px;font-weight:1000}
+.modal-overlay{position:fixed;inset:0;z-index:160;display:none;place-items:center;background:rgba(4,5,8,.88);padding:17px;backdrop-filter:blur(7px)}.modal-overlay.show{display:grid}.modal-card{width:min(100%,440px);border:1px solid #34404c;background:#11161d;border-radius:24px;padding:18px;box-shadow:var(--shadow);text-align:center}.modal-art{font-size:62px;margin:3px}.modal-card h2{font-size:22px;margin:8px 0}.modal-card p{font-size:9px;line-height:1.5;color:var(--muted);margin:0 0 13px}.modal-card .big-line{font-size:14px;color:#fff;font-weight:1000;min-height:42px}.modal-buttons{display:grid;gap:8px}.modal-buttons button{border:1px solid #3b4754;background:#222a35;border-radius:13px;padding:12px;font-size:9px;font-weight:1000}.modal-buttons button.primary{background:var(--cyan);border-color:#b9f2ff;color:#061117}.modal-buttons button.danger{background:#3a1c22;border-color:#7e343e;color:#ff9ba4}
+
+/* MINI GAMES */
+.minigame-overlay{position:fixed;inset:0;z-index:180;background:rgba(5,7,10,.96);padding:var(--safe-top) 12px var(--safe-bottom);overflow:auto}.minigame-shell{width:min(100%,500px);margin:auto}.minigame-shell header{display:flex;justify-content:space-between;align-items:end;margin-bottom:10px}.minigame-shell header h2{font-size:20px;margin:4px 0 0}.minigame-shell header>div:last-child{text-align:right}.minigame-shell header b{display:block;font-size:23px}.minigame-shell header span{font-size:8px;color:var(--muted)}.mini-arena{height:min(63dvh,520px);min-height:380px;border:2px solid #33404d;border-radius:22px;position:relative;overflow:hidden;background:
+  linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),
+  radial-gradient(circle at 50% 38%,rgba(22,200,255,.11),transparent 35%),#0b0f14;background-size:29px 29px,29px 29px,100% 100%,100% 100%;box-shadow:inset 0 0 40px rgba(0,0,0,.45)}.mini-target{position:absolute;width:78px;height:78px;border:4px solid #090d12;border-radius:50%;background:var(--cyan);font-size:31px;display:grid;place-items:center;box-shadow:0 0 0 8px rgba(22,200,255,.16),0 12px 22px rgba(0,0,0,.45);transition:left .08s,top .08s,transform .08s}.mini-target:active{transform:scale(.82)}.mini-target.bad{background:var(--red);box-shadow:0 0 0 8px rgba(255,92,108,.15),0 12px 22px rgba(0,0,0,.45)}.mini-target.good{background:var(--lime);box-shadow:0 0 0 8px rgba(158,255,117,.15),0 12px 22px rgba(0,0,0,.45)}.minigame-shell>p{font-size:8px;color:var(--muted);text-align:center}.ghost-button{width:100%;background:transparent}
+
+/* TOASTS + PARTICLES */
+.toast-stack{position:fixed;z-index:240;top:var(--safe-top);left:50%;transform:translateX(-50%);width:min(calc(100% - 24px),480px);display:grid;gap:7px;pointer-events:none}.toast{border:2px solid #0c1419;background:#f7f2e7;color:#0a1015;border-radius:13px;padding:10px 12px;font-size:9px;font-weight:1000;line-height:1.35;box-shadow:5px 5px 0 rgba(0,0,0,.32);animation:toastIn .24s ease-out,toastOut .3s 2.7s forwards}.float-text{position:fixed;z-index:220;font-size:12px;font-weight:1000;color:#071217;text-shadow:2px 2px 0 #fff;pointer-events:none;animation:floatText .8s ease-out forwards}.confetti{position:fixed;z-index:230;width:7px;height:13px;pointer-events:none;animation:confettiFall 1.8s linear forwards}
+
+/* ANIMATION */
+@keyframes rainFall{to{transform:translate(-90px,125vh) rotate(11deg)}}
+@keyframes skyPulse{50%{opacity:.58}}
+@keyframes mistMove{to{transform:translateX(6%) scale(1.08)}}
+@keyframes originEggFloat{0%,100%{transform:translate(-50%,-50%) rotate(-2deg)}50%{transform:translate(-50%,-56%) rotate(2deg)}}
+@keyframes eggGlow{50%{transform:scale(1.11);opacity:.55}}
+@keyframes pulseOut{0%{opacity:.7;transform:translate(-50%,-50%) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
+@keyframes viewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes windowRain{to{transform:translate(-11px,120px) rotate(12deg)}}
+@keyframes dustFloat{0%,100%{transform:translate(0,0);opacity:.15}50%{transform:translate(14px,-20px);opacity:.6}}
+@keyframes eggIdle{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes crackShake{0%{transform:translateX(-2px)}100%{transform:translateX(2px)}}
+@keyframes rizoIdle{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+@keyframes sleepBreathe{0%,100%{transform:scaleY(.96)}50%{transform:scaleY(.91) translateY(4px)}}
+@keyframes auraPulse{0%{transform:scale(.65);opacity:.4}100%{transform:scale(1.18);opacity:0}}
+@keyframes boing{0%{transform:scale(1)}55%{transform:scale(1.08,.9)}100%{transform:scale(1)}}
+@keyframes heartFloat{0%{opacity:0;transform:translate(-50%,18px) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-38px) scale(1.2)}}
+@keyframes zzzFloat{50%{transform:translateY(-9px) rotate(-13deg);opacity:.55}}
+@keyframes sparkleSpin{0%{opacity:0;transform:translateX(-50%) rotate(-15deg) scale(.5)}35%{opacity:1}100%{opacity:0;transform:translateX(-50%) rotate(15deg) scale(1.25)}}
+@keyframes claimPulse{50%{box-shadow:0 0 17px rgba(255,212,90,.45)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px)}}
+@keyframes floatText{0%{opacity:0;transform:translate(-50%,0) scale(.7)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-68px) scale(1.2)}}
+@keyframes confettiFall{to{transform:translate(var(--dx),105vh) rotate(720deg);opacity:.08}}
+
+@media (max-height:760px){
+  .habitat-scene{height:355px}.game-header{height:44px;margin-bottom:7px}.brand-button img{width:32px;height:32px}.habitat-card{padding:7px}.pet-actor{width:245px;height:238px}.care-actions{grid-template-columns:repeat(4,1fr)}.care-action{min-height:62px;display:grid;place-items:center;text-align:center;gap:3px;padding:6px}.care-action span:last-child small{display:none}.care-icon{width:32px;height:32px}.origin-ui{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+}
+@media (min-width:760px){
+  .game-shell{padding-top:24px}.habitat-scene{height:455px}.origin-ui{padding-bottom:34px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
+}
+body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+
+
+/* RIZO FOREVER UPDATE */
+.brand-button em{display:block;font-style:normal;font-size:6px;color:var(--cyan);letter-spacing:.16em;margin-bottom:4px}.brand-button strong{font-size:15px}.store-pill{height:35px;min-width:48px;padding:0 9px;border:1px solid #197c99;border-radius:999px;background:linear-gradient(180deg,#153d49,#0d242d);color:#c8f6ff;text-decoration:none;display:grid;place-items:center;font-size:7px;font-weight:1000;letter-spacing:.08em;box-shadow:0 7px 20px rgba(0,0,0,.25)}
+.rizo-origin-stamp{position:absolute;left:12px;bottom:48px;z-index:11;font-size:6px;letter-spacing:.14em;font-weight:1000;color:rgba(8,18,23,.56);background:rgba(247,242,231,.48);padding:4px 6px;border-radius:5px}
+.season-card{margin-top:10px;border:1px solid #315362;border-radius:18px;padding:12px;background:radial-gradient(circle at 88% 20%,rgba(22,200,255,.21),transparent 28%),linear-gradient(135deg,#16222b,#11161e);box-shadow:0 12px 28px rgba(0,0,0,.26);position:relative;overflow:hidden}.season-card:after{content:"✦";position:absolute;right:12px;top:-18px;font-size:88px;font-weight:1000;color:rgba(255,255,255,.035);transform:rotate(8deg)}.season-head{display:flex;justify-content:space-between;align-items:end;position:relative;z-index:1}.season-head small{display:block;color:var(--cyan);font-size:7px;letter-spacing:.14em}.season-head b{display:block;font-size:13px;margin-top:4px}.season-head span{font-size:8px;color:var(--gold)}.season-track{height:9px;background:#080c11;border:1px solid #2c3943;border-radius:99px;overflow:hidden;margin:10px 0 6px;position:relative;z-index:1}.season-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#9eff75,var(--gold));box-shadow:0 0 14px rgba(22,200,255,.5);transition:width .35s}.season-foot{display:flex;justify-content:space-between;font-size:7px;color:var(--muted);position:relative;z-index:1}
+.brand-drop-card{margin-top:10px;border:1px solid #2a3340;border-radius:18px;background:linear-gradient(135deg,#f7f2e7 0 34%,#11161e 34%);color:#071017;display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:center;padding:11px;overflow:hidden}.brand-drop-card .brand-face{font-size:34px;font-weight:1000;letter-spacing:-.1em;text-align:center}.brand-drop-card div:nth-child(2){color:#fff}.brand-drop-card small{display:block;font-size:6px;color:var(--cyan);letter-spacing:.14em}.brand-drop-card b{font-size:10px;display:block;margin:3px 0}.brand-drop-card p{font-size:7px;color:var(--muted);margin:0;line-height:1.35}.brand-drop-card a{border:1px solid #87e9ff;background:var(--cyan);color:#061117;text-decoration:none;border-radius:10px;padding:10px 8px;font-size:7px;font-weight:1000;white-space:nowrap}
+.expedition-card{border:1px solid #2d3a46;background:linear-gradient(145deg,#131a22,#0c1016);border-radius:20px;padding:13px;margin-top:10px}.expedition-head{display:flex;justify-content:space-between;gap:10px}.expedition-head small{font-size:7px;color:var(--cyan);letter-spacing:.13em}.expedition-head h2{font-size:14px;margin:4px 0}.expedition-status{font-size:8px;color:var(--muted);text-align:right;max-width:48%}.expedition-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.expedition-options button,.expedition-claim{border:1px solid #35424e;background:#1c2530;border-radius:12px;padding:10px 5px;font-size:7px;font-weight:1000}.expedition-options button span{display:block;font-size:17px;margin-bottom:4px}.expedition-options button:disabled{opacity:.35}.expedition-claim{width:100%;margin-top:9px;background:linear-gradient(180deg,#16c8ff,#0e84aa);color:#061117;border-color:#a5efff;animation:claimPulse 1.2s infinite}
+.real-shop-banner{margin:11px 0 2px;border:1px solid #34414e;border-radius:18px;padding:14px;background:radial-gradient(circle at 85% 20%,rgba(22,200,255,.2),transparent 28%),#121820;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.real-shop-banner small{color:var(--cyan);font-size:7px;letter-spacing:.14em}.real-shop-banner h2{font-size:14px;margin:4px 0}.real-shop-banner p{font-size:7px;color:var(--muted);margin:0;line-height:1.45}.real-shop-banner a{border:1px solid #b9f2ff;background:var(--cyan);color:#061117;text-decoration:none;border-radius:11px;padding:11px 10px;font-size:7px;font-weight:1000;text-align:center}
+.capsule-machine{border:1px solid #32414d;border-radius:18px;padding:14px;background:radial-gradient(circle at 18% 5%,rgba(255,104,189,.18),transparent 26%),radial-gradient(circle at 90% 80%,rgba(22,200,255,.16),transparent 28%),#121820;margin-bottom:10px}.capsule-machine h2{font-size:15px;margin:4px 0}.capsule-machine p{font-size:8px;color:var(--muted);line-height:1.45}.capsule-wallet{display:flex;gap:8px;font-size:8px;margin:8px 0}.capsule-wallet b{color:var(--gold)}.capsule-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.capsule-actions button{border:1px solid #3d4a57;background:#202936;border-radius:12px;padding:11px 7px;font-size:8px;font-weight:1000}.capsule-actions button:last-child{background:linear-gradient(180deg,#7e3d8e,#44234e);border-color:#a86ab5}.pity-track{height:7px;border-radius:99px;background:#080c11;overflow:hidden;margin-top:9px}.pity-track i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .3s}.lore-archive{display:grid;gap:8px;margin-top:10px}.lore-fragment{border:1px solid #2a3440;background:#141a22;border-radius:14px;padding:11px}.lore-fragment.locked{filter:grayscale(1);opacity:.34}.lore-fragment small{font-size:6px;color:var(--cyan);letter-spacing:.13em}.lore-fragment h3{font-size:10px;margin:4px 0}.lore-fragment p{font-size:7px;color:var(--muted);line-height:1.45;margin:0}
+.collection-card.secret{border-color:#b8f5ff;box-shadow:0 0 18px rgba(185,245,255,.14)}.collection-card.legendary{border-color:#8a6d22}.rarity-pill.secret{background:#dffbff;color:#061117}.rarity-pill.legendary{background:#ffd54a;color:#171008}
+.sensory-flash{position:fixed;inset:0;z-index:210;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(255,255,255,.45),transparent 34%)}.sensory-flash.pop{animation:sensoryPop .34s ease-out}.screen-shake{animation:screenShake .32s ease-out}.pet-actor.head-no img{animation:headNo .58s cubic-bezier(.3,.8,.3,1)}.pet-actor.overloaded img{animation:overload .85s ease-in-out}.pet-actor.happy-jump img{animation:happyJump .48s ease-out}.pet-actor.mutation-starborn .aura-ring{opacity:1;border-color:rgba(255,255,255,.7);box-shadow:0 0 24px rgba(255,255,255,.4)}.pet-actor.mutation-stormmarked:after{content:"ϟ";position:absolute;right:20%;top:19%;z-index:7;color:#fff;font-size:24px;text-shadow:0 0 8px var(--cyan)}.pet-actor.mutation-hollow{filter:saturate(.45) contrast(1.12);text-shadow:0 0 20px #000}.pet-actor.diamond{filter:drop-shadow(0 0 18px rgba(202,249,255,.72))}.pet-actor.glitch img{animation:rizoIdle 2.35s ease-in-out infinite,glitchJolt 3.8s steps(1) infinite}.pet-actor.obsidian{filter:drop-shadow(0 0 18px rgba(83,101,170,.45))}
+.particle-pop{position:fixed;z-index:225;pointer-events:none;font-size:12px;font-weight:1000;animation:particlePop .72s ease-out forwards}.rarity-reveal{position:relative}.rarity-reveal img{width:145px;height:145px;object-fit:contain;filter:drop-shadow(0 0 25px var(--reveal-color,#16c8ff))}.rarity-reveal:before{content:"";position:absolute;inset:8px;border:2px solid var(--reveal-color,#16c8ff);border-radius:50%;animation:auraPulse 1.2s infinite}.modal-card.secret-reveal{border-color:#c9fbff;box-shadow:0 0 70px rgba(202,249,255,.25)}
+.accessory-layer.beanie:before{content:"";position:absolute;left:29%;top:10%;width:43%;height:28%;background:#1b1e27;border:7px solid #080b0f;border-radius:50% 50% 22% 22%;transform:rotate(-4deg)}.accessory-layer.beanie:after{content:"";position:absolute;left:42%;top:19%;z-index:2;color:var(--cyan);font-size:15px;font-weight:1000}.accessory-layer.halo:before{content:"";position:absolute;left:31%;top:3%;width:39%;height:13%;border:7px solid #fff3a5;border-radius:50%;filter:drop-shadow(0 0 8px #ffe66d)}.accessory-layer.horns:before,.accessory-layer.horns:after{content:"";position:absolute;top:12%;width:21%;height:28%;background:#ff4f57;border:6px solid #080b0f;clip-path:polygon(50% 0,100% 100%,0 75%)}.accessory-layer.horns:before{left:24%;transform:rotate(-17deg)}.accessory-layer.horns:after{right:23%;transform:rotate(17deg)}.accessory-layer.headphones:before{content:"";position:absolute;left:23%;top:31%;width:55%;height:28%;border:9px solid #161922;border-bottom:0;border-radius:50% 50% 0 0}.accessory-layer.headphones:after{content:"";position:absolute;left:20%;top:48%;width:17%;height:21%;background:var(--pink);border:6px solid #0a0d12;border-radius:8px;box-shadow:154px 0 0 -6px var(--pink),154px 0 0 0 #0a0d12}.accessory-layer.flower:before{content:"✿";position:absolute;right:24%;top:16%;font-size:47px;color:#fff59b;text-shadow:0 0 0 #0a1115,2px 3px 0 #0a1115}.accessory-layer.wings:before,.accessory-layer.wings:after{content:"";position:absolute;z-index:-1;top:40%;width:34%;height:34%;background:#11151d;border:7px solid #06080c;clip-path:polygon(100% 44%,60% 0,55% 35%,10% 15%,30% 55%,0 90%,58% 76%,75% 100%)}.accessory-layer.wings:before{left:-3%;transform:rotate(-12deg)}.accessory-layer.wings:after{right:-3%;transform:scaleX(-1) rotate(-12deg)}.accessory-layer.eyepatch:before{content:"";position:absolute;left:26%;top:42%;width:23%;height:20%;background:#080a0e;border-radius:50%;transform:rotate(8deg)}.accessory-layer.eyepatch:after{content:"";position:absolute;left:25%;top:37%;width:50%;height:5px;background:#080a0e;transform:rotate(-9deg)}.accessory-layer.scarf:before{content:"";position:absolute;left:26%;bottom:24%;width:49%;height:15%;background:#16c8ff;border:6px solid #080b0f;border-radius:50%;transform:rotate(2deg)}.accessory-layer.scarf:after{content:"";position:absolute;right:28%;bottom:8%;width:12%;height:25%;background:#16c8ff;border:5px solid #080b0f;transform:rotate(-16deg)}
+.theme-forest .habitat-sky{background:radial-gradient(circle at 50% 15%,#b9eaa3,transparent 18%),linear-gradient(180deg,#5ea67b,#244d3e 60%,#36543a 60.5%,#203827)}.theme-forest .habitat-floor{background:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 48px),linear-gradient(#41663b,#25391f)}.theme-arcade .habitat-sky{background:linear-gradient(rgba(22,200,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,104,189,.13) 1px,transparent 1px),linear-gradient(#121229,#25153c 60%,#16121f 60.5%,#0b0a10);background-size:28px 28px,28px 28px,100% 100%}.theme-arcade .habitat-window{background:linear-gradient(135deg,#16c8ff,#ff68bd);box-shadow:0 0 30px rgba(255,104,189,.4)}.theme-cloud .habitat-sky{background:radial-gradient(ellipse at 22% 27%,#fff 0 12%,transparent 13%),radial-gradient(ellipse at 68% 18%,#fff 0 15%,transparent 16%),linear-gradient(#8bdfff,#dff8ff 60%,#c8d7df 60.5%,#9aaeb9)}.theme-void .habitat-sky{background:radial-gradient(circle at 50% 40%,#41275f,transparent 20%),radial-gradient(circle at 20% 20%,#16c8ff 0 2px,transparent 3px),radial-gradient(circle at 80% 30%,#fff 0 1px,transparent 2px),linear-gradient(#070611,#130b21 60%,#0a0810 60.5%,#050407);background-size:100% 100%,53px 53px,37px 37px,100% 100%}.theme-void .habitat-floor{background:linear-gradient(#130b20,#06050a)}
+@keyframes headNo{0%,100%{transform:rotate(0)}18%{transform:rotate(-9deg) translateX(-5px)}38%{transform:rotate(9deg) translateX(5px)}58%{transform:rotate(-7deg)}78%{transform:rotate(5deg)}}@keyframes overload{0%,100%{transform:rotate(0) scale(1)}20%{transform:rotate(-8deg) scale(.96)}40%{transform:rotate(8deg) scale(1.02)}60%{transform:translateY(8px) rotate(-5deg)}80%{transform:translateY(5px) rotate(4deg)}}@keyframes happyJump{0%{transform:translateY(0)}45%{transform:translateY(-28px) scale(1.06,.94)}100%{transform:translateY(0)}}@keyframes sensoryPop{0%{opacity:0}24%{opacity:.48}100%{opacity:0}}@keyframes screenShake{0%,100%{transform:none}20%{transform:translateX(-3px) rotate(-.2deg)}40%{transform:translateX(3px) rotate(.2deg)}60%{transform:translateX(-2px)}80%{transform:translateX(1px)}}@keyframes particlePop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}25%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(1.3)}}@keyframes glitchJolt{0%,92%,100%{transform:none;filter:none}93%{transform:translateX(5px);filter:hue-rotate(60deg)}95%{transform:translateX(-4px);filter:hue-rotate(-50deg)}97%{transform:none}}
+@media(max-width:390px){.store-pill{min-width:38px;padding:0 7px}.brand-drop-card{grid-template-columns:58px 1fr}.brand-drop-card a{grid-column:1/-1}.expedition-options{grid-template-columns:1fr}.capsule-actions{grid-template-columns:1fr}}
+
+
+/* LIVING GARDEN / RAISE-BASED EVOLUTION */
+.habitat-toys{position:absolute;inset:0;z-index:4;pointer-events:none}
+.garden-toy{position:absolute;pointer-events:auto;border:0;padding:0;display:grid;place-items:center;color:#071016;font-weight:1000;box-shadow:0 5px 0 rgba(0,0,0,.22);transition:transform .14s,filter .14s;touch-action:manipulation}
+.garden-toy:active{transform:translateY(3px) scale(.95);box-shadow:0 2px 0 rgba(0,0,0,.22)}
+.garden-toy:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.toy-ball{left:24px;bottom:44px;width:32px;height:32px;border-radius:50%;background:linear-gradient(45deg,var(--pink) 0 50%,#fff 50%);border:3px solid rgba(0,0,0,.45);transform:rotate(12deg)}
+.toy-stump{right:26px;bottom:33px;width:48px;height:42px;border-radius:8px 8px 4px 4px;background:linear-gradient(90deg,#8b512b,#c07b3e,#75411f);border:4px solid rgba(0,0,0,.42);font-size:15px}
+.toy-puddle{left:88px;bottom:27px;width:55px;height:20px;border-radius:50%;background:#4cbfe4;border:3px solid rgba(0,0,0,.25);font-size:14px}
+.toy-bush{right:88px;bottom:43px;width:39px;height:35px;border-radius:55% 45% 50% 45%;background:#6cca6e;border:3px solid rgba(0,0,0,.33);font-size:14px}
+.garden-growth{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch;padding:0 8px 9px}
+.growth-overview{min-width:0;border:1px solid #2b3a48;background:linear-gradient(135deg,#151c25,#0e131a);border-radius:13px;padding:10px 11px;text-align:left;box-shadow:0 4px 0 #07090d;position:relative;overflow:hidden}
+.growth-overview:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--align,var(--cyan))}
+.growth-overview span,.growth-overview small{display:block;color:var(--muted);font-size:7px;letter-spacing:.09em}.growth-overview b{display:block;font-size:12px;letter-spacing:.08em;margin:4px 0}.growth-overview.egg{grid-column:1/-1}
+.skill-mini-row{display:flex;gap:4px;align-items:end;background:#0c1016;border:1px solid #222b35;border-radius:13px;padding:7px 6px}
+.skill-mini-row i{position:relative;width:10px;height:38px;background:#252c36;border-radius:999px;overflow:hidden;display:flex;align-items:end;justify-content:center}.skill-mini-row i u{position:absolute;left:0;right:0;bottom:0;min-height:2px}.skill-mini-row i b{position:absolute;bottom:1px;z-index:2;font-size:7px;color:#05070a;text-shadow:0 0 2px #fff}
+.pet-actor.form-speed .aura-ring{opacity:.55;border-color:#16c8ff;transform:skewX(-10deg);animation-duration:1.15s}.pet-actor.form-power .aura-ring{opacity:.6;border:4px double #ff5c6c}.pet-actor.form-instinct .aura-ring{opacity:.7;border-color:#a46cff;box-shadow:0 0 22px rgba(164,108,255,.35)}.pet-actor.form-stamina .aura-ring{opacity:.55;border-color:#9eff75;box-shadow:inset 0 0 20px rgba(158,255,117,.18)}.pet-actor.form-luck .aura-ring,.pet-actor.form-royal .aura-ring{opacity:.9;border-color:#ffd45a;box-shadow:0 0 26px rgba(255,212,90,.45)}.pet-actor.form-prism .aura-ring{opacity:1;border-color:#fff;box-shadow:0 0 30px #16c8ff,0 0 48px #ff68bd}.pet-actor.form-pixel img{image-rendering:pixelated;animation-timing-function:steps(4)}.pet-actor.form-eclipse{filter:drop-shadow(0 0 18px rgba(121,84,255,.72))}.pet-actor.align-light:after{content:"✦";position:absolute;top:14%;right:22%;z-index:8;color:#fff39a;text-shadow:0 0 10px #fff}.pet-actor.align-shadow:after{content:"☾";position:absolute;top:14%;right:22%;z-index:8;color:#9a75ff;text-shadow:0 0 10px #7a54ff}.pet-actor.resting{filter:saturate(.35) brightness(.7);transform:translateY(18px) scale(.8)}
+.growth-sheet-hero{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:center;border:1px solid #2f3b49;background:#111721;border-radius:15px;padding:13px;margin-bottom:10px}.growth-sheet-hero>span{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--align),#0c1016 72%);border:1px solid var(--align);font-size:24px}.growth-sheet-hero small{font-size:8px;color:var(--muted)}.growth-sheet-hero h3{margin:4px 0;font-size:17px}.growth-sheet-hero p{margin:0;color:var(--muted);font-size:9px;line-height:1.45}
+.aptitude-list{display:grid;gap:8px}.aptitude-row{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;border:1px solid #2b3441;background:#151a23;border-radius:12px;padding:9px}.aptitude-row>span{font-size:18px;text-align:center}.aptitude-row div>b{display:block;font-size:10px}.aptitude-row div>small{display:block;color:var(--muted);font-size:7px;margin:2px 0 6px}.aptitude-row div>i{height:7px;background:#252d38;border-radius:999px;display:block;overflow:hidden}.aptitude-row div>i>u{display:block;height:100%}.aptitude-row>strong{font-size:13px}.aptitude-row>strong em{font-style:normal;color:var(--muted);font-size:8px}
+.evolution-board{background:linear-gradient(135deg,#151c27,#10141b)}.evolution-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.evolution-head small{font-size:7px;color:var(--muted)}.evolution-head h3{font-size:20px;margin:4px 0}.evolution-head p{font-size:9px;color:var(--muted);line-height:1.45;margin:0}.evolution-head>span{white-space:nowrap;border:1px solid var(--align);color:var(--align);border-radius:999px;padding:7px 8px;font-size:8px}.alignment-track{height:8px;border-radius:999px;background:linear-gradient(90deg,#6d46d9,#24303b 50%,#ffe894);position:relative;margin:13px 0 7px}.alignment-track i{position:absolute;top:50%;width:15px;height:15px;border-radius:50%;background:#fff;border:3px solid #111;transform:translate(-50%,-50%)}.evolution-copy,.board-note{font-size:8px;color:var(--muted);line-height:1.45}.legacy-board p{font-size:9px;color:var(--muted);line-height:1.5}.legacy-list{display:grid;gap:5px;margin-top:10px}.legacy-list span{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #27303b;padding-top:7px;font-size:8px;color:var(--muted)}.legacy-list span b{color:var(--cream)}.legacy-ready{background:linear-gradient(90deg,#a46cff,#16c8ff)!important;color:#071016!important}.gene-preview{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.gene-preview span{display:flex;justify-content:space-between;border:1px solid #2d3744;background:#151b24;border-radius:9px;padding:8px;font-size:8px}.gene-preview b{color:var(--cyan)}
+.collection-card img[src*="retro"]{image-rendering:pixelated}.collection-card img[src*="shadow"]{filter:drop-shadow(0 0 12px rgba(121,84,255,.7))}
+@media(max-width:350px){.garden-growth{grid-template-columns:1fr}.skill-mini-row{height:47px;justify-content:center}.toy-puddle{left:70px}.toy-bush{right:76px}.evolution-head{display:block}.evolution-head>span{display:inline-block;margin-top:8px}}
+
+
+.garden-visitor{position:absolute;right:4%;left:auto;top:27%;bottom:auto;z-index:5;width:82px;height:95px;border:0;background:transparent;padding:0;display:grid;place-items:center;cursor:pointer;animation:visitorBob 2.3s ease-in-out infinite;filter:drop-shadow(0 7px 0 rgba(0,0,0,.16))}.garden-visitor[hidden]{display:none}.garden-visitor img{width:72px;height:72px;object-fit:contain;transform:scale(.72);image-rendering:auto}.garden-visitor.retro img{image-rendering:pixelated}.garden-visitor.shadow img{filter:drop-shadow(0 0 9px var(--visitor-color))}.garden-visitor span{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);width:max-content;max-width:115px;overflow:hidden;text-overflow:ellipsis;background:#10151d;color:#fff;border:1px solid var(--visitor-color,#16c8ff);border-radius:999px;padding:4px 6px;font-size:6px;letter-spacing:.06em;white-space:nowrap}.garden-visitor:active{transform:scale(.92)}
+@keyframes visitorBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.social-board p{font-size:9px;line-height:1.5;color:var(--muted)}.social-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.social-actions button,.resonance-button{border:1px solid #35485b;background:#17202a;color:#fff;border-radius:10px;padding:9px;font-size:8px;font-weight:1000;letter-spacing:.05em;cursor:pointer}.visitor-history{display:grid;gap:5px;margin-top:9px}.visitor-history span{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #26313d;padding-top:6px;font-size:8px;color:var(--muted)}.visitor-history b{color:#fff}.visit-sheet{text-align:center}.visit-art{font-size:56px;color:var(--cyan);margin:7px}.visit-sheet p{font-size:10px;line-height:1.55;color:var(--muted)}.visit-sheet textarea,.visit-code-output{width:100%;min-height:112px;resize:vertical;background:#090d12;color:#fff;border:1px solid #354454;border-radius:12px;padding:11px;font:9px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:9px 0}.collection-card{padding-bottom:9px}.collection-card .resonance-button{width:100%;margin-top:7px;min-height:34px}.collection-card.resonating{border-color:#ffd45a;box-shadow:0 0 0 1px #ffd45a,0 0 20px rgba(255,212,90,.16)}.collection-card.resonating .resonance-button{background:#5f4910;border-color:#ffd45a;color:#fff4bd}
+@media(max-width:350px){.garden-visitor{left:3%;width:66px}.garden-visitor img{width:60px;height:60px}.social-actions{grid-template-columns:1fr}}
+
+/* ===== v22 LIVING WORLD / PERSONALITY PASS ===== */
+.habitat-scene{--camera-x:0px;--camera-y:0px;--camera-scale:1;transform:translate3d(var(--camera-x),var(--camera-y),0) scale(var(--camera-scale));transition:transform .48s cubic-bezier(.2,.82,.2,1),filter .45s}
+.habitat-scene.camera-land{animation:v22CameraLand .38s cubic-bezier(.2,.9,.3,1)}
+.habitat-scene.camera-reward{animation:v22CameraReward .75s cubic-bezier(.2,.9,.2,1)}
+.pet-actor{--gaze-x:0px;--gaze-y:0px;--life-tilt:0deg}
+.pet-actor .rizo-motion-shell{transform:translate3d(var(--gaze-x),var(--gaze-y),0) rotate(var(--life-tilt));transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+.pet-actor.behavior-look-left .rizo-motion-shell{--gaze-x:-3px;--life-tilt:-1.2deg}.pet-actor.behavior-look-right .rizo-motion-shell{--gaze-x:3px;--life-tilt:1.2deg}
+.pet-actor.behavior-yawn .rizo-motion-shell{animation:v22Yawn 1.85s ease-in-out}.pet-actor.behavior-sneeze .rizo-motion-shell{animation:v22Sneeze .72s cubic-bezier(.3,.85,.25,1)}
+.pet-actor.behavior-wave .rizo-motion-shell{animation:v22Wave 1.45s ease-in-out}.pet-actor.behavior-dizzy .rizo-motion-shell{animation:v22Dizzy 1.8s ease-in-out}.pet-actor.behavior-doze .rizo-motion-shell{animation:v22Doze 3.4s ease-in-out infinite}
+.pet-actor.behavior-annoyed{filter:saturate(.78) contrast(1.08)}.pet-actor.behavior-proud .aura-ring{opacity:.9;box-shadow:0 0 30px var(--pet-color)}
+.life-particle{position:absolute;z-index:3;pointer-events:none;opacity:0;will-change:transform,opacity;font-size:14px;text-shadow:0 2px 4px rgba(0,0,0,.25);animation:v22LifeParticle var(--life-duration,4.5s) ease-in-out forwards}
+.life-particle.brand{width:18px;height:18px;background:url('./assets/rizo-full-mark.png') center/contain no-repeat;filter:drop-shadow(0 0 5px rgba(255,255,255,.45))}
+.weather-fx.is-windy .dust{animation-duration:2.3s}.weather-fx.is-snowy:before{content:'✦  ·  ✦  ·';position:absolute;inset:0;color:rgba(255,255,255,.7);font-size:16px;letter-spacing:38px;animation:v22Snow 7s linear infinite}
+.wearable{--material-lag:0deg}.wearable.material-cloth .wearable-front{animation:v22Cloth 2.6s ease-in-out infinite}.wearable.material-metal .wearable-front{filter:drop-shadow(0 0 2px rgba(255,255,255,.42))}.wearable.material-glass .wearable-front{animation:v22Glass 5.8s ease-in-out infinite}.wearable.material-leather .wearable-body{filter:contrast(1.06) saturate(.9)}
+.mood-chip{transition:border-color .3s,box-shadow .3s,transform .3s}.mood-chip.life-active{transform:translateY(-1px);box-shadow:3px 5px 0 rgba(0,0,0,.14)}
+body.life-night .habitat-scene{filter:brightness(.88) saturate(.93)}body.life-dawn .habitat-scene{filter:sepia(.08) saturate(1.05)}
+@keyframes v22Yawn{0%,100%{transform:scale(1)}35%{transform:translateY(5px) scale(1.045,.94) rotate(-2deg)}62%{transform:translateY(-2px) scale(.985,1.035)}}
+@keyframes v22Sneeze{0%,100%{transform:none}34%{transform:translate(-2px,3px) rotate(-3deg) scale(.98)}48%{transform:translate(7px,-5px) rotate(5deg) scale(1.04)}70%{transform:translate(-2px,1px) rotate(-1deg)}}
+@keyframes v22Wave{0%,100%{transform:none}25%{transform:rotate(-3deg) translateY(-3px)}50%{transform:rotate(4deg) translateY(-6px)}75%{transform:rotate(-2deg) translateY(-3px)}}
+@keyframes v22Dizzy{0%,100%{transform:none}20%{transform:rotate(7deg) translateX(5px)}40%{transform:rotate(-8deg) translateX(-6px)}60%{transform:rotate(6deg) translateX(4px)}80%{transform:rotate(-4deg) translateX(-2px)}}
+@keyframes v22Doze{0%,100%{transform:translateY(2px) rotate(-1deg) scale(1)}50%{transform:translateY(7px) rotate(1deg) scale(1.015,.985)}}
+@keyframes v22LifeParticle{0%{opacity:0;transform:translate3d(0,8px,0) scale(.7) rotate(0)}18%,72%{opacity:.9}100%{opacity:0;transform:translate3d(var(--life-dx,20px),var(--life-dy,-55px),0) scale(1.05) rotate(var(--life-rot,18deg))}}
+@keyframes v22Snow{from{transform:translateY(-18px)}to{transform:translateY(180px)}}
+@keyframes v22Cloth{0%,100%{transform:rotate(-.45deg)}50%{transform:rotate(.65deg)}}@keyframes v22Glass{0%,82%,100%{filter:none}88%{filter:brightness(1.45) drop-shadow(0 0 4px rgba(255,255,255,.8))}}
+@keyframes v22CameraLand{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(3px) scale(.995)}70%{transform:translateY(-2px) scale(1.006)}}@keyframes v22CameraReward{0%,100%{transform:scale(1)}35%{transform:scale(1.018)}65%{transform:scale(1.008)}}
+@media(prefers-reduced-motion:reduce){.life-particle,.weather-fx.is-snowy:before,.wearable.material-cloth .wearable-front,.wearable.material-glass .wearable-front{animation:none!important}.habitat-scene{transform:none!important}}
+
+</style>
+<title>RIZO LIFE — A RIZO APPAREL GAME</title>
+<link href="./assets/icon-192.png" rel="apple-touch-icon"/>
+<meta content="Rizo.game: raise, collect, customize, and discover Rizos in a browser pet game by Rizo Apparel." name="description"/>
+<link href="https://play.rizo.store/" rel="canonical"/>
+
+<link href="./manifest.webmanifest" rel="manifest"/><link href="./launch-v79-defense-alive.css" rel="stylesheet"/><link href="./rtd-defense-integration.css" rel="stylesheet"/><link href="./worker-b-economy.css" rel="stylesheet"/><link href="./worker-e-abilities-depth.css" rel="stylesheet"/>
+<link href="./v81-art.css" rel="stylesheet"/><link href="./rtd-worker-i-feel.css" rel="stylesheet"/><link href="./arcade-v75.css" rel="stylesheet"/><link href="./arcade-v83.css" rel="stylesheet"/><link href="./arcade-v84-depth.css" rel="stylesheet"/><link href="./rizo-v85-handmade.css" rel="stylesheet"/><link href="./arcade-v87-system.css" rel="stylesheet"/><link href="./worker-d-towers.css" rel="stylesheet"/><link href="./worker-h-ui.css" rel="stylesheet"/><style id="rizo-egg-anchor-v363">
+/* V36.3 live-iPhone fix: explicit flex centering with a non-positioned egg.
+   This deliberately does not depend on inset sizing, CSS translate, or an
+   external stylesheet cache. */
+#habitatScene #petTapTarget{
+  position:absolute!important;
+  left:15px!important;right:15px!important;top:48px!important;bottom:50px!important;
+  inset:48px 15px 50px!important;
+  width:auto!important;height:auto!important;margin:0!important;padding:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  overflow:visible!important;
+}
+#habitatScene #petTapTarget.tutorial-focus{position:absolute!important}
+#habitatScene #petTapTarget>#eggActor{
+  position:relative!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;inset:auto!important;
+  flex:0 0 155px!important;width:155px!important;height:195px!important;
+  margin:0!important;translate:none!important;transform:none!important;
+  align-self:center!important;justify-self:center!important;
+}
+#habitatScene #eggActor>.egg-motion-shell{
+  position:relative!important;width:155px!important;height:195px!important;
+  display:grid!important;place-items:center!important;margin:0!important;
+}
+</style>
+</head>
+<body class="rizo-handmade">
+<noscript><div style="position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:#07090d;color:#fff;padding:24px;font:800 16px system-ui;text-align:center">RIZO.GAME NEEDS JAVASCRIPT.<br><small style="opacity:.7">Open this build in Safari or deploy the ZIP root as the site root.</small></div></noscript>
+<section id="rizoBootShell" role="status" aria-live="polite" aria-label="Rizo.game loading">
+  <div class="rizo-boot-card">
+    <small>RIZO.GAME // STARTUP</small>
+    <h1 data-rizo-boot-title>LOADING YOUR GARDEN</h1>
+    <p data-rizo-boot-reason>Checking the game files and restoring your local save.</p>
+    <div class="rizo-boot-pulse" aria-hidden="true"><i></i></div>
+    <div class="rizo-boot-actions">
+      <button type="button" data-rizo-reload>RELOAD CLEAN</button>
+      <button type="button" data-rizo-reset-cache>REPAIR APP CACHE &amp; RELOAD</button>
+    </div>
+  </div>
+</section>
+<section aria-labelledby="installTitle" aria-modal="true" class="install-gate" hidden="" id="rizoInstallGate" role="dialog">
+<div class="install-card">
+<div class="install-brand"><img alt="Rizo mascot" src="./assets/rizo-classic.png"/><div><b>RIZO.GAME</b><small>BY RIZO APPAREL</small></div></div>
+<span class="install-status"><i></i> YOUR PET SAVES ON THIS DEVICE</span>
+<h1 data-install-title="" id="installTitle">INSTALL THE FULL RIZO.GAME EXPERIENCE</h1>
+<p>Fullscreen play, a Home Screen icon, offline loading, and one tap back to your Rizo. No app store required.</p>
+<div class="install-benefits"><div><b>↗</b><span>FULLSCREEN</span></div><div><b>◉</b><span>HOME ICON</span></div><div><b>∞</b><span>SAVED PET</span></div></div>
+<div class="install-steps"><strong>HOW TO INSTALL</strong><ol data-install-steps=""></ol></div>
+<div class="install-actions"><button class="install-primary" data-install-button="" type="button">INSTALL RIZO.GAME</button><button class="install-secondary" data-play-browser="" type="button">PLAY IN BROWSER</button></div>
+<p class="install-meta">Recommended for ages 13+. By continuing, you agree to the <a href="./terms.html">Terms</a> and acknowledge the <a href="./privacy.html">Privacy Notice</a>.</p>
+</div>
+</section>
+<div aria-hidden="true" class="screen-grain"></div><div aria-hidden="true" class="sensory-flash" id="sensoryFlash"></div>
+<div aria-hidden="true" class="rain-layer" id="rainLayer"></div>
+<section aria-label="Rizo origin story" class="origin-screen" id="originScreen">
+<div class="origin-sky"></div>
+<div aria-hidden="true" class="moon"></div>
+<div aria-hidden="true" class="forest forest-far"></div>
+<div aria-hidden="true" class="forest forest-mid"></div>
+<div aria-hidden="true" class="forest forest-near"></div>
+<div aria-hidden="true" class="ground-mist"></div>
+<div aria-hidden="true" class="origin-path"></div>
+<button aria-label="Inspect the glowing egg" class="found-egg" id="foundEgg" type="button">
+<span class="egg-shell"><span class="egg-glow"></span></span>
+<span class="egg-pulse"></span>
+</button>
+<div class="origin-ui">
+<div class="origin-tag">RIZO LIFE // ORIGIN 001</div>
+<div class="story-box">
+<div class="speaker" id="storySpeaker">...</div>
+<p aria-live="polite" id="storyText"></p>
+<div class="story-choices" id="storyChoices"></div>
+<button class="story-next" id="storyNext" type="button">CONTINUE <span>›</span></button>
+</div>
+</div>
+<button class="skip-origin" hidden="" id="skipOrigin" type="button">SKIP ORIGIN</button>
+</section>
+<main class="game-shell" hidden="" id="gameShell">
+<header class="game-header">
+<button aria-label="Open Rizo profile" class="brand-button" id="brandButton" type="button">
+<img alt="" aria-hidden="true" src="./assets/rizo-classic.png"/>
+<span><em>RIZO APPAREL // FIELD UNIT</em><strong>RIZO.GAME</strong><small>KEEPER <b id="keeperShort">----</b></small></span>
+</button>
+<div class="header-right"><a aria-label="Shop Rizo Apparel" class="store-pill" href="https://rizo.store" rel="noopener" target="_blank">SHOP</a>
+<button aria-label="Daily gift" class="daily-gift" id="dailyGiftButton" type="button"><span>✦</span><b id="streakCount">1</b></button>
+<div aria-label="Embers" class="currency-pill"><span class="ember-coin">R</span><b id="coinCount">0</b></div>
+</div>
+</header>
+<section class="view active" data-view="home" id="viewHome">
+<div class="tutorial-banner" hidden="" id="tutorialBanner">
+<span id="tutorialStepBadge">01</span>
+<p id="tutorialText"></p>
+<button aria-label="Close tutorial" id="tutorialClose" type="button">×</button>
+</div>
+<section class="habitat-card" id="habitatCard">
+<div class="habitat-scene theme-rain" id="habitatScene">
+<div class="habitat-sky"></div>
+<div aria-hidden="true" class="habitat-stars"></div>
+<div aria-hidden="true" class="habitat-window"><i></i><i></i><i></i><i></i></div>
+<div aria-hidden="true" class="habitat-shelf"><span></span><span></span></div>
+<div aria-hidden="true" class="habitat-floor"></div>
+<div aria-label="Interactive garden toys" class="habitat-toys">
+<button aria-label="Play ball with Rizo" class="garden-toy toy-ball" data-garden-toy="ball" title="Ball: raises Speed" type="button"></button>
+<button aria-label="Train with the stump" class="garden-toy toy-stump" data-garden-toy="stump" title="Stump: raises Power" type="button">✦</button>
+<button aria-label="Splash in the puddle" class="garden-toy toy-puddle" data-garden-toy="puddle" title="Puddle: raises Stamina" type="button">≈</button>
+<button aria-label="Investigate the moon bush" class="garden-toy toy-bush" data-garden-toy="bush" title="Bush: raises Instinct" type="button">✦</button>
+</div>
+<div aria-hidden="true" class="weather-fx" id="weatherFx"></div><img aria-hidden="true" class="den-face-mark" src="./assets/rizo-full-mark.png" alt=""><div aria-hidden="true" class="den-care-trace" hidden id="denCareTrace"></div><div class="rizo-origin-stamp">A RIZO APPAREL GAME</div>
+<div class="scene-topline">
+<div class="mood-chip" id="moodChip"><i></i><span>CURIOUS</span></div>
+<button aria-label="Open quick actions" class="scene-menu-button" id="sceneMenuButton" type="button">•••</button>
+</div>
+<div aria-live="polite" class="thought-bubble" id="thoughtBubble"></div>
+<button aria-label="Talk to visiting Rizo" class="garden-visitor" data-visitor-interact="" hidden="" id="gardenVisitor" type="button"><span aria-hidden="true" class="accessory-layer wearable none" id="visitorAccessory"></span><img alt="" id="visitorSprite" src="./assets/rizo-classic.png"/><span id="visitorName">GUEST RIZO • VISITING</span></button>
+<button aria-label="Interact with your Rizo" class="pet-tap-target" id="petTapTarget" type="button">
+<div class="egg-actor" id="eggActor">
+<span class="egg-motion-shell" aria-hidden="true">
+<div class="egg-main"><span class="egg-crack">ϟ</span></div>
+<div class="egg-shadow"></div>
+</span>
+</div>
+<div class="pet-actor stage-spark" hidden="" id="petActor">
+<span class="aura-ring"></span>
+<span class="body-shadow"></span>
+<span aria-hidden="true" class="evolution-echo"></span>
+<span aria-hidden="true" class="evolution-rune"></span>
+<span class="rizo-motion-shell" aria-hidden="true">
+<img alt="Your Rizo" id="petSprite" src="./assets/rizo-classic.png"/>
+<span aria-hidden="true" class="rizo-grime"></span>
+<span class="face-fx" id="faceFx"></span>
+<span class="accessory-layer" id="accessoryLayer"></span>
+</span>
+<span aria-hidden="true" class="status-fx" id="statusFx"></span>
+</div>
+</button>
+<div class="tap-combo" id="tapCombo">x2</div>
+<div class="scene-bottomline">
+<div>
+<strong id="petName">MYSTERY EGG</strong>
+<span id="petDescriptor">WARM • DEFINITELY WEIRD</span>
+</div>
+<div class="level-badge"><span>LV</span><b id="petLevel">0</b></div>
+</div>
+</div>
+<div class="progress-wrap">
+<div class="progress-copy"><span id="growthTitle">HATCHING</span><b id="growthText">0%</b></div>
+<div class="progress-track"><i id="growthBar"></i></div>
+</div>
+<div class="need-grid" id="needGrid">
+<button class="need-card actionable-need" data-need="hunger" type="button"><span>●</span><div><small>FULL</small><b id="hungerText">100</b></div><i><u id="hungerBar"></u></i></button>
+<button class="need-card actionable-need" data-need="mood" type="button"><span>♥</span><div><small>HAPPY</small><b id="moodText">100</b></div><i><u id="moodBar"></u></i></button>
+<button class="need-card actionable-need" data-need="energy" type="button"><span>⚡</span><div><small>ENERGY</small><b id="energyText">100</b></div><i><u id="energyBar"></u></i></button>
+<button class="need-card actionable-need" data-need="hygiene" type="button"><span>✦</span><div><small>CLEAN</small><b id="hygieneText">100</b></div><i><u id="hygieneBar"></u></i></button>
+</div>
+<div aria-live="polite" class="garden-growth" id="gardenGrowth"></div>
+</section>
+<section class="care-panel">
+<div class="section-heading"><div><small>KEEPER KEYS // 04</small><h2><span id="careName">RIZO</span> // PICK A MOVE</h2></div><button aria-label="More care options" class="text-button" id="moreCareButton" type="button">MORE</button></div>
+<div class="care-actions">
+<button class="care-action feed" data-action="feed" type="button"><span class="care-icon">●</span><span><b>FEED</b><small>SNACKS</small></span></button>
+<button class="care-action play" data-action="play" type="button"><span class="care-icon">★</span><span><b>PLAY</b><small>BOND</small></span></button>
+<button class="care-action clean" data-action="clean" type="button"><span class="care-icon">✦</span><span><b>CLEAN</b><small>SPARKLE</small></span></button>
+<button class="care-action sleep" data-action="sleep" type="button"><span class="care-icon">☾</span><span><b id="sleepActionText">SLEEP</b><small>REST</small></span></button>
+</div>
+</section>
+<section class="quest-card">
+<div class="quest-icon">!</div>
+<div class="quest-copy"><small>DAILY MISCHIEF</small><b id="questTitle">TAP YOUR RIZO 20 TIMES</b><div class="quest-track"><i id="questBar"></i></div><span id="questText">0 / 20</span></div>
+<button disabled="" id="questClaim" type="button">R 30</button>
+</section>
+<section class="season-card" id="seasonCard">
+<div class="season-head"><div><small>RIZO RUN // ENDLESS SEASON</small><b id="seasonLevel">HEAT LEVEL 01</b></div><span id="seasonReward">NEXT: R 25</span></div>
+<div class="season-track"><i id="seasonBar"></i></div>
+<div class="season-foot"><span id="seasonText">0 / 100 HEAT</span><span id="keeperRank">ROOKIE KEEPER</span></div>
+</section>
+<section class="memory-strip">
+<div class="section-heading compact"><div><small>RECENT MEMORY</small><h2 id="memoryTitle">THE EGG IN THE RAIN</h2></div><button class="text-button" id="journalJump" type="button">JOURNAL</button></div>
+<p id="memoryText">You found something impossible under a tree and decided that was somehow your problem now.</p>
+</section>
+<section class="brand-drop-card">
+<div class="brand-face"><img src="./assets/rizo-full-mark.png" alt="Rizo"></div>
+<div><small>FROM THE BRAND THAT MADE THE GAME</small><b>WE MAKE REAL CLOTHES TOO.</b><p>Rizo Life is a playable doorway into Rizo Apparel.</p></div>
+<a href="https://rizo.store" rel="noopener" target="_blank">SHOP RIZO.STORE ↗</a>
+</section>
+<section aria-label="Sponsored content" class="ad-slot" data-ad-slot="home-feed" hidden=""></section>
+</section>
+<section class="view" data-view="arcade" id="viewArcade">
+<div class="view-hero arcade-hero"><small>RIZO AFTER DARK // 11 GAMES</small><h1>THE BACK<br/>ROOM.</h1><p>Ember Beat gets the good speakers. Defense gets the whole back wall. The rest survived because somebody refused to throw them out.</p><b class="arcade-hero-stamp">NO TOKEN REFUNDS</b></div>
+<div class="game-card rhythm-card arcade-headliner">
+<div class="game-art rhythm-art"><img alt="" src="./assets/rizo-violet.png"/><span>♫</span></div>
+<div><small>HOUSE FAVORITE // TEN TRACKS</small><h2>EMBER BEAT</h2><p>Four lanes, strict timing, real charts. Clean runs unlock harder songs and permanently build Speed and Bond.</p><div class="game-meta" data-arcade-meta="rhythm"></div></div>
+<button data-minigame="rhythm" type="button">DROP IN</button>
+</div>
+<div class="game-card maze-card">
+<div class="game-art maze-art"><img alt="" src="./assets/rizo-shadow.png"/><span>⌗</span></div>
+<div><small>THE HUNTERS STUDY YOU</small><h2>RIZO RUNAWAY</h2><p>Eat the Ember trail, bait three Shadow brains, then flip the chase with Prism Seeds. The ambusher learns the direction you favor.</p><div class="game-meta" data-arcade-meta="maze"></div></div>
+<button data-minigame="maze" type="button">RUN</button>
+</div>
+<div class="game-card walk-card">
+<div class="game-art walk-art"><img alt="" src="./assets/rizo-classic.png"/><span>☂</span></div>
+<div><small>TWO FORKS // WEATHER // LORE</small><h2>RAIN WALK</h2><p>Take your actual Rizo outside. Choose the trail, inspect strange finds, and let risk change the biome, weather, and story.</p><div class="game-meta" data-arcade-meta="walk"></div></div>
+<button data-minigame="walk" type="button">LEAVE</button>
+</div>
+<div class="game-card power-card">
+<div class="game-art power-art"><img alt="" src="./assets/rizo-classic.png"/><span>×</span></div>
+<div><small>COACH TAPE 03 // READ + EXECUTE</small><h2>POWER TAPE</h2><p>Coach calls JAB, BODY, or HOOK. Match the strike to the moving window, hold through bag feints, and build Overdrive.</p><div class="game-meta" data-arcade-meta="power"></div></div>
+<button data-minigame="power" type="button">PUNCH</button>
+</div>
+<div class="game-card spark-card">
+<div class="game-art spark-art"><img alt="" src="./assets/rizo-bubblegum.png"/><span>★</span></div>
+<div><small>GREED IS THE MECHANIC</small><h2>SPARK STASH</h2><p>Catch clean signals into an unbanked stash. Cash out safe or stay greedy for a multiplier while Shadow signals hunt the pile.</p><div class="game-meta" data-arcade-meta="spark"></div></div>
+<button data-minigame="spark" type="button">CHASE</button>
+</div>
+<div class="game-card forage-card">
+<div class="game-art forage-art"><img alt="" src="./assets/rizo-toxic.png"/><span>⌁</span></div>
+<div><small>PICKY ORDER // PICNIC PANIC</small><h2>FOREST LUNCH</h2><p>Pack an exact lunch ticket across three lanes. Tickets grow, and every second plate erupts into a short three-choice panic burst.</p><div class="game-meta" data-arcade-meta="forage"></div></div>
+<button data-minigame="forage" type="button">PACK</button>
+</div>
+<div class="game-card rush-card">
+<div class="game-art rush-art"><img alt="" src="./assets/rizo-glitch.png"/><span>↗</span></div>
+<div><small>ROOFTOP DELIVERY // DON'T DROP IT</small><h2>RIZO COURIER</h2><p>Double-jump the skyline, steal a Prism package, then survive two clean obstacles before the delivery actually pays.</p><div class="game-meta" data-arcade-meta="rush"></div></div>
+<button data-minigame="rush" type="button">SEND IT</button>
+</div>
+<div class="game-card memory-card">
+<div class="game-art memory-art"><img alt="" src="./assets/rizo-moss.png"/><span>▦</span></div>
+<div><small>PIRATE RADIO 96.3</small><h2>LOST SIGNAL</h2><p>Memorize the broadcast while the rule corrupts underneath you: reverse, opposite, rotate, then stacked transformations.</p><div class="game-meta" data-arcade-meta="memory"></div></div>
+<button data-minigame="memory" type="button">TUNE IN</button>
+</div>
+<div class="game-card glide-card">
+<div class="game-art glide-art"><img alt="" src="./assets/rizo-aurora.png"/><span>⌁</span></div>
+<div><small>CENTER-LINE FLIGHT</small><h2>SKYBOUND</h2><p>Wind fights every flap. Thread gate centers to charge Thermal Bursts that bend the physics and double clean scoring.</p><div class="game-meta" data-arcade-meta="glide"></div></div>
+<button data-minigame="glide" type="button">FLY</button>
+</div>
+<div class="game-card breaker-card">
+<div class="game-art breaker-art"><img alt="" src="./assets/rizo-ember.png"/><span>✦</span></div>
+<div><small>BROKEN X // FIRE TEETH // MORE</small><h2>EMBER FORGE</h2><p>Read authored Rizo-mark walls, shape the rebound, and crack CORE blocks to collapse the structure around them.</p><div class="game-meta" data-arcade-meta="breaker"></div></div>
+<button data-minigame="breaker" type="button">FORGE</button>
+</div>
+<div class="game-card defense-card">
+<div class="game-art defense-art"><img alt="" src="./assets/rizo-ember.png"/><span class="defense-card-balloon"><i></i></span></div>
+<div><small>THE BIG MACHINE // ENDLESS</small><h2>RIZO DEFENSE</h2><p>Your raised Rizos become the roster. Place, upgrade, read the route, survive bosses, weather, and stranger balloon properties.</p><div class="game-meta" data-arcade-meta="defense"></div></div>
+<button data-minigame="defense" type="button">DEFEND</button>
+</div>
+<section class="expedition-card">
+<div class="expedition-head"><div><small>PASSIVE ADVENTURE</small><h2>FOREST EXPEDITIONS</h2></div><div class="expedition-status" id="expeditionStatus">SEND RIZO OUT FOR LOOT AND LORE.</div></div>
+<div class="expedition-options" id="expeditionOptions">
+<button data-expedition="puddle"><span>☂</span>PUDDLE RUN<br/>2 MIN</button>
+<button data-expedition="trail"><span>🌲</span>RAIN TRAIL<br/>10 MIN</button>
+<button data-expedition="deep"><span>🌙</span>DEEP WOODS<br/>30 MIN</button>
+</div>
+<button class="expedition-claim" data-expedition-claim="" hidden="" id="expeditionClaim">CLAIM EXPEDITION LOOT</button>
+</section>
+<section class="high-score-card">
+<div><small>PERSONAL BESTS</small><h2>YOUR ARCADE LORE</h2></div>
+<div class="score-grid"><div data-arcade-best="rhythm"><b id="bestRhythm">0</b><span>EMBER BEAT</span></div><div data-arcade-best="maze"><b id="bestMaze">0</b><span>RIZO RUNAWAY</span></div><div data-arcade-best="walk"><b id="bestWalk">0</b><span>RAIN WALK</span></div><div data-arcade-best="power"><b id="bestPower">0</b><span>POWER TAPE</span></div><div data-arcade-best="spark"><b id="bestSpark">0</b><span>SPARK STASH</span></div><div data-arcade-best="forage"><b id="bestForage">0</b><span>FOREST LUNCH</span></div><div data-arcade-best="rush"><b id="bestRush">0</b><span>RIZO COURIER</span></div><div data-arcade-best="memory"><b id="bestMemory">0</b><span>LOST SIGNAL</span></div><div data-arcade-best="glide"><b id="bestGlide">0</b><span>SKYBOUND</span></div><div data-arcade-best="breaker"><b id="bestBreaker">0</b><span>EMBER FORGE</span></div><div data-arcade-best="defense"><b id="bestDefense">0</b><span>RIZO DEFENSE • WAVE</span></div></div>
+</section>
+<section aria-label="Sponsored content" class="ad-slot" data-ad-slot="arcade-between-games" hidden=""></section>
+</section>
+<section class="view" data-view="farm" id="viewFarm">
+<div id="farmContent"></div>
+</section>
+<section class="view" data-view="closet" id="viewCloset">
+<div class="view-hero closet-hero"><small>THE CLOSET</small><h1>MAKE RIZO<br/>LOOK EXPENSIVE.</h1><p>Accessories stay unlocked across every future Rizo.</p></div>
+<div class="closet-preview">
+<div class="closet-glow"></div>
+<div class="pet-actor stage-kid preview-actor" data-base-class="pet-actor preview-actor" id="closetActor">
+<span class="body-shadow"></span>
+<span aria-hidden="true" class="evolution-echo"></span>
+<span aria-hidden="true" class="evolution-rune"></span>
+<span class="rizo-motion-shell">
+<span class="accessory-layer" id="closetAccessory"></span>
+<img alt="Rizo preview" id="closetSprite" src="./assets/rizo-classic.png"/>
+</span>
+</div>
+<div><strong id="closetName">RIZO</strong><span id="closetVariant">CLASSIC BLUE</span></div>
+</div>
+<div class="shop-tabs" role="tablist">
+<button aria-selected="true" class="active" data-shop-tab="wear" role="tab" type="button">WEAR</button>
+<button aria-selected="false" data-shop-tab="rooms" role="tab" type="button">ROOMS</button>
+<button aria-selected="false" data-shop-tab="boosts" role="tab" type="button">BOOSTS</button>
+</div>
+<div class="shop-list" id="shopList"></div>
+<section class="real-shop-banner"><div><small>RIZO APPAREL // REAL-WORLD DROP</small><h2>YOUR RIZO IS DRESSED. YOU SHOULD BE TOO.</h2><p>Shop the actual clothing brand behind Rizo Life.</p></div><a href="https://rizo.store" rel="noopener" target="_blank">RIZO.STORE ↗</a></section>
+<section aria-label="Sponsored content" class="ad-slot" data-ad-slot="shop-footer" hidden=""></section>
+</section>
+<section class="view" data-view="journal" id="viewJournal">
+<div class="view-hero journal-hero"><small>KEEPER JOURNAL</small><h1>EVERY RIZO<br/>LEAVES LORE.</h1><p>Your pet, collection, memories, badges, and save tools live here.</p></div>
+<section class="profile-card">
+<div class="profile-avatar"><div class="mini-pet profile-pet stage-kid" data-base-class="mini-pet profile-pet" id="profileActor"><span class="mini-pet-shadow"></span><span aria-hidden="true" class="evolution-echo"></span><span aria-hidden="true" class="evolution-rune"></span><img alt="Current Rizo" id="profileSprite" src="./assets/rizo-classic.png"/><span class="accessory-layer none" id="profileAccessory"></span></div></div>
+<div><small id="profileRarity">MYSTERY</small><h2 id="profileName">MYSTERY EGG</h2><p id="profileBio">Found in the rain. Future unclear.</p></div>
+<button id="renameButton" type="button">RENAME</button>
+</section>
+<div aria-label="Journal sections" class="journal-tabs" role="tablist">
+<button aria-selected="true" class="active" data-journal-tab="stats" role="tab" type="button">STATS</button>
+<button aria-selected="false" data-journal-tab="collection" role="tab" type="button">RIZOS</button>
+<button aria-selected="false" data-journal-tab="memories" role="tab" type="button">LORE</button>
+<button aria-selected="false" data-journal-tab="settings" role="tab" type="button">MORE</button>
+</div>
+<div id="journalContent"></div>
+</section>
+<nav aria-label="Main navigation" class="bottom-nav">
+<button class="active" data-nav="home" type="button"><span>⌂</span><b>DEN</b></button>
+<button data-nav="arcade" type="button"><span>✦</span><b>ARCADE</b></button>
+<button data-nav="farm" type="button"><span>▰</span><b>HOUSE</b></button>
+<button data-nav="closet" type="button"><span>♢</span><b>CLOSET</b></button>
+<button data-nav="journal" type="button"><span>▤</span><b>JOURNAL</b></button>
+</nav>
+</main>
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<section aria-hidden="true" aria-labelledby="sheetTitle" aria-modal="true" class="bottom-sheet" id="bottomSheet" inert="" role="dialog">
+<div class="sheet-handle"></div>
+<header><div><small id="sheetKicker">RIZO LIFE</small><h2 id="sheetTitle">MENU</h2></div><button aria-label="Close" id="sheetClose" type="button">×</button></header>
+<div class="sheet-body" id="sheetBody"></div>
+</section>
+<section aria-hidden="true" aria-live="polite" aria-modal="true" class="modal-overlay" id="modalOverlay" role="dialog"></section>
+<section aria-labelledby="miniTitle" aria-modal="true" class="minigame-overlay" hidden="" id="miniGameOverlay" role="dialog">
+<div class="minigame-shell">
+<header><div><small id="miniKicker">RIZO ARCADE</small><h2 id="miniTitle">POWER TAP</h2></div><div><b id="miniTimer">10.0</b><span id="miniScore">0 PTS</span></div></header>
+<div class="mini-stage">
+<div aria-label="Interactive Rizo minigame playfield" class="mini-arena" id="miniArena" tabindex="0"></div>
+<div aria-live="polite" class="arcade-pause-panel" hidden="" id="miniPausePanel" role="group"></div>
+</div>
+<p id="miniHint">Tap the target before it escapes.</p>
+<div class="mini-actions">
+<button aria-expanded="false" class="mini-pause-button" id="miniPause" type="button">PAUSE</button>
+<button class="ghost-button" id="miniQuit" type="button">QUIT RUN</button>
+</div>
+</div>
+</section>
+<div aria-live="polite" class="toast-stack" id="toastStack"></div>
+<aside class="rizo-update-bar" id="rizoUpdateBar" hidden aria-live="polite"><div><small>RIZO.GAME UPDATE</small><b data-update-copy>New build ready.</b></div><button type="button" data-update-now>UPDATE NOW</button><button type="button" class="rizo-update-later" data-update-later aria-label="Dismiss update reminder">LATER</button></aside>
+<input accept="application/json" hidden="" id="importSaveInput" type="file"/>
+<!-- Load order matters: owner config -> install UX -> ad adapter -> game core. -->
+
+
+
+
+
+  <script src="./rizo-config.js"></script>
+  <script src="./install-manager.js"></script>
+  <script src="./monetization.js"></script>
+  <script src="./defense-core-v79.js"></script>
+  <script src="./defense-canvas-v79.js"></script>
+  <script src="./game-v79-defense.js"></script>
+</body>
+</html>

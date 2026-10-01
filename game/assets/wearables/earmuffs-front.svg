@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Rizo.game wearable artwork. Adapted from headphones. See ASSET-CREDITS.md. -->
+<ellipse cx="73" cy="411" rx="45" ry="64" fill="#d9f9ff" stroke="#080b0f" stroke-width="10" paint-order="stroke fill" /><ellipse cx="447" cy="411" rx="45" ry="64" fill="#d9f9ff" stroke="#080b0f" stroke-width="10" paint-order="stroke fill" /><ellipse cx="73" cy="411" rx="27" ry="42" fill="#a4efff" stroke="#16c8ff" stroke-width="6" paint-order="stroke fill" /><ellipse cx="447" cy="411" rx="27" ry="42" fill="#a4efff" stroke="#16c8ff" stroke-width="6" paint-order="stroke fill" /><path d="M46 397l14-13m-7 35l-16 6m38-54l5-20m394 46l-14-13m7 35l16 6m-38-54l-5-20" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke fill" opacity=".8"/>
+</svg>

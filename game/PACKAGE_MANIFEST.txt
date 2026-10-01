@@ -1,0 +1,92 @@
+RIZO V87 — ARCADE QUALITY PASS
+Baseline: RIZO_V87_PURPLE_POP_CORRECTION_FLAT
+Build marker: v87-first-ten-visual-nuance
+Branch: claude/rizo-arcade-quality-pass-o17io9
+Commit: c4879d5 (arcade quality pass + pause-aware scheduler)
+Deploy: extract this ZIP directly; index.html is at root.
+
+Focus: shared arcade infrastructure across all 11 modes. The individual games
+were already the strong part; what read as unfinished was that eleven modes
+each reinvented or skipped the shared layer. This pass builds that layer once
+and moves every mode onto it.
+
+NEW FILE
+  arcade-v87-system.css — authoritative arcade layer, loaded last. Legacy
+  arcade filenames (v75/v83/v84-depth/v85-handmade) are retained unchanged in
+  path; only the colliding shared rules moved here.
+
+INTERRUPTION SAFETY AND PAUSE
+- Backgrounding, ad breaks and the pause menu now share one freeze/thaw clock.
+  suspendRuntime() previously credited paused time back to mini.endAt for
+  Rhythm only, so a phone call or notification silently drained 8 of 11 runs.
+- Freeze sources stack: a notification arriving during an ad cannot thaw early.
+- Real shared pause: RESUME / RESTART / END RUN, frozen clock, frozen timer.
+  Defense pauses through its own interruption path, entry in its field menu.
+- Quit and Escape no longer destroy a run with zero friction. A run the arcade
+  would have credited confirms first and banks on confirm; an unqualified
+  warm-up run still exits silently.
+- Runs carry an end reason: death, time up, cleared, and voluntary exit are
+  four different result screens.
+
+ONE ARCADE INSTEAD OF ELEVEN
+- Skybound, Ember Forge and Rizo Runaway have their own music instead of
+  falling through to the home theme.
+- Spark Stash and Ember Forge streak HUDs were written to and never rendered.
+  Spark now shows chain, risk multiplier and the payout BANK will pay.
+- Rain Walk gained a results breakdown; all ten small games report four stats
+  drawn from play already tracked.
+- ARCADE_GAMES is the single source of truth for display names, art, energy
+  and run length. The score board no longer shows engineering ids, and Defense
+  is marked as a wave count rather than a point total.
+- Five hearts implementations collapsed into mini.lives / maxLives /
+  renderLives().
+- Every cabinet card shows BEST, ENERGY and RUN length; new personal bests get
+  real presentation.
+
+FINISH AND INPUT
+- Ember Forge paddle grabs and tracks relatively instead of teleporting.
+- Skybound and Rizo Courier no longer take gameplay input on their HUDs.
+- Rizo Courier art modifier, and card depth for the headliner and flagship.
+- sfx("ui") and sfx("coin") are real sounds; each mode family has a signature
+  win and failure.
+- Reduced motion is one blanket arcade rule plus OS prefers-reduced-motion.
+- #defenseDeployHint and #defensePlacementGuide were queried every frame and
+  never rendered; they exist now as a zero-layout placement coach.
+- Space (Skybound, Courier), left/right (Ember Forge, Forest Lunch), number
+  keys (Lost Signal), P to pause.
+
+NOT IN THIS PASS (deliberate)
+- Ember economy normalization: balance work that changes the value of existing
+  saves.
+- Per-game onboarding cards: 11 new flows plus a state.meta schema change.
+
+PAUSE-AWARE SCHEDULER
+- queueMiniTimeout() wrapped native setTimeout, so a hold stopped the run clock
+  and the frame loop but not the delayed gameplay callbacks riding on it: Lost
+  Signal's rune chain and input gate, its round transitions, Ember Beat's
+  3/2/1/GO countdown, Ember Forge's wall rebuild and Rizo Runaway's maze rebuild
+  all advanced behind the pause panel.
+- Buffs and invulnerability windows are absolute now() stamps and burned off in
+  real time during a hold.
+- Both are fixed: jobs bank their remaining delay and re-arm with exactly that
+  much left, and absolute deadlines are credited the frozen interval on thaw.
+  Holds stack by reason. A deadline that had already lapsed stays lapsed.
+- Found while testing: arcadeFreeze() registered a job hold only for the first
+  freeze source, so ending an ad while still backgrounded released the queue.
+
+VERIFICATION
+- 19 browser suites, 2 node suites, static defense audit: all green and
+  matching the pre-pass baseline. defense-core 31/31, service-worker 4/4,
+  static 80/80, defense-integration 77/77, defense-surfaces 76/76,
+  first-ten 41/41, all arcade suites 100%.
+- Three partials (rhythm-engine 13/14, phase7-art 42/43, consumer-pass 18/20)
+  were confirmed pre-existing by running them against the pre-pass commit.
+- tests/browser-v87-arcade-freeze.py: 65 checks proving no game state advances
+  during manual pause, background suspension or stacked ad+background (in both
+  release orders). 29 of them fail against the previous behaviour.
+- 90 additional targeted checks for behaviour no existing suite covered:
+  background credit-back across all 10 timed modes, stacked ad+background
+  freezes, pause/restart/quit paths, death vs timeout results, naming on every
+  surface, card meta, streak HUDs, relative drag, HUD hit-testing, keyboard
+  parity, music resolution, walk-fork survival across a background, and
+  Defense pause containment.

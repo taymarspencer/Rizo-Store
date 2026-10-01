@@ -1,0 +1,43 @@
+Rizo.game v83 — Player Pressure verification
+Build: v83-arcade-stress
+
+Adversarial findings fixed
+- Arcade card Energy requirement could disagree with the Energy actually consumed by a successful run.
+- Some v82 live CTA labels were overwritten by generic PLAY during normal rendering.
+- Zero-effort timed launches could previously produce permanent progression in multiple cabinets.
+- Power Tap feints could create passive value before meaningful play.
+- Power Tap could count a total whiff as a landed hit; whiffs could therefore advance hit-driven presentation.
+- Power Tap accepted repeated taps in the same scoring window.
+- Spark Catch's live instruction contradicted its Shadow-decoy rule.
+- Runaway's original opening direction could create an unfair first collision; hunters now wake after a readable grace.
+- Runaway could generate passive opening pellet score; that score is no longer bankable without real input/progress.
+- Skybound result language counted spawned gates rather than cleared gates.
+- Ember Breaker could process duplicate block contacts in an overlapping collision window.
+- Arcade Play sheet omitted newer cabinets and current rule depth.
+
+Verification matrix — all green
+- defense-core.test.js: 29/29
+- service-worker-policy.test.js: 4/4
+- static-defense-audit.py: 80/80
+- browser-launch-recovery.py: 5/5
+- browser-phase7-art.py: 43/43
+- browser-phase8-final.py: 17/17
+- browser-v74-route-fidelity.py: 19/19
+- browser-v75-arcade.py: 17/17
+- browser-v75-arcade-surfaces.py: 66/66
+- browser-v76-rhythm-engine.py: 14/14
+- browser-v77-feel-pass.py: 33/33
+- browser-v78-canvas-flow.py: 11/11
+- browser-v79-consumer-pass.py: 20/20
+- browser-v80-strategy-feel.py: 17/17
+- browser-v82-arcade-soul.py: 25/25
+- browser-v82-arcade-surfaces.py: 99/99
+- browser-v83-player-pressure.py: 27/27
+- browser-defense-integration.py: 77/77
+- browser-defense-surfaces.py: 76/76
+
+TOTAL: 679/679 checks green across 19 suites.
+
+Notes
+- The Phase 7 and Phase 8 test files contained three assertions already stale in the unmodified v82 baseline. Those assertions were updated to the current authored contracts rather than changing shipped Defense behavior backward.
+- v83's new checks distinguish a real qualified run from simply launching/closing a cabinet.

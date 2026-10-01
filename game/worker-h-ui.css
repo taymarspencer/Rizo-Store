@@ -1,0 +1,454 @@
+/* Worker H — phone-first RTD UI authority layer. UI-only: no combat/economy math. */
+
+/* Tactile defaults. */
+.defense-shell button{
+  -webkit-tap-highlight-color:transparent;
+}
+/* Roster cards own their own pointer drag (drag-a-Rizo-to-the-field), which needs
+   touch-action:none. A blanket tactile touch-action here outranked that deliberate
+   rule and handed the gesture back to the browser on touch devices. Same shape as
+   the .defense-tower press-transform exclusion below. */
+.defense-shell button:not(.defense-roster-pet){
+  touch-action:manipulation;
+}
+.defense-shell button:active:not(:disabled):not(.defense-tower){
+  translate:0 2px;
+  box-shadow:0 1px 0 #17151b;
+}
+.defense-command-actions button,
+.defense-stat,
+.defense-roster-pet,
+.defense-stage-frame>.defense-wave-button,
+.defense-upgrade-big{
+  transition:transform .12s ease,box-shadow .12s ease,filter .12s ease,background-color .12s ease;
+}
+
+/* HUD hierarchy: life and gold read first; actions are compact controls, not six equal panels. */
+.defense-command-deck{gap:.28rem}
+.defense-hud{gap:.28rem}
+.defense-stat{position:relative;min-height:46px;padding:.3rem .46rem}
+.defense-stat-value{position:relative;display:grid;place-items:center;min-width:2.35rem}
+.defense-stat-cash{background:linear-gradient(180deg,#ffe67b,#ffd45a)}
+.defense-stat-lives{background:linear-gradient(180deg,#ff9aaa,#ff7189)}
+.defense-stat-cash>i,.defense-stat-lives>i{width:24px;height:24px}
+.defense-stat-cash b,.defense-stat-lives b{font-variant-numeric:tabular-nums}
+.defense-cash-delta{
+  position:absolute;left:50%;top:-1.05rem;translate:-50% 0;opacity:0;pointer-events:none;
+  padding:.12rem .28rem;border:1.5px solid #17151b;border-radius:999px;background:#fff;color:#17151b;
+  font:950 .58rem/1 var(--def-font-mono);font-style:normal;white-space:nowrap;z-index:4;
+}
+.defense-cash-delta.show{animation:worker-h-cash-delta .72s cubic-bezier(.2,.8,.2,1) both}
+.defense-cash-delta.gain{background:#bcffca}
+.defense-cash-delta.spend{background:#ffd6de}
+@keyframes worker-h-cash-delta{0%{opacity:0;translate:-50% 5px;scale:.85}18%{opacity:1;translate:-50% -3px;scale:1.04}70%{opacity:1}100%{opacity:0;translate:-50% -12px;scale:.96}}
+
+.defense-command-actions button{overflow:visible;border-width:2px}
+.defense-command-actions button.ready{
+  background:#bcffca;color:#17151b;
+  box-shadow:0 3px 0 #17151b,0 0 0 3px rgb(115 232 144 / .2);
+}
+.defense-command-actions button.ready>i:first-child{animation:worker-h-ready-icon 1.15s ease-in-out infinite}
+.defense-command-actions button.sealed{filter:saturate(.45)}
+@keyframes worker-h-ready-icon{50%{transform:translateY(-2px) scale(1.08)}}
+
+/* Battlefield gets the visual authority. */
+.defense-stage-frame{
+  border-width:2px;
+  box-shadow:0 5px 0 #050407,inset 0 0 0 1px rgb(255 255 255 / .06),0 10px 30px rgb(0 0 0 / .3);
+}
+.defense-world{width:min(100%,82vh)}
+.defense-wave-banner{backdrop-filter:blur(6px);box-shadow:0 2px 0 rgb(23 21 27 / .75),0 8px 18px rgb(0 0 0 / .16)}
+.defense-stage-frame>.defense-wave-button:not(:disabled){animation:worker-h-wave-breathe 2.2s ease-in-out infinite}
+.defense-stage-frame>.defense-wave-button.running{animation:none}
+@keyframes worker-h-wave-breathe{50%{box-shadow:0 6px 0 #17151b,0 12px 28px rgb(0 0 0/.3)}}
+
+/* Boss information belongs on the battlefield, not in the text feed. */
+.defense-boss-overlay{
+  position:absolute;z-index:33;left:50%;top:.48rem;translate:-50% 0;width:min(58%,460px);min-height:48px;
+  display:grid;grid-template-columns:auto minmax(72px,1fr) auto;align-items:center;gap:.5rem;
+  padding:.38rem .5rem;border:3px solid #17151b;border-radius:13px;background:linear-gradient(90deg,#4b1f2c,#2c1822);
+  box-shadow:0 4px 0 #17151b,0 10px 26px rgb(0 0 0 / .35),0 0 0 3px rgb(255 99 127 / .12);
+  color:#fff;pointer-events:none;
+}
+.defense-boss-overlay[hidden]{display:none}
+.defense-boss-overlay span{display:grid;min-width:0}
+.defense-boss-overlay small{font:950 .56rem/1 var(--def-font-mono);color:#ff9fb0;letter-spacing:.08em}
+.defense-boss-overlay b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:950 .78rem/1 var(--def-font-display)}
+.defense-boss-overlay>i{height:11px;border:2px solid #17151b;border-radius:999px;background:#160c11;overflow:hidden}
+.defense-boss-overlay>i>u{display:block;height:100%;background:linear-gradient(90deg,#ff637f,#ffd45a);transition:width .12s linear}
+.defense-boss-overlay>em{font:950 .7rem/1 var(--def-font-mono);font-style:normal}
+.defense-shell:has(.defense-boss-overlay:not([hidden])) .defense-wave-banner{visibility:hidden}
+
+/* Quiet text feed; important events already use moment cards. */
+.defense-field-feed{min-height:0;gap:.18rem}
+.defense-message{min-height:36px;padding:.28rem .48rem;background:rgb(24 20 29 / .9);box-shadow:0 2px 0 #17151b}
+.defense-message b{font-size:.68rem}
+.defense-message span{font-size:.66rem}
+
+/* Upgrade flow: show what the purchase changes before the tap. */
+.defense-upgrade-big{position:relative;min-height:72px;background:linear-gradient(180deg,#ffe77e,#ffd45a)}
+.defense-upgrade-big>div{width:100%}
+.defense-upgrade-deltas{display:flex;flex-wrap:wrap;gap:.22rem;margin-top:.18rem;font-style:normal}
+.defense-upgrade-deltas u{
+  padding:.16rem .28rem;border:1.5px solid #17151b;border-radius:999px;background:#fff8dc;color:#17151b;
+  font:950 .66rem/1 var(--def-font-mono);text-decoration:none;
+}
+.defense-upgrade-big.cant-afford .defense-upgrade-deltas{opacity:.62}
+.defense-tower.just-upgraded .defense-rizo,.defense-tower.just-upgraded .mini-pet{animation:worker-h-upgrade-pop .76s cubic-bezier(.2,.8,.2,1)}
+@keyframes worker-h-upgrade-pop{0%{filter:brightness(1);transform:scale(1)}30%{filter:brightness(1.55);transform:translateY(-8px) scale(1.16)}60%{transform:translateY(-2px) scale(.98,1.06)}100%{filter:brightness(1);transform:scale(1)}}
+
+/* Placement reads as a mode, not a hidden state. */
+.defense-shell.has-placement .defense-stage-frame{box-shadow:0 5px 0 #050407,inset 0 0 0 3px rgb(115 232 144 / .42),0 10px 30px rgb(0 0 0 / .3)}
+.defense-shell.has-placement .defense-placement-coach{background:#bcffca;color:#17151b;border-color:#17151b}
+.defense-shell.has-placement .defense-deploy-hint{color:#2c4030}
+.defense-placement-label{font-size:.66rem;padding:5px 8px}
+
+/* Bench cards: actionable, thumb-sized, less copy. */
+.defense-roster-pet{min-width:0}
+.defense-roster-pet:not(:disabled):active{transform:scale(.985)}
+.defense-roster-pet.placement-selected{box-shadow:0 4px 0 #17151b,0 0 0 3px rgb(104 207 255 / .28)}
+.defense-roster-badge{min-width:26px;height:24px}
+
+/* Context sheets distinguish themselves without drowning the map. */
+.defense-context-scrim{background:rgb(5 4 8 / .48);backdrop-filter:blur(1.5px)}
+.defense-tower-panel,.defense-ability-tray,.defense-intel-tray,.defense-field-menu{
+  border-width:3px;background:linear-gradient(180deg,#2b2531,#1e1a23);box-shadow:0 -6px 0 #17151b,0 -18px 45px rgb(0 0 0 / .38);
+}
+.defense-ability-group.ready .defense-ability-card{background:#253a2b;color:#fff;box-shadow:inset 4px 0 0 #73e890}
+.defense-ability-card:disabled{opacity:.74}
+
+/* Phone first: six commands become one reachable ribbon instead of two full rows. */
+@media (max-width:599px) and (orientation:portrait){
+  .defense-shell{
+    grid-template-rows:auto minmax(0,1fr) auto auto auto;
+    gap:.24rem;
+    padding:max(.25rem,env(safe-area-inset-top)) max(.25rem,env(safe-area-inset-right)) max(.25rem,env(safe-area-inset-bottom)) max(.25rem,env(safe-area-inset-left));
+  }
+  .defense-command-deck{display:grid;grid-template-columns:minmax(0,1fr);gap:.24rem}
+  .defense-hud{grid-column:1;display:grid;grid-template-columns:minmax(76px,.72fr) minmax(108px,1fr);gap:.24rem}
+  .defense-stat{min-height:43px;justify-content:flex-start;padding:.24rem .42rem}
+  .defense-stat small{margin-left:auto;font-size:.54rem;letter-spacing:.05em}
+  .defense-command-actions{
+    grid-column:1;display:grid;grid-template-columns:repeat(6,minmax(44px,1fr));gap:.18rem;
+  }
+  .defense-command-actions button:not(.defense-wave-button){min-height:48px;padding:.13rem .08rem;border-radius:11px;flex-direction:column;gap:1px}
+  .defense-command-actions button:not(.defense-wave-button)>i:first-child{width:22px;height:22px;flex-basis:22px}
+  .defense-command-actions .defense-action-label{display:block;max-width:46px;font-size:8px;line-height:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .defense-action-circle>b{top:-4px;right:-3px;min-width:19px;height:19px;font-size:.51rem}
+  #defenseBenchButton{display:flex}
+  .defense-gate-flame-button>b{display:grid;max-width:36px;overflow:hidden}
+  .defense-stage-frame>.defense-wave-button{min-width:128px;min-height:50px;right:.4rem;bottom:.4rem}
+  /* The battlefield must stay square: Worker G's authored route paths are drawn on
+     a square viewBox, so a 1:1.08 field stretches the road away from the enemies
+     that walk it (observed ~10px boss/trail drift). Keep the reclaimed width, keep
+     the square. */
+  .defense-world{width:100%;max-height:100%;aspect-ratio:1/1}
+  .defense-wave-preview{min-height:30px;max-width:none;padding:.2rem .34rem;border-radius:9px}
+  .defense-wave-preview small,.defense-wave-preview em,.defense-wave-preview i{font-size:.56rem}
+  .defense-placement-coach{min-height:30px;padding:.18rem .28rem;border-radius:9px}
+  .defense-placement-guide{min-width:auto}
+  .defense-placement-guide>b{font-size:.62rem}
+  .defense-deploy-hint{font-size:.59rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .defense-roster{grid-auto-columns:104px;gap:.26rem;padding:.1rem .08rem .22rem}
+  .defense-roster-pet{height:68px;grid-template-columns:45px minmax(0,1fr);gap:.2rem;padding:.2rem .24rem;border-radius:11px}
+  .defense-roster-rizo{width:45px;height:57px}
+  .defense-roster-info b{font-size:.65rem}
+  .defense-roster-info small{font-size:.54rem;line-height:1.08}
+  .defense-roster-badge,.defense-roster-copies{scale:.86;transform-origin:top right}
+  .defense-cancel-placement{bottom:calc(100% + .12rem);min-height:38px}
+  .defense-boss-overlay{top:.38rem;width:calc(100% - .75rem);min-height:46px}
+  .defense-message span{display:block}
+  .defense-tower-panel,.defense-ability-tray,.defense-intel-tray,.defense-field-menu{max-height:min(46dvh,430px);padding:.56rem}
+  .v80-tower-shop .defense-panel-hero.v80{grid-template-columns:58px minmax(0,1fr) auto;padding-right:38px;gap:.4rem}
+  .defense-panel-rizo{max-width:58px}
+  .v80-tower-shop .defense-panel-wallet{min-width:60px;padding:.3rem .38rem}
+  .defense-path-choice button{min-height:72px}
+}
+
+/* Very short phones: preserve action access, sacrifice labels before battlefield. */
+@media (max-width:359px), (max-height:650px) and (orientation:portrait){
+  .defense-command-actions .defense-action-label{display:none}
+  .defense-command-actions button:not(.defense-wave-button){min-height:44px}
+  .defense-stat{min-height:40px}
+  .defense-stat small{display:none}
+  .defense-roster{grid-auto-columns:94px}
+  .defense-roster-pet{height:62px;grid-template-columns:40px minmax(0,1fr)}
+  .defense-roster-rizo{width:40px;height:52px}
+  .defense-deploy-hint{display:none}
+  .defense-placement-coach{min-height:24px}
+}
+
+/* Landscape: map remains center stage; controls stay compact. */
+@media (orientation:landscape){
+  .defense-shell .defense-command-actions{grid-template-columns:repeat(2,minmax(44px,1fr));gap:.26rem}
+  .defense-shell .defense-command-actions button{min-height:46px}
+  .defense-boss-overlay{width:min(70%,430px)}
+}
+
+/* Motion/contrast preferences. */
+@media (prefers-reduced-motion:reduce){
+  .defense-cash-delta.show,.defense-command-actions button.ready>i:first-child,.defense-stage-frame>.defense-wave-button:not(:disabled),.defense-tower.just-upgraded .defense-rizo,.defense-tower.just-upgraded .mini-pet{animation:none}
+  .defense-cash-delta.show{opacity:1;translate:-50% -5px}
+}
+@media (prefers-contrast:more){
+  .defense-boss-overlay,.defense-stat,.defense-command-actions button,.defense-roster-pet,.defense-upgrade-big{border-width:3px}
+  .defense-message{background:#17151b}
+}
+
+/* Worker H depth pass — progression should stay visible after the purchase sheet closes. */
+.defense-power-mark{
+  position:absolute;z-index:3;left:-7px;bottom:9px;display:flex;flex-direction:column;gap:2px;
+  align-items:center;pointer-events:none;opacity:0;transform-origin:50% 100%;
+  transition:opacity .16s ease,filter .16s ease,transform .16s ease;
+}
+.defense-power-mark>i{display:block;width:9px;height:3px;border:1px solid #17151b;border-radius:99px;background:#413847;box-shadow:0 1px 0 rgb(0 0 0/.35)}
+.defense-upgrade-1 .defense-power-mark,.defense-upgrade-2 .defense-power-mark,.defense-upgrade-3 .defense-power-mark,.defense-upgrade-4 .defense-power-mark{opacity:.88}
+.defense-upgrade-1 .defense-power-mark>i:nth-child(1),
+.defense-upgrade-2 .defense-power-mark>i:nth-child(-n+2),
+.defense-upgrade-3 .defense-power-mark>i,
+.defense-upgrade-4 .defense-power-mark>i{background:var(--tower-color);box-shadow:0 0 5px color-mix(in srgb,var(--tower-color) 62%,transparent),0 1px 0 #17151b}
+.defense-doctrine-power .defense-power-mark{transform:rotate(-8deg);filter:drop-shadow(0 0 3px #ff9b62)}
+.defense-doctrine-control .defense-power-mark{transform:rotate(8deg);filter:drop-shadow(0 0 3px #72e7ff)}
+.defense-doctrine-power .defense-power-mark::before,.defense-doctrine-control .defense-power-mark::before{
+  display:grid;place-items:center;width:15px;height:15px;margin-bottom:1px;border:1.5px solid #17151b;border-radius:50%;background:#fff2cf;color:#17151b;
+  font:950 .66rem/1 var(--def-font-mono);box-shadow:0 1px 0 #17151b;
+}
+.defense-doctrine-power .defense-power-mark::before{content:"◆";background:#ffb576}
+.defense-doctrine-control .defense-power-mark::before{content:"⌁";background:#bff4d6}
+.defense-upgrade-4 .defense-power-mark>i{height:4px}
+.defense-super-power .defense-power-mark,.defense-super-control .defense-power-mark{scale:1.12;opacity:1}
+.defense-shell[data-field-density="crowded"] .defense-tower:not(.selected) .defense-power-mark{opacity:.48;scale:.9}
+
+/* The sheet now communicates a run-long investment arc, not only the next transaction. */
+.defense-evolution-rail{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,1.25fr);align-items:center;gap:.5rem;
+  min-height:48px;padding:.38rem .48rem;border:1.5px solid #514758;border-radius:12px;background:rgb(18 15 22/.72);
+}
+.defense-evolution-copy{min-width:0;display:grid;gap:.08rem}
+.defense-evolution-copy small{font:950 .66rem/1 var(--def-font-mono);letter-spacing:.05em;color:#c9becf}
+.defense-evolution-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:950 .76rem/1 var(--def-font-display);color:#fff2cf}
+.defense-evolution-track{position:relative;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;gap:.18rem}
+.defense-evolution-track::before{content:"";position:absolute;left:8%;right:8%;top:50%;height:3px;translate:0 -50%;border:1px solid #17151b;border-radius:99px;background:#3c3441}
+.defense-evolution-track>i{position:relative;z-index:1;display:grid;place-items:center;width:24px;height:24px;justify-self:center;border:1.5px solid #17151b;border-radius:50%;background:#433a48;color:#bdb4c3;font:950 .66rem/1 var(--def-font-mono);font-style:normal;box-shadow:0 1px 0 #09080a}
+.defense-evolution-track>i.done{background:var(--panel-accent,#ffd45a);color:#17151b}
+.defense-evolution-track>i.current{outline:2px solid #fff2cf;outline-offset:2px;scale:1.06}
+.defense-evolution-rail.doctrine-power .path-node{background:#ffb576}
+.defense-evolution-rail.doctrine-control .path-node{background:#bff4d6}
+.defense-evolution-track>.max-node.done{background:#fff2a8;box-shadow:0 0 0 2px rgb(255 242 168/.16),0 0 12px rgb(255 212 90/.38)}
+
+/* Grouped powers reveal staggered reserves and the next charge at a glance. */
+.defense-ability-card{position:relative;padding-bottom:.72rem}
+.defense-ability-charge{position:absolute;left:64px;right:38px;bottom:.22rem;display:grid;grid-template-columns:auto minmax(34px,1fr);align-items:center;gap:.28rem;height:8px;pointer-events:none}
+.defense-ability-charge-pips{display:flex;align-items:center;gap:2px}
+.defense-ability-charge-pips>i{display:block;width:6px;height:6px;border:1px solid #17151b;border-radius:50%;background:#4d4453;box-shadow:0 1px 0 #09080a}
+.defense-ability-charge-pips>i.charged{background:#73e890;box-shadow:0 0 5px rgb(115 232 144/.65),0 1px 0 #09080a}
+.defense-ability-charge-pips>u{font:950 .66rem/1 var(--def-font-mono);text-decoration:none;color:#d8cfdd}
+.defense-ability-charge-rail{height:6px;overflow:hidden;border:1px solid #17151b;border-radius:99px;background:#19151d}
+.defense-ability-charge-rail>i{display:block;width:var(--ability-charge,0%);height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--panel-accent,#73e890),#fff2a8);transition:width .18s linear}
+.defense-ability-group.ready .defense-ability-charge-rail>i{background:#73e890}
+.defense-abilities-button.ready-arrival{animation:worker-h-power-arrival .72s cubic-bezier(.2,.8,.2,1) both}
+@keyframes worker-h-power-arrival{0%,100%{filter:none}24%{filter:brightness(1.35);box-shadow:0 3px 0 #17151b,0 0 0 5px rgb(115 232 144/.3),0 0 18px rgb(115 232 144/.42)}52%{filter:brightness(1.08);box-shadow:0 3px 0 #17151b,0 0 0 2px rgb(115 232 144/.18)}}
+
+/* Ordinary income, perfect defense, and run milestones should not all feel like the same receipt. */
+.defense-moment.moment-money.tone-perfect .defense-moment-card{
+  border-color:#bcffca;background:linear-gradient(105deg,rgb(17 30 24/.97),rgb(31 42 29/.96));
+  box-shadow:0 6px 0 #000,0 0 0 4px rgb(188 255 202/.12),0 18px 38px rgb(0 0 0/.38);
+}
+.defense-moment.moment-money.tone-perfect .defense-moment-card>i{background:#bcffca}
+.defense-moment.moment-money.tone-perfect b{color:#bcffca}
+.defense-moment.moment-money.tone-milestone .defense-moment-card{
+  position:relative;border-color:#fff2a8;background:linear-gradient(110deg,rgb(38 25 45/.98),rgb(28 24 29/.98) 48%,rgb(48 35 20/.97));
+  box-shadow:0 7px 0 #000,0 0 0 4px rgb(255 242 168/.14),0 20px 44px rgb(0 0 0/.42);
+}
+.defense-moment.moment-money.tone-milestone .defense-moment-card::after{content:"×  ×  ×";position:absolute;right:44px;top:-10px;color:#ffcf5a;font:950 .66rem/1 var(--def-font-mono);letter-spacing:.12em;text-shadow:0 2px #17151b}
+.defense-moment.moment-money.tone-milestone .defense-moment-card>i{background:#fff2a8;box-shadow:0 2px 0 #000,0 0 12px rgb(255 212 90/.5)}
+.defense-moment.moment-money.tone-milestone b{color:#fff2a8}
+
+@media (max-width:599px) and (orientation:portrait){
+  .defense-evolution-rail{grid-template-columns:minmax(0,.82fr) minmax(145px,1.18fr);min-height:44px;padding:.32rem .4rem;gap:.35rem}
+  .defense-evolution-track>i{width:22px;height:22px}
+  .defense-ability-charge{left:58px;right:34px}
+}
+@media (max-width:359px), (max-height:650px) and (orientation:portrait){
+  .defense-evolution-copy small{display:none}
+  .defense-evolution-rail{grid-template-columns:minmax(70px,.65fr) minmax(138px,1.35fr);min-height:40px}
+  .defense-evolution-track>i{width:20px;height:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .defense-abilities-button.ready-arrival{animation:none;box-shadow:0 3px 0 #17151b,0 0 0 3px rgb(115 232 144/.24)}
+  .defense-ability-charge-rail>i,.defense-power-mark{transition:none}
+}
+
+/* Depth restraint: grouped power portraits stay inside their card instead of spilling into the sheet. */
+.defense-ability-stack{
+  position:relative;display:block;flex:0 0 54px;width:54px;height:48px;overflow:hidden;
+  border:1.5px solid #17151b;background:#211d27;isolation:isolate;
+}
+.defense-ability-stack>i{position:absolute;inset:0;display:block;overflow:hidden;font-style:normal;transform-origin:50% 100%}
+.defense-ability-stack>i:nth-child(1){z-index:3}
+.defense-ability-stack>i:nth-child(2){z-index:2;translate:7px 1px;scale:.88;opacity:.9}
+.defense-ability-stack>i:nth-child(3){z-index:1;translate:13px 2px;scale:.76;opacity:.78}
+.defense-ability-stack .defense-ability-rizo{
+  position:absolute;left:50%;bottom:-7px;width:52px;height:52px;max-width:none;max-height:none;translate:-50% 0;
+}
+.defense-ability-stack>u{
+  position:absolute;z-index:4;right:2px;top:2px;padding:2px 3px;border:1px solid #17151b;border-radius:7px;
+  background:#fff2cf;color:#17151b;font:950 .66rem/1 var(--def-font-mono);text-decoration:none;
+}
+@media (max-width:599px) and (orientation:portrait){
+  .defense-ability-stack{flex-basis:48px;width:48px;height:44px}
+  .defense-ability-stack .defense-ability-rizo{width:48px;height:48px}
+}
+
+/* Final player-experience pass — presentation only. The opening choice should read
+   before secondary status, and the first four deploy tools must identify themselves
+   without turning the phone UI into a wall of copy. */
+@media (max-width:599px) and (orientation:portrait){
+  /* Make portrait breathing room feel framed without changing Worker G's square field. */
+  .defense-stage-frame{
+    background:
+      radial-gradient(circle at 50% 50%,rgb(255 255 255/.035),transparent 58%),
+      linear-gradient(180deg,#0b0910,#070609 38%,#070609 62%,#0b0910);
+  }
+
+  /* The opening action is enough; NEXT becomes useful after the first placement. */
+  .defense-shell:not(.has-towers) .defense-wave-preview{display:none}
+  .defense-shell.has-towers .defense-wave-preview{
+    display:flex;align-items:center;gap:.28rem;min-height:27px;max-height:30px;overflow:hidden;
+    padding:.18rem .34rem;
+  }
+  .defense-shell.has-towers .defense-wave-preview em,
+  .defense-shell.has-towers .defense-wave-preview>span{display:none}
+  .defense-shell:has(.defense-boss-overlay:not([hidden])) .defense-wave-preview{visibility:hidden}
+
+  /* Four opening choices fit in one glance. Extra/loaner Rizos can still scroll. */
+  .defense-roster{
+    grid-auto-columns:calc((100% - .66rem)/4);
+    gap:.22rem;padding:.1rem .04rem .2rem;
+    scroll-snap-type:x proximity;
+  }
+  .defense-roster-pet{
+    height:72px;grid-template-columns:1fr;grid-template-rows:37px minmax(0,1fr);
+    align-items:center;justify-items:center;gap:.05rem;padding:.14rem .12rem .12rem;
+    border-radius:10px;scroll-snap-align:start;overflow:hidden;
+  }
+  .defense-roster-pet .defense-roster-frame{border-radius:8px}
+  .defense-roster-rizo,
+  .defense-roster-structure .defense-structure-thumb{
+    grid-column:1;grid-row:1;width:38px;height:40px;align-self:center;justify-self:center;
+  }
+  .defense-roster-rizo{height:45px}
+  .defense-roster-info{
+    grid-column:1;grid-row:2;width:100%;min-width:0;display:grid;place-items:center;gap:1px;
+    text-align:center;align-self:stretch;padding:0;
+  }
+  .defense-roster-info b{
+    width:100%;overflow:visible;text-overflow:clip;white-space:normal;word-break:normal;
+    font-size:.62rem;line-height:.92;letter-spacing:-.015em;
+  }
+  .defense-roster-info small{
+    max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:.53rem;line-height:1;font-weight:900;letter-spacing:.025em;
+  }
+  .defense-roster-tag{
+    position:absolute;left:3px;top:3px;z-index:4;max-width:40px;padding:2px 3px;
+    border:1px solid #17151b;border-radius:6px;background:#fff2cf;color:#17151b;
+    font-size:.44rem;line-height:1;letter-spacing:.045em;
+  }
+  .defense-roster-kind,.defense-roster-mastery{display:none}
+  .defense-roster-badge{
+    right:3px;top:3px;min-width:23px;height:20px;padding:0 3px;scale:1;
+    font-size:.52rem;line-height:1;
+  }
+  .defense-roster-copies{left:3px;bottom:3px;scale:.86;transform-origin:bottom left}
+
+  /* Captain wins through framing, not by consuming another row of screen. */
+  .defense-roster-pet.roster-active{
+    background:linear-gradient(180deg,color-mix(in srgb,var(--roster-color) 24%,#fff7df),#2a2430);
+    box-shadow:0 4px 0 #17151b,inset 0 0 0 2px color-mix(in srgb,var(--roster-color) 60%,#fff);
+  }
+  .defense-roster-pet.roster-active .defense-roster-rizo{scale:1.08;transform-origin:50% 70%}
+  .defense-roster-pet.roster-active .defense-roster-tag{background:var(--roster-color);color:#17151b}
+
+  /* Universal tools teach category first: combat / economy / support. */
+  .defense-roster-universal .defense-roster-info b{font-size:.61rem;line-height:.92;padding:0}
+  .defense-roster-universal .defense-roster-info small{color:#17151b;font-weight:950}
+  .defense-roster-structure.structure-factory .defense-roster-info small{color:#ffc36e}
+  .defense-roster-structure.structure-beacon .defense-roster-info small{color:#ffe681}
+  .defense-roster-structure.structure-factory{background:linear-gradient(180deg,#553526,#2b2428)}
+  .defense-roster-structure.structure-beacon{background:linear-gradient(180deg,#504527,#2b2724)}
+
+  /* Keep YOUR CALL compact, but never make the actual decision microscopic. */
+  .defense-decision-rail{padding:.3rem .36rem;gap:.28rem}
+  .defense-decision-rail b{font-size:.68rem;line-height:1.02}
+  .defense-decision-rail>div{gap:.22rem}
+  .defense-decision-rail button{
+    min-height:36px;min-width:54px;max-width:74px;padding:.24rem .3rem;font-size:.55rem;
+  }
+
+  /* Map mechanics communicate with the authored marker first; details stay in
+     placement confirmation / inspection instead of floating paragraphs on the road. */
+  .defense-map-mechanic>span{
+    min-width:0;max-width:138px;padding:.25rem .34rem;border-color:rgb(255 255 255/.24);
+    background:rgb(18 15 23/.93);box-shadow:0 3px 0 rgb(10 8 13/.42),0 0 0 1px rgb(0 0 0/.22);
+  }
+  .defense-map-mechanic>span strong{font-size:.58rem;line-height:1.05;letter-spacing:.045em}
+  .defense-map-mechanic>span em{display:none}
+
+  /* Economy feedback should be legible once, then leave. */
+  .defense-factory-payout{font-size:10px;padding:4px 6px;gap:3px;z-index:9}
+  .defense-factory-payout>i{width:11px;height:10px}
+
+  /* During the short boss entrance, secondary decision chrome knows to recede. */
+  .defense-shell.cinematic-boss .defense-field-feed,
+  .defense-shell.cinematic-boss .defense-deploy-dock{opacity:.62;filter:saturate(.72)}
+}
+
+/* The 320px/short-phone composition keeps names readable by giving up art size,
+   not the words that identify the tool. */
+@media (max-width:359px), (max-height:650px) and (orientation:portrait){
+  .defense-roster{grid-auto-columns:calc((100% - .6rem)/4);gap:.2rem}
+  .defense-roster-pet{height:66px;grid-template-rows:33px minmax(0,1fr);padding:.12rem .1rem .1rem}
+  .defense-roster-rizo,
+  .defense-roster-structure .defense-structure-thumb{width:34px;height:36px}
+  .defense-roster-rizo{height:40px}
+  .defense-roster-info b,.defense-roster-universal .defense-roster-info b{font-size:.58rem;line-height:.9}
+  .defense-roster-info small{font-size:.49rem}
+  .defense-roster-tag{font-size:.4rem;max-width:36px}
+  .defense-roster-pet.roster-active .defense-roster-tag{font-size:0;max-width:none}
+  .defense-roster-pet.roster-active .defense-roster-tag::after{content:"CAPT.";font-size:.4rem;letter-spacing:.02em}
+  .defense-roster-badge{min-width:21px;height:18px;font-size:.48rem}
+  .defense-decision-rail b{font-size:.64rem}
+  .defense-decision-rail button{min-height:34px;min-width:51px;max-width:69px;font-size:.51rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .defense-roster-pet.roster-active .defense-roster-rizo{scale:1}
+}
+
+/* Restraint: on phones the decision rail + selected card + range preview already
+   teach placement. The old coach repeated the same instruction and physically
+   competed with YOUR CALL at 320px. */
+@media (max-width:599px) and (orientation:portrait){
+  .defense-placement-coach{display:none}
+}
+@media (max-width:599px) and (orientation:portrait){
+  .defense-decision-rail em{display:none}
+}
+@media (max-width:599px) and (orientation:portrait){
+  .defense-field-feed{min-height:40px}
+  .defense-decision-rail button{min-height:40px}
+}
+@media (max-width:359px), (max-height:650px) and (orientation:portrait){
+  .defense-field-feed{min-height:38px}
+  .defense-decision-rail button{min-height:38px}
+}
+
+/* Upgrade/inspection wallet reads as two deliberate fields, not one jammed token. */
+@media (max-width:599px) and (orientation:portrait){
+  .v80-tower-shop .defense-panel-wallet{column-gap:.5rem;align-items:center}
+  .v80-tower-shop .defense-panel-wallet small{letter-spacing:.055em}
+}
+@media (max-width:599px) and (orientation:portrait){
+  .v80-tower-shop .defense-panel-wallet{grid-template-columns:auto auto;justify-content:center}
+}

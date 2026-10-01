@@ -1,0 +1,31 @@
+PASS phase model gates actions coherently
+PASS gameplay density is invariant across quality and speed
+PASS 2x speed reduces visual pressure independently of combat math
+PASS imminent child spawns reserve density without trusting the whole buffer
+PASS golden income is capped
+PASS phase 5 economy constants are centralized
+PASS deployment pricing escalates canonically and duplicates cost extra
+PASS Golden active income diminishes across duplicates and stops scaling after wave 40
+PASS upgrade pricing and derived investment are explicit
+PASS opening-world discount is derived into canonical investment
+PASS wave and permanent rewards are map-invariant
+PASS late run cash growth is normalized without touching the opening curve
+PASS wave plans are capped and packetized
+PASS boss waves reserve a final entrance packet and a pre-boss breath
+PASS v76 simulation contract is fixed at 30Hz with bounded catch-up
+PASS wave grammar flattens top-level count and creates recovery valleys
+PASS run rewards use cleared accomplishments and soften late farming
+PASS checkpoint signatures detect casual tampering across derived surfaces
+PASS v5 checkpoint signatures cover opening-economy state
+PASS v7 checkpoint signatures cover Super Rizo form
+PASS v6 checkpoint signatures cover Gate Flame tactical state
+PASS legacy v4 checkpoint signatures remain verifiable for v67 migration
+PASS legacy v3 checkpoint signatures remain verifiable after the packet-clock migration
+PASS legacy v2 checkpoint signatures remain verifiable for migration
+PASS whole-save signatures detect progression edits
+PASS whole-save signatures cover arcade and unlock progression
+PASS phase transitions form one explicit runtime state machine
+PASS phase action permissions prevent contradictory build and combat states
+PASS clamps reject impossible imported numbers
+
+29/29 core tests passed.

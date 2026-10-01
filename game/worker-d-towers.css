@@ -1,0 +1,128 @@
+/* Worker D — Universal Defense Towers & Upgrade Evolution
+   Isolated so the integrator can port or drop this visual layer independently. */
+
+.defense-basic-rizo{
+  --basic-ink:#17151b;
+  --basic-paper:#eee6d6;
+  --basic-path:#d8cfc0;
+  position:relative;
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:32px;
+  min-height:42px;
+  transform-origin:50% 82%;
+}
+.defense-basic-rizo .basic-body{
+  position:absolute;
+  left:50%;top:50%;
+  width:58%;height:62%;
+  translate:-50% -48%;
+  border:2.6px solid var(--basic-ink);
+  border-radius:46% 46% 42% 42% / 44% 44% 54% 54%;
+  background:var(--basic-paper);
+  box-shadow:inset -4px -4px 0 rgb(23 21 27 / .08),0 3px 0 rgb(23 21 27 / .20);
+}
+.defense-basic-rizo .basic-eye{position:absolute;z-index:3;top:39%;width:6%;height:8%;border-radius:50%;background:var(--basic-ink)}
+.defense-basic-rizo .eye-a{left:39%}.defense-basic-rizo .eye-b{right:39%}
+.defense-basic-rizo .basic-mouth{position:absolute;z-index:3;left:50%;top:52%;width:18%;height:12%;translate:-50% 0}
+.defense-basic-rizo .basic-mouth::before,.defense-basic-rizo .basic-mouth::after{content:"";position:absolute;left:50%;top:50%;width:110%;height:2.4px;background:var(--basic-ink);border-radius:2px;transform-origin:center}
+.defense-basic-rizo .basic-mouth::before{translate:-50% -50%;rotate:34deg}.defense-basic-rizo .basic-mouth::after{translate:-50% -50%;rotate:-34deg}
+.defense-basic-rizo .basic-stitch,.defense-basic-rizo .basic-rig,.defense-basic-rizo .basic-core,.defense-basic-rizo .basic-crown{position:absolute;z-index:4;opacity:0;pointer-events:none}
+
+/* LV1: intentionally almost blank — paper shell, ink face, no inner color. */
+.defense-universal-tower.defense-upgrade-0 .defense-aura{opacity:.08}
+.defense-universal-tower.defense-upgrade-0::after{border-color:rgb(238 230 214 / .58)}
+
+/* LV2: the first investment becomes visible: stitched harness + tiny launcher. */
+.defense-basic-rizo.basic-evo-1 .basic-stitch,.defense-basic-rizo.basic-evo-2 .basic-stitch,.defense-basic-rizo.basic-evo-3 .basic-stitch,.defense-basic-rizo.basic-evo-4 .basic-stitch{opacity:1}
+.defense-basic-rizo .stitch-a{left:34%;top:57%;width:32%;height:3px;border-top:2px dashed #857a6d;rotate:-8deg}
+.defense-basic-rizo .stitch-b{left:42%;top:28%;width:17%;height:36%;border-left:2px dashed #857a6d;rotate:17deg}
+.defense-basic-rizo.basic-evo-1 .rig-a,.defense-basic-rizo.basic-evo-2 .rig-a,.defense-basic-rizo.basic-evo-3 .rig-a,.defense-basic-rizo.basic-evo-4 .rig-a{opacity:1;right:16%;top:42%;width:22%;height:8%;border:2px solid var(--basic-ink);border-radius:5px;background:#d8cfc0;rotate:-8deg;transform-origin:left center}
+
+/* LV3: path-ready field kit. Shoulder hardware makes the silhouette wider. */
+.defense-basic-rizo.basic-evo-2 .rig-b,.defense-basic-rizo.basic-evo-3 .rig-b,.defense-basic-rizo.basic-evo-4 .rig-b{opacity:1;left:14%;top:38%;width:18%;height:14%;border:2px solid var(--basic-ink);border-radius:5px;background:#d8cfc0;rotate:8deg}
+.defense-basic-rizo.basic-evo-2 .basic-core,.defense-basic-rizo.basic-evo-3 .basic-core,.defense-basic-rizo.basic-evo-4 .basic-core{opacity:1;left:50%;top:66%;width:18%;aspect-ratio:1;translate:-50% -50%;border:2px solid var(--basic-ink);border-radius:50%;background:#fff8ea;box-shadow:0 0 0 2px rgb(255 255 255 / .3)}
+
+/* POWER path: blunt rivet driver, armor plates, then a crown-like twin barrel. */
+.defense-basic-rizo.basic-path-power{--basic-path:#ff9a56}
+.defense-basic-rizo.basic-path-power.basic-evo-3 .basic-body,.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-body{box-shadow:inset -6px -5px 0 rgb(255 154 86 / .18),0 3px 0 rgb(23 21 27 / .24)}
+.defense-basic-rizo.basic-path-power.basic-evo-3 .rig-a,.defense-basic-rizo.basic-path-power.basic-evo-4 .rig-a{right:3%;top:38%;width:38%;height:13%;background:var(--basic-path);border-width:3px;box-shadow:inset -7px 0 0 rgb(23 21 27 / .14)}
+.defense-basic-rizo.basic-path-power.basic-evo-3 .rig-b,.defense-basic-rizo.basic-path-power.basic-evo-4 .rig-b{left:11%;top:35%;width:21%;height:22%;background:#3b343a;clip-path:polygon(0 15%,100% 0,86% 100%,8% 88%)}
+.defense-basic-rizo.basic-path-power.basic-evo-3 .basic-core,.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-core{background:var(--basic-path);box-shadow:0 0 0 3px rgb(255 154 86 / .23)}
+.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-crown{opacity:1;left:50%;top:17%;width:52%;height:22%;translate:-50% 0;border-bottom:3px solid var(--basic-ink)}
+.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-crown::before,.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-crown::after{content:"";position:absolute;top:1px;width:38%;height:70%;border:3px solid var(--basic-ink);border-radius:5px;background:var(--basic-path)}
+.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-crown::before{left:0;rotate:-12deg}.defense-basic-rizo.basic-path-power.basic-evo-4 .basic-crown::after{right:0;rotate:12deg}
+
+/* CONTROL path: pinwheel rig, antenna, then a thread halo that clearly changes silhouette. */
+.defense-basic-rizo.basic-path-control{--basic-path:#7fe2c4}
+.defense-basic-rizo.basic-path-control.basic-evo-3 .rig-a,.defense-basic-rizo.basic-path-control.basic-evo-4 .rig-a{right:7%;top:34%;width:24%;height:24%;border-radius:50%;background:conic-gradient(from 45deg,var(--basic-path) 0 22%,#fff8ea 22% 48%,var(--basic-path) 48% 72%,#fff8ea 72%);border-width:3px}
+.defense-basic-rizo.basic-path-control.basic-evo-3 .rig-b,.defense-basic-rizo.basic-path-control.basic-evo-4 .rig-b{left:18%;top:20%;width:4px;height:28%;border:0;border-left:3px solid var(--basic-ink);border-radius:0;background:none;rotate:-10deg}
+.defense-basic-rizo.basic-path-control.basic-evo-3 .rig-b::after,.defense-basic-rizo.basic-path-control.basic-evo-4 .rig-b::after{content:"";position:absolute;left:-6px;top:-7px;width:9px;height:9px;border:2px solid var(--basic-ink);border-radius:50%;background:var(--basic-path)}
+.defense-basic-rizo.basic-path-control.basic-evo-3 .basic-core,.defense-basic-rizo.basic-path-control.basic-evo-4 .basic-core{background:var(--basic-path);box-shadow:0 0 0 3px rgb(127 226 196 / .23)}
+.defense-basic-rizo.basic-path-control.basic-evo-4 .basic-crown{opacity:1;left:50%;top:13%;width:76%;height:76%;translate:-50% 0;border:3px dashed var(--basic-path);border-radius:50%;box-shadow:0 0 0 2px var(--basic-ink);animation:worker-d-thread-ring 2.4s linear infinite}
+
+/* Roster + action sheet distinguish tools from owned Rizos without new tutorial text. */
+.defense-roster-universal{background:#f1e9da;color:#17151b;box-shadow:0 3px 0 #17151b,inset 0 0 0 2px rgb(255 255 255 / .42)}
+.defense-roster-universal::before{height:7px;background:repeating-linear-gradient(90deg,#17151b 0 8px,#eee6d6 8px 16px)}
+.defense-roster-universal .defense-roster-info b{font-size:.66rem;white-space:normal;line-height:1.02;padding-right:18px}
+.defense-roster-universal .defense-roster-info small{font-weight:900;color:#5a514a}
+.defense-roster-kind{position:absolute;left:.35rem;top:.24rem;padding:2px 4px;border:1.5px solid #17151b;border-radius:999px;background:#fff8ea;color:#17151b;font:950 .46rem/1 system-ui,-apple-system,sans-serif;font-style:normal;letter-spacing:.04em}
+.defense-roster-universal .defense-basic-rizo{width:54px;height:66px;margin-top:6px}
+.universal-tool-panel .defense-panel-portrait{background:#f2eadb}
+.universal-tool-panel .defense-panel-rizo{width:62px;height:78px;margin:auto}
+.universal-tool-panel .defense-ability-one-line{border-style:dashed}
+
+/* Field presence: upgrades grow beyond the original pet-image silhouette. */
+.defense-universal-tower{--tower-color:#eee6d6}
+.defense-universal-tower .defense-rizo{width:100%;height:100%}
+.defense-universal-tower.defense-upgrade-0{width:calc(47px * var(--def-unit-scale));height:calc(59px * var(--def-unit-scale))}
+.defense-universal-tower.defense-upgrade-1{width:calc(51px * var(--def-unit-scale));height:calc(63px * var(--def-unit-scale))}
+.defense-universal-tower.defense-upgrade-2{width:calc(56px * var(--def-unit-scale));height:calc(67px * var(--def-unit-scale))}
+.defense-universal-tower.defense-upgrade-3{width:calc(62px * var(--def-unit-scale));height:calc(71px * var(--def-unit-scale))}
+.defense-universal-tower.defense-upgrade-4{width:calc(70px * var(--def-unit-scale));height:calc(77px * var(--def-unit-scale))}
+.defense-universal-tower.defense-doctrine-power{--tower-color:#ff9a56}
+.defense-universal-tower.defense-doctrine-control{--tower-color:#7fe2c4}
+.defense-universal-tower.defense-upgrade-4::before{width:calc(54px * var(--def-unit-scale));height:calc(17px * var(--def-unit-scale));box-shadow:0 0 15px var(--tower-color),0 3px 3px rgb(0 0 0 / .2)}
+.defense-universal-tower.defense-upgrade-4 .defense-level{background:var(--tower-color);color:#17151b;border-color:#17151b}
+
+/* Attack language is economical but authored: needle, rivet, or pin. */
+.defense-shot.shot-needle,.defense-shot.shot-rivet,.defense-shot.shot-pin{width:17px;height:5px;border-radius:2px;rotate:var(--shot-angle,0rad);background:var(--signature-color,#eee6d6);box-shadow:0 0 0 1px rgb(255 255 255 / .35)}
+.defense-shot.shot-rivet{width:20px;height:8px;border-radius:3px;background:#ff9a56}
+.defense-shot.shot-pin{width:14px;height:4px;border-radius:99px;background:#7fe2c4}
+.defense-shot.shot-double-stitch::after{content:"";position:absolute;left:4%;top:calc(100% + 3px);width:88%;height:45%;min-height:2px;border-radius:99px;background:inherit;box-shadow:0 0 0 1px #17151b;opacity:.9}
+.defense-chain-link.worker-d-link{height:3px;background:var(--worker-d-link,#eee6d6);box-shadow:0 0 0 1px #17151b,0 0 8px color-mix(in srgb,var(--worker-d-link,#eee6d6) 70%,transparent)}
+.defense-universal-tower.firing .defense-basic-rizo{animation:worker-d-basic-fire var(--attack-life,.2s) cubic-bezier(.18,.82,.28,1)}
+.defense-universal-tower.defense-doctrine-power.firing .defense-basic-rizo{animation:worker-d-power-fire var(--attack-life,.24s) cubic-bezier(.16,.76,.22,1)}
+.defense-universal-tower.defense-doctrine-control.firing .defense-basic-rizo{animation:worker-d-control-fire var(--attack-life,.16s) cubic-bezier(.2,.9,.2,1)}
+.defense-universal-tower.doctrine-strike .basic-core{animation:worker-d-core-pop .32s ease-out}
+
+/* Universal upgrade burst does not pretend this tool owns a collected Rizo sprite. */
+.universal-basic-upgrade .defense-upgrade-silhouette{background:none;border:3px solid #17151b;border-radius:46% 46% 42% 42%;background:#eee6d6;width:34px;height:42px;left:50%;top:50%;translate:-50% -50%}
+.universal-basic-upgrade .defense-upgrade-silhouette::before,.universal-basic-upgrade .defense-upgrade-silhouette::after{content:"";position:absolute;left:50%;top:52%;width:13px;height:2px;background:#17151b}
+.universal-basic-upgrade .defense-upgrade-silhouette::before{translate:-50% -50%;rotate:35deg}.universal-basic-upgrade .defense-upgrade-silhouette::after{translate:-50% -50%;rotate:-35deg}
+
+@keyframes worker-d-basic-fire{35%{transform:translate(var(--soft-kick-x,0),var(--soft-kick-y,0)) scale(.96,1.04)}70%{transform:translate(var(--lunge-x,0),var(--lunge-y,0)) scale(1.03,.98)}}
+@keyframes worker-d-power-fire{28%{transform:translate(var(--heavy-kick-x,0),var(--heavy-kick-y,0)) rotate(-3deg) scale(.93,1.05)}72%{transform:translate(var(--heavy-lunge-x,0),var(--heavy-lunge-y,0)) rotate(2deg) scale(1.06,.96)}}
+@keyframes worker-d-control-fire{40%{transform:translate(var(--soft-kick-x,0),var(--soft-kick-y,0)) rotate(-5deg)}70%{transform:translate(var(--lunge-x,0),var(--lunge-y,0)) rotate(5deg)}}
+@keyframes worker-d-core-pop{50%{scale:1.5;box-shadow:0 0 0 6px color-mix(in srgb,var(--basic-path) 28%,transparent)}}
+@keyframes worker-d-thread-ring{to{rotate:360deg}}
+
+body.reduce-motion .defense-universal-tower .defense-basic-rizo,
+body.reduce-motion .defense-basic-rizo .basic-crown{animation:none}
+@media(prefers-reduced-motion:reduce){
+  .defense-universal-tower .defense-basic-rizo,
+  .defense-basic-rizo .basic-crown{animation:none}
+}
+
+@media(max-width:390px){
+  .defense-roster-universal .defense-basic-rizo{width:46px;height:58px}
+  .defense-roster-universal .defense-roster-info b{font-size:.60rem}
+}
+
+/* Short landscape already runs the baseline tower silhouette close to the top
+   safe edge. Keep Worker D's max form no taller than the stock tower box there
+   so its evolution does not add extra clipping while preserving the wider crown. */
+@media(max-height:430px) and (orientation:landscape){
+  .defense-universal-tower.defense-upgrade-4{height:calc(76px * var(--def-unit-scale))}
+}

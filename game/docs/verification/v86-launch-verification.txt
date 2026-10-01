@@ -1,0 +1,16 @@
+Rizo.game v86 — Launch Hotfix targeted verification
+Build: v86-launch-hotfix
+
+PASS launch recovery: 5/5
+PASS service-worker policy: 4/4
+PASS static architecture: 80/80
+PASS v84 gameplay lame-test: 34/34
+PASS v85 handmade UI: 33/33
+
+TOTAL: 156/156 targeted hotfix checks passed.
+
+Release packaging contract:
+- index.html must be at ZIP root
+- sw.js must be at ZIP root
+- game-v79-defense.js must be at ZIP root
+- page/runtime/service-worker markers must all be v86-launch-hotfix

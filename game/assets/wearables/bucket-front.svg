@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Rizo.game wearable artwork. Adapted from outback-hat. See ASSET-CREDITS.md. -->
+<path d="M92 235 C178 211 342 211 429 239 C400 279 329 298 260 298 C190 298 121 279 92 235 Z" fill="#16c8ff" stroke="#080b0f" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke fill" /><path d="M122 248 C194 267 326 268 400 249" fill="none" stroke="#8cecff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke fill" stroke-dasharray="13 10"/><rect x="225" y="188" width="71" height="43" rx="8" fill="#171c27" stroke="#080b0f" stroke-width="6" paint-order="stroke fill" transform="rotate(-1 260 210)"/><g transform="translate(260 215) rotate(-1) scale(0.34)" stroke="#16c8ff" fill="#16c8ff" stroke-linecap="round">
+      <ellipse cx="-31" cy="-10" rx="5.5" ry="7"/><ellipse cx="31" cy="-9" rx="5" ry="6.5"/>
+      <g fill="none" stroke-width="4.5">
+        <path d="M-34 8l10 12m0-12l-10 12"/><path d="M-19 5l10 12m0-12l-10 12"/>
+        <path d="M-4 3L6 15M6 3L-4 15"/><path d="M11 5l10 12m0-12L11 17"/>
+        <path d="M26 8l10 12m0-12L26 20"/>
+      </g></g>
+</svg>

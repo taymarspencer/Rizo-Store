@@ -1,0 +1,88 @@
+/* Rizo.game v75 — Arcade Revival
+   Additive arcade-only layer. Defense keeps the v74 tuned surface unchanged. */
+
+/* Arcade shelf identity */
+.arcade-new-card{position:relative;border-color:#3f5f70;background:linear-gradient(145deg,#16212a,#101319)}
+.arcade-new-card::after{content:"NEW";position:absolute;right:8px;top:8px;padding:4px 6px;border-radius:999px;background:#16c8ff;color:#061015;font:1000 6px/1 Inter,sans-serif;letter-spacing:.12em;box-shadow:0 0 16px rgba(22,200,255,.32)}
+.glide-art{background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.6),transparent 22%),linear-gradient(145deg,#3380a6,#152c43)}
+.breaker-art{background:linear-gradient(145deg,#78302f,#24131a)}
+.game-card.power-card,.game-card.spark-card,.game-card.forage-card,.game-card.rush-card,.game-card.memory-card{position:relative}
+.game-card.power-card::after,.game-card.spark-card::after,.game-card.forage-card::after,.game-card.rush-card::after,.game-card.memory-card::after{content:"DX";position:absolute;right:8px;top:8px;color:#768999;font:1000 7px/1 Inter,sans-serif;letter-spacing:.14em}
+
+/* Shared arcade mastery HUD */
+.power-hud,.glide-hud,.breaker-hud,.memory-top{position:absolute;left:10px;right:10px;top:10px;z-index:28;display:flex;justify-content:space-between;gap:7px;pointer-events:none}
+.power-hud span,.glide-hud span,.breaker-hud span,.memory-top span,.forage-chain{padding:6px 8px;border:1px solid rgba(255,255,255,.13);border-radius:9px;background:rgba(5,9,13,.72);backdrop-filter:blur(6px);font:900 7px/1 Inter,sans-serif;letter-spacing:.08em;color:#cbd7df}
+.power-hud b,.glide-hud b,.breaker-hud b{color:#fff;font-size:10px}
+.arcade-result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:10px 0}
+.arcade-result-grid span{display:grid;gap:4px;padding:9px;border:1px solid #28343f;border-radius:11px;background:#0c1117;color:#81909b;font-size:6px;font-weight:1000;letter-spacing:.08em;text-align:center}
+.arcade-result-grid b{font-size:17px;color:#f2f7fa}
+.new-arcade-best{display:inline-flex;margin:0 auto 7px;padding:5px 8px;border-radius:999px;background:#ffd45a;color:#181308;font-size:7px;font-weight:1000;letter-spacing:.12em;box-shadow:0 0 18px rgba(255,212,90,.28)}
+
+/* Power Tap DX */
+.power-dx .timing-perfect{width:13%;transform:translateX(-50%);transition:left .12s ease;background:linear-gradient(90deg,#087c95,#b8f7ff,#087c95)}
+.power-dx .training-bag{transition:filter .2s}
+.bag-cracks{position:absolute;inset:14% 18%;pointer-events:none;opacity:0;background:linear-gradient(55deg,transparent 44%,#250b0f 45% 49%,transparent 50%),linear-gradient(-34deg,transparent 51%,#250b0f 52% 56%,transparent 57%);background-size:30px 38px}
+.bag-cracks[data-crack="1"]{opacity:.22}.bag-cracks[data-crack="2"]{opacity:.38}.bag-cracks[data-crack="3"]{opacity:.58}.bag-cracks[data-crack="4"]{opacity:.78}
+.power-dx .timing-console{bottom:12px}.power-dx .power-rizo{bottom:80px}
+
+/* Spark Catch DX — restraint becomes a mechanic */
+.spark-dx .spark-orb{transition:left .11s cubic-bezier(.2,.75,.25,1),top .11s cubic-bezier(.2,.75,.25,1),filter .08s}
+.spark-dx .spark-orb.gold{background:radial-gradient(circle,#fff 0 10%,#fff09c 12% 36%,#e3a91c 38% 68%,#70420d 70%);box-shadow:0 0 0 8px rgba(255,212,90,.16),0 0 34px rgba(255,212,90,.9);color:#fff7c2}
+.spark-dx .spark-orb.shadow{background:radial-gradient(circle,#6c548f 0 12%,#24172f 14% 58%,#09070e 61%);border-color:#b18aff;box-shadow:0 0 0 8px rgba(138,92,255,.12),0 0 28px rgba(124,82,222,.65);color:#d2c0ff;animation:sparkShadow .16s steps(2) infinite}
+/* .spark-hud lives in arcade-v87-system.css (single authority). */
+@keyframes sparkShadow{50%{filter:brightness(1.35);transform:translateX(2px)}}
+
+/* Forest Forage DX */
+.forage-order{position:absolute;left:10px;right:10px;top:9px;z-index:26;display:flex;align-items:center;justify-content:center;gap:5px;pointer-events:none}
+.forage-order small{margin-right:4px;color:#b9c7cf;font-size:6px;font-weight:1000;letter-spacing:.09em}
+.forage-order span{width:30px;height:30px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(7,12,10,.68);display:grid;place-items:center;font-size:17px;opacity:.38;transition:.12s}
+.forage-order span.active{opacity:1;border-color:#9eff75;box-shadow:0 0 0 2px rgba(158,255,117,.12)}
+.forage-order span.done{opacity:.65;filter:saturate(.4)}
+.forage-chain{left:10px;right:auto;top:48px;z-index:25}.forage-dx .forage-drop{will-change:transform}
+
+/* Rizo Rush DX */
+.rush-entity.tall{bottom:48px;width:52px;height:91px;background:linear-gradient(90deg,#5d351f,#98613a 45%,#4f2c1c);border:5px solid #1b100b;border-radius:8px 8px 15px 15px;box-shadow:inset 0 9px 0 #b37a4e}
+.rush-entity.tall::before{content:"";position:absolute;left:-10px;right:-10px;top:22px;height:11px;border-radius:8px;background:#2a190f;transform:rotate(-7deg)}
+.rush-entity.prism{bottom:109px;width:43px;height:43px;border-radius:9px;display:grid;place-items:center;border:4px solid #d9fbff;background:linear-gradient(135deg,#16c8ff,#ff68bd);color:white;font-size:20px;box-shadow:0 0 22px #8eeeff}
+.rush-entity.prism.collected{animation:itemCaught .18s ease-out forwards}
+.rush-streak{position:absolute;left:12px;top:42px;z-index:20;color:#dce9ef;font-size:7px;font-weight:1000;letter-spacing:.06em;text-shadow:2px 2px #081017}
+.rush-streak b{color:#9eff75}.rush-rizo.rush-double img{animation:rushDouble .22s ease-out}
+@keyframes rushDouble{50%{transform:rotate(16deg) scale(.9,1.08)}}
+
+/* Forest Memory DX */
+.memory-top #memoryRule{color:#9eff75}.memory-top #memoryHearts{color:#ff6776;font-size:11px;letter-spacing:3px}
+.memory-dx .memory-board{margin-top:34px}.memory-dx .memory-rune{transition:transform .12s,filter .12s,background .12s}
+.memory-dx .memory-rune:active{transform:scale(.9)}
+
+/* Skybound Rizo */
+.glide-world{background:linear-gradient(#4a9dcc 0 63%,#bfe8ef 63% 78%,#33573d 78%);isolation:isolate}
+.glide-world::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 18% 20%,rgba(255,255,255,.88) 0 8%,transparent 9%),radial-gradient(ellipse at 72% 28%,rgba(255,255,255,.64) 0 10%,transparent 11%);background-size:250px 150px;animation:glideCloud 13s linear infinite;opacity:.72}
+.glide-clouds{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:glideSkyPulse 3.4s ease-in-out infinite}
+.glide-floor{position:absolute;left:0;right:0;bottom:0;height:23%;background:repeating-linear-gradient(90deg,#31563a 0 36px,#294b34 36px 72px);border-top:5px solid #709665}
+#miniPet.glide-rizo{left:24%;top:50%;width:86px;height:86px;transform:translate(-50%,-50%) rotate(var(--glide-tilt,0deg));transition:none;z-index:19;will-change:top,transform}
+.glide-rizo .mini-pet-shadow{display:none}.glide-rizo.glide-flap .rizo-motion-shell{animation:glideFlap .14s ease-out}.glide-rizo.glide-hurt{filter:brightness(1.8) saturate(.4);animation:rushHurt .5s steps(2)}
+.glide-gate{position:absolute;left:0;top:0;width:58px;height:100%;z-index:14;will-change:transform}
+.glide-gate i{position:absolute;left:0;width:58px;background:repeating-linear-gradient(90deg,#315b47 0 9px,#3f7659 9px 18px);border:4px solid #10291d;box-shadow:inset 7px 0 0 rgba(255,255,255,.08)}
+.glide-gate .top{top:0;height:var(--gate-top)}.glide-gate .bottom{bottom:0;height:var(--gate-bottom)}
+.glide-gate i::after{content:"";position:absolute;left:-7px;right:-7px;height:14px;background:#5a8a64;border:4px solid #10291d}.glide-gate .top::after{bottom:-5px}.glide-gate .bottom::after{top:-5px}
+.glide-gate>b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font-size:20px;text-shadow:0 0 13px #fff;z-index:4}
+.glide-gate.prism i{background:linear-gradient(90deg,#274c55,#376f75,#274c55);border-color:#bdf7ff;box-shadow:0 0 14px rgba(130,239,255,.45)}
+.glide-wind{position:absolute;right:10px;bottom:11px;z-index:25;padding:6px 8px;border-radius:9px;background:rgba(6,11,15,.7);border:1px solid rgba(255,255,255,.12);font-size:7px;font-weight:1000;color:#e6f5fb;letter-spacing:.08em}
+@keyframes glideCloud{to{background-position-x:-250px}}@keyframes glideSkyPulse{50%{opacity:.28}}@keyframes glideFlap{50%{transform:translateY(-8px) rotate(-8deg) scale(1.05,.94)}}
+
+/* Ember Breaker */
+.breaker-world{background:linear-gradient(rgba(22,200,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(22,200,255,.05) 1px,transparent 1px),radial-gradient(circle at 50% 35%,rgba(255,92,108,.13),transparent 38%),#0b1017;background-size:28px 28px,28px 28px,100% 100%,100% 100%;isolation:isolate}
+.breaker-blocks{position:absolute;inset:0;z-index:10}.breaker-block{position:absolute;display:grid;place-items:center;border:3px solid #081016;border-radius:7px;background:linear-gradient(#5b7485,#304353);box-shadow:inset 0 5px 0 rgba(255,255,255,.08),0 4px 0 rgba(0,0,0,.2);font-style:normal;color:#fff;will-change:transform}
+.breaker-block.armored{background:repeating-linear-gradient(135deg,#7e5a34 0 8px,#5a3c23 8px 16px);border-color:#24160d}.breaker-block.cracked{background:linear-gradient(45deg,#4f6675 0 44%,#111 45% 49%,#405361 50%)}
+.breaker-block.prism{background:linear-gradient(135deg,#16c8ff,#ff68bd);border-color:#d8fbff;box-shadow:0 0 12px rgba(116,236,255,.75)}
+.breaker-block.break{animation:breakerPop .13s ease-out forwards}
+.breaker-ball{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;z-index:20;display:grid;place-items:center;background:#fff1a5;border:3px solid #241508;color:#ff7a3d;font-size:10px;box-shadow:0 0 13px #ff9b4e;will-change:left,top;pointer-events:none}
+#miniPet.breaker-rizo{left:50%;bottom:0;width:94px;height:94px;transform:translateX(-50%);transition:left .045s linear;z-index:17}
+.breaker-rizo::after{content:"";position:absolute;left:8%;right:8%;top:7px;height:9px;border-radius:999px;background:#ff5c6c;border:3px solid #14090c;box-shadow:0 0 8px rgba(255,92,108,.4);z-index:9}
+.breaker-world.boost .breaker-rizo::after{left:-12%;right:-12%;background:#16c8ff;box-shadow:0 0 14px #16c8ff}
+.breaker-callout{position:absolute;left:50%;bottom:101px;transform:translateX(-50%);z-index:26;white-space:nowrap;padding:5px 7px;border-radius:8px;background:rgba(5,9,13,.65);color:#9baab4;font-size:6px;font-weight:1000;letter-spacing:.08em;pointer-events:none}
+@keyframes breakerPop{to{opacity:0;transform:scale(1.5) rotate(8deg)}}
+
+/* Keep the new games cheap on stressed devices. */
+body.reduce-motion .glide-world::before,body.reduce-motion .glide-clouds,body.reduce-motion .spark-dx .spark-orb.shadow{animation:none}
+@media (max-height:700px){.forage-order span{width:25px;height:25px;font-size:14px}#miniPet.glide-rizo{width:72px;height:72px}#miniPet.breaker-rizo{width:80px;height:80px}.breaker-callout{bottom:84px}}

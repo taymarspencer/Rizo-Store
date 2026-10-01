@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Rizo.game wearable artwork. Adapted from gem-necklace. See ASSET-CREDITS.md. -->
+<ellipse cx="144" cy="532" rx="17" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" transform="rotate(34 144 532)"/><ellipse cx="177" cy="551" rx="18" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" transform="rotate(25 177 551)"/><ellipse cx="214" cy="565" rx="18" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" transform="rotate(12 214 565)"/><ellipse cx="254" cy="571" rx="18" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" /><ellipse cx="295" cy="565" rx="18" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" transform="rotate(-12 295 565)"/><ellipse cx="333" cy="551" rx="18" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" transform="rotate(-25 333 551)"/><ellipse cx="366" cy="531" rx="17" ry="12" fill="none" stroke="#ffd45a" stroke-width="9" paint-order="stroke fill" transform="rotate(-34 366 531)"/><path d="M254 578 L254 590" fill="none" stroke="#ffd45a" stroke-width="8" stroke-linecap="round" /><ellipse cx="254" cy="611" rx="35" ry="37" fill="#ffd45a" stroke="#080b0f" stroke-width="9" paint-order="stroke fill" /><ellipse cx="254" cy="611" rx="25" ry="27" fill="#f6b82d" stroke="#b47913" stroke-width="4" paint-order="stroke fill" /><g transform="translate(254 616) rotate(0) scale(0.31)" stroke="#080b0f" fill="#080b0f" stroke-linecap="round">
+      <ellipse cx="-31" cy="-10" rx="5.5" ry="7"/><ellipse cx="31" cy="-9" rx="5" ry="6.5"/>
+      <g fill="none" stroke-width="4.5">
+        <path d="M-34 8l10 12m0-12l-10 12"/><path d="M-19 5l10 12m0-12l-10 12"/>
+        <path d="M-4 3L6 15M6 3L-4 15"/><path d="M11 5l10 12m0-12L11 17"/>
+        <path d="M26 8l10 12m0-12L26 20"/>
+      </g></g>
+</svg>

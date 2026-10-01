@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 670" width="520" height="670">
+<!-- Original Rizo.game artwork, final fit pass v18. No external source. -->
+
+<path d="M119 355 C151 342 198 341 232 354 L226 392 C199 409 153 408 126 391 Z" fill="#182b38" stroke="#080b0f" stroke-width="9" stroke-linejoin="round"/>
+<path d="M288 354 C322 341 369 344 401 360 L393 397 C365 411 321 410 294 393 Z" fill="#182b38" stroke="#080b0f" stroke-width="9" stroke-linejoin="round"/>
+<path d="M229 361 C246 352 273 352 291 362" fill="none" stroke="#080b0f" stroke-width="10" stroke-linecap="round"/>
+<path d="M142 356 C165 349 189 349 209 353" fill="none" stroke="#78e6ff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+<path d="M311 356 C334 349 357 352 377 359" fill="none" stroke="#78e6ff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+<path d="M125 381 C157 397 198 397 225 381 M295 382 C323 399 364 399 394 384" fill="none" stroke="#0d131b" stroke-width="4" opacity=".75"/>
+
+</svg>

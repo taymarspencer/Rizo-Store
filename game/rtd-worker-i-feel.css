@@ -1,0 +1,163 @@
+/* RTD Worker I — authored motion / sensory glue.
+   Mechanics and elemental VFX remain owned by their existing systems. */
+
+/* ---------- Rizo idle language: quiet enough to disappear during decisions ---------- */
+.defense-tower:is(.feel-idle-breathe,.feel-idle-braced,.feel-idle-hover,.feel-idle-twitch):not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo{
+  transform-origin:50% 84%;
+  will-change:transform;
+}
+.defense-tower.feel-idle-breathe:not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo{animation:rtd-feel-idle-breathe 5.8s ease-in-out infinite}
+.defense-tower.feel-idle-braced:not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo{animation:rtd-feel-idle-braced 6.6s ease-in-out infinite}
+.defense-tower.feel-idle-hover:not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo{animation:rtd-feel-idle-hover 5.2s ease-in-out infinite}
+.defense-tower.feel-idle-twitch:not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo{animation:rtd-feel-idle-twitch 6.1s steps(1,end) infinite}
+@keyframes rtd-feel-idle-breathe{0%,72%,100%{transform:none}79%{transform:translateY(-1px) scale(1.012,.992)}86%{transform:translateY(0) scale(.996,1.008)}}
+@keyframes rtd-feel-idle-braced{0%,68%,100%{transform:none}76%{transform:translateY(1px) scale(1.016,.986)}84%{transform:translateY(-1px) scale(.994,1.008)}}
+@keyframes rtd-feel-idle-hover{0%,62%,100%{transform:none}72%{transform:translateY(-2px) rotate(-.8deg)}82%{transform:translateY(-1px) rotate(.65deg)}90%{transform:translateY(0)}}
+@keyframes rtd-feel-idle-twitch{0%,74%,78%,84%,100%{transform:none}75%{transform:translate(-1px,0) rotate(-1deg)}77%{transform:translate(1px,-1px) rotate(1deg)}82%{transform:translate(0,1px)}}
+
+/* ---------- Attack performance: body motion only, leaving elemental VFX to Worker E ---------- */
+.defense-tower.attack-toxic.firing .defense-rizo{animation:rtd-feel-toxic var(--attack-life,.22s) cubic-bezier(.16,.78,.25,1)}
+.defense-tower.attack-moss.firing .defense-rizo{animation:rtd-feel-moss var(--attack-life,.235s) cubic-bezier(.18,.72,.24,1)}
+.defense-tower.attack-bubblegum.firing .defense-rizo{animation:rtd-feel-bubble var(--attack-life,.24s) cubic-bezier(.14,.82,.26,1)}
+.defense-tower.attack-glitch.firing .defense-rizo{animation:rtd-feel-glitch var(--attack-life,.18s) steps(4,end)}
+.defense-tower.attack-aurora.firing .defense-rizo{animation:rtd-feel-aurora var(--attack-life,.25s) cubic-bezier(.2,.75,.2,1)}
+.defense-tower.attack-golden.firing .defense-rizo{animation:rtd-feel-golden var(--attack-life,.235s) cubic-bezier(.16,.8,.24,1)}
+.defense-tower.attack-diamond.firing .defense-rizo{animation:rtd-feel-diamond var(--attack-life,.22s) cubic-bezier(.12,.78,.2,1)}
+.defense-tower.attack-shadow.firing .defense-rizo{animation:rtd-feel-shadow var(--attack-life,.23s) cubic-bezier(.2,.7,.2,1)}
+.defense-tower.attack-retro.firing .defense-rizo{animation:rtd-feel-retro var(--attack-life,.18s) steps(5,end)}
+@keyframes rtd-feel-toxic{0%{transform:none}20%{transform:translate(var(--soft-kick-x),var(--soft-kick-y)) scale(1.07,.93) rotate(-2deg)}43%{transform:translate(var(--lunge-x),var(--lunge-y)) scale(.95,1.06) rotate(1deg)}66%{transform:translateY(1px) scale(1.025,.98)}100%{transform:none}}
+@keyframes rtd-feel-moss{0%{transform:none}25%{transform:translate(var(--soft-kick-x),var(--soft-kick-y)) scale(1.04,.96)}45%{transform:translate(var(--lunge-x),var(--lunge-y)) scale(.93,1.08)}72%{transform:translateY(1px) scale(1.015,.985)}100%{transform:none}}
+@keyframes rtd-feel-bubble{0%{transform:none}18%{transform:translate(var(--soft-kick-x),var(--soft-kick-y)) scale(1.12,.86)}42%{transform:translate(var(--lunge-x),var(--lunge-y)) scale(.9,1.13) rotate(2deg)}67%{transform:translateY(-2px) scale(1.04,.97)}100%{transform:none}}
+@keyframes rtd-feel-glitch{0%{transform:none}25%{transform:translate(var(--kick-x),1px) skewX(-3deg)}50%{transform:translate(var(--lunge-x),-1px) skewX(4deg)}75%{transform:translate(-1px,1px) skewX(-2deg)}100%{transform:none}}
+@keyframes rtd-feel-aurora{0%{transform:none}22%{transform:translate(var(--soft-kick-x),var(--soft-kick-y)) scale(.96,1.05) rotate(-1deg)}48%{transform:translate(var(--lunge-x),var(--lunge-y)) scale(1.04,.96) rotate(1deg)}72%{transform:translateY(-2px)}100%{transform:none}}
+@keyframes rtd-feel-golden{0%{transform:none}18%{transform:translate(var(--kick-x),var(--kick-y)) scale(1.1,.9) rotate(-2deg)}44%{transform:translate(var(--lunge-x),var(--lunge-y)) scale(.94,1.07) rotate(2deg)}70%{transform:translateY(-1px) scale(1.025,.985)}100%{transform:none}}
+@keyframes rtd-feel-diamond{0%{transform:none}21%{transform:translate(var(--kick-x),var(--kick-y)) scale(1.08,.92)}39%{transform:translate(var(--lunge-x),var(--lunge-y)) scale(.92,1.09)}55%{transform:translateY(-2px) scale(1.04,.98)}76%{transform:translateY(1px)}100%{transform:none}}
+@keyframes rtd-feel-shadow{0%{transform:none;opacity:1}20%{transform:translate(var(--soft-kick-x),var(--soft-kick-y)) scale(.97,1.04);opacity:.84}42%{transform:translate(var(--heavy-lunge-x),var(--heavy-lunge-y)) scale(1.04,.96);opacity:1}65%{transform:translate(-1px,0);opacity:.91}100%{transform:none;opacity:1}}
+@keyframes rtd-feel-retro{0%{transform:none}20%{transform:translate(var(--kick-x),0) scale(1.06,.94)}40%{transform:translate(var(--lunge-x),var(--lunge-y))}60%{transform:translate(1px,-1px)}80%{transform:translate(-1px,1px)}100%{transform:none}}
+
+/* Doctrine choice changes body language, while variant-specific spectacle remains E-owned. */
+.defense-tower.defense-doctrine-power.ability-cast .defense-rizo{animation:rtd-feel-ability-power var(--attack-life,.68s) cubic-bezier(.12,.74,.2,1)}
+.defense-tower.defense-doctrine-control.ability-cast .defense-rizo{animation:rtd-feel-ability-control var(--attack-life,.68s) cubic-bezier(.18,.86,.26,1)}
+.defense-tower.defense-doctrine-power.doctrine-strike .defense-rizo{animation-duration:.36s;filter:drop-shadow(0 2px 3px color-mix(in srgb,var(--tower-color) 32%,transparent))}
+.defense-tower.defense-doctrine-control.doctrine-strike .defense-rizo{animation-duration:.27s;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--tower-color) 30%,transparent))}
+.defense-tower:is(.defense-super-power,.defense-super-control).doctrine-strike .defense-rizo{filter:drop-shadow(0 0 7px color-mix(in srgb,var(--tower-color) 48%,transparent))}
+@keyframes rtd-feel-ability-power{0%{transform:none}18%{transform:translateY(3px) scale(1.11,.86) rotate(-1deg)}42%{transform:translateY(-5px) scale(.91,1.13) rotate(1deg)}66%{transform:translateY(1px) scale(1.035,.975)}100%{transform:none}}
+@keyframes rtd-feel-ability-control{0%{transform:none}16%{transform:translateY(-2px) scale(.96,1.055) rotate(-2deg)}36%{transform:translateY(1px) scale(1.08,.93) rotate(2deg)}58%{transform:translateY(-3px) scale(.98,1.045) rotate(-1deg)}78%{transform:translateY(1px) scale(1.015,.99)}100%{transform:none}}
+
+/* ---------- Placement / selection / upgrade transformations ---------- */
+.defense-tower.feel-deployed{animation:rtd-feel-deploy .42s cubic-bezier(.14,.88,.28,1.28)}
+.defense-tower.feel-selected .defense-rizo{animation:rtd-feel-select .28s cubic-bezier(.2,.8,.2,1)}
+.defense-tower.feel-upgraded{z-index:calc(var(--z-tower,20) + 2)}
+.defense-tower.feel-upgraded .defense-rizo{animation:rtd-feel-upgrade .7s cubic-bezier(.12,.82,.2,1)}
+.defense-tower.feel-upgraded .defense-power-mark{animation:rtd-feel-upgrade-mark .72s ease-out}
+@keyframes rtd-feel-deploy{0%{opacity:.15;transform:translateY(-12px) scale(.72,1.18)}58%{opacity:1;transform:translateY(3px) scale(1.08,.93)}78%{transform:translateY(-1px) scale(.98,1.02)}100%{transform:none}}
+@keyframes rtd-feel-select{0%{transform:none}38%{transform:translateY(-2px) scale(1.055,.96)}72%{transform:translateY(1px) scale(.985,1.02)}100%{transform:none}}
+@keyframes rtd-feel-upgrade{0%{transform:none;filter:brightness(1)}24%{transform:translateY(2px) scale(.9,1.08);filter:brightness(1.25)}48%{transform:translateY(-6px) scale(1.14,.9);filter:brightness(1.55)}70%{transform:translateY(1px) scale(.98,1.03);filter:brightness(1.12)}100%{transform:none;filter:none}}
+@keyframes rtd-feel-upgrade-mark{0%{opacity:.25;transform:scale(.55) rotate(-18deg)}50%{opacity:1;transform:scale(1.22) rotate(4deg)}100%{opacity:1;transform:none}}
+
+.defense-upgrade-burst{animation:rtd-feel-burst-shell 1.35s ease-out both}
+.defense-upgrade-burst>i:not(.defense-upgrade-silhouette){position:absolute;left:50%;top:50%;width:6px;height:24px;border-radius:99px;background:var(--upgrade-color);transform-origin:50% 44px;animation:rtd-feel-upgrade-ray .72s ease-out both}
+.defense-upgrade-burst>i:nth-of-type(2){rotate:0deg}.defense-upgrade-burst>i:nth-of-type(3){rotate:90deg}.defense-upgrade-burst>i:nth-of-type(4){rotate:180deg}.defense-upgrade-burst>i:nth-of-type(5){rotate:270deg}
+.defense-upgrade-burst .defense-upgrade-silhouette{position:absolute;left:50%;top:50%;width:68px;height:68px;translate:-50% -58%;background:var(--upgrade-color);opacity:.24;mask:var(--upgrade-silhouette) center/contain no-repeat;-webkit-mask:var(--upgrade-silhouette) center/contain no-repeat;animation:rtd-feel-upgrade-echo .78s ease-out both}
+.defense-upgrade-burst b,.defense-upgrade-burst span{animation:rtd-feel-upgrade-copy .68s cubic-bezier(.16,.8,.2,1) both}
+.defense-upgrade-burst span{animation-delay:.07s}
+@keyframes rtd-feel-burst-shell{0%{opacity:0}8%,76%{opacity:1}100%{opacity:0}}
+@keyframes rtd-feel-upgrade-ray{0%{opacity:0;transform:translate(-50%,-50%) scaleY(.2)}28%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) translateY(-34px) scaleY(1.2)}}
+@keyframes rtd-feel-upgrade-echo{0%{opacity:.38;transform:scale(.65)}55%{opacity:.2;transform:scale(1.35)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes rtd-feel-upgrade-copy{0%{opacity:0;transform:translateY(7px) scale(.94)}45%{opacity:1;transform:translateY(-2px) scale(1.03)}100%{opacity:1;transform:none}}
+
+/* ---------- Enemy physical response ---------- */
+.defense-enemy.hit:not(.popped) .balloon-body{animation:rtd-feel-enemy-hit .12s cubic-bezier(.2,.8,.2,1)}
+.defense-enemy.hit:not(.popped) .balloon-knot,.defense-enemy.hit:not(.popped) .balloon-string{animation:rtd-feel-string-hit .14s ease-out}
+@keyframes rtd-feel-enemy-hit{0%{transform:none}38%{transform:translate(var(--feel-hit-x,1px),var(--feel-hit-y,1px)) scale(1.055,.95)}100%{transform:none}}
+@keyframes rtd-feel-string-hit{0%{transform:none}45%{transform:translate(calc(var(--feel-hit-x,1px) * 1.25),calc(var(--feel-hit-y,1px) * 1.25)) rotate(7deg)}100%{transform:none}}
+
+/* ---------- Boss set-piece motion hooks ---------- */
+.defense-enemy.boss-entering .balloon-body{animation:rtd-feel-boss-enter .86s cubic-bezier(.12,.78,.2,1)}
+.defense-enemy.feel-boss-windup .balloon-body{animation:rtd-feel-boss-windup .54s ease-in-out infinite alternate}
+.defense-stage-frame.feel-boss-arrival{animation:rtd-feel-stage-arrival .82s cubic-bezier(.18,.74,.22,1)}
+.defense-stage-frame.feel-boss-phase{animation:rtd-feel-stage-phase .58s ease-out}
+.defense-stage-frame.feel-boss-defeat{animation:rtd-feel-stage-defeat .72s cubic-bezier(.16,.82,.24,1)}
+@keyframes rtd-feel-boss-enter{0%{opacity:0;filter:blur(2px) saturate(.6);transform:translateY(-18px) scale(1.28,.76)}42%{opacity:1;filter:none;transform:translateY(3px) scale(.96,1.05)}67%{transform:translateY(-1px) scale(1.02,.99)}100%{transform:none}}
+@keyframes rtd-feel-boss-windup{from{transform:scale(.985,1.015);filter:brightness(.96)}to{transform:scale(1.035,.965);filter:brightness(1.16)}}
+@keyframes rtd-feel-stage-arrival{0%,100%{transform:none}14%{transform:translateX(-3px) rotate(-.12deg)}28%{transform:translateX(3px) rotate(.1deg)}43%{transform:translateX(-2px)}58%{transform:translateX(1px)}}
+@keyframes rtd-feel-stage-phase{0%,100%{transform:none}22%{transform:scale(1.004)}45%{transform:translateX(-2px)}66%{transform:translateX(2px)}}
+@keyframes rtd-feel-stage-defeat{0%{transform:none;filter:none}18%{transform:translateY(2px) scale(.997);filter:brightness(1.13)}38%{transform:translateY(-2px) scale(1.004);filter:brightness(1.04)}62%{transform:translateY(1px)}100%{transform:none;filter:none}}
+
+/* Bosses share lifecycle hooks but not physical personality. */
+.defense-enemy.boss-crown.boss-entering .balloon-body{animation-name:rtd-feel-boss-enter-crown}
+.defense-enemy.boss-vortex.boss-entering .balloon-body{animation-name:rtd-feel-boss-enter-vortex}
+.defense-enemy.boss-mirror.boss-entering .balloon-body{animation-name:rtd-feel-boss-enter-mirror}
+.defense-enemy.boss-apex.boss-entering .balloon-body{animation-name:rtd-feel-boss-enter-apex}
+.defense-stage-frame.feel-boss-arrival.feel-boss-crown{animation-name:rtd-feel-stage-crown}
+.defense-stage-frame.feel-boss-arrival.feel-boss-vortex{animation-name:rtd-feel-stage-vortex}
+.defense-stage-frame.feel-boss-arrival.feel-boss-mirror{animation-name:rtd-feel-stage-mirror}
+.defense-stage-frame.feel-boss-arrival.feel-boss-apex{animation-name:rtd-feel-stage-apex}
+.defense-stage-frame.feel-boss-phase.feel-boss-crown{animation-name:rtd-feel-phase-crown}
+.defense-stage-frame.feel-boss-phase.feel-boss-vortex{animation-name:rtd-feel-phase-vortex}
+.defense-stage-frame.feel-boss-phase.feel-boss-mirror{animation-name:rtd-feel-phase-mirror}
+.defense-stage-frame.feel-boss-phase.feel-boss-apex{animation-name:rtd-feel-phase-apex}
+@keyframes rtd-feel-boss-enter-crown{0%{opacity:0;transform:translateY(-20px) scale(1.34,.7)}45%{opacity:1;transform:translateY(5px) scale(.94,1.08)}70%{transform:translateY(-1px) scale(1.02,.99)}100%{transform:none}}
+@keyframes rtd-feel-boss-enter-vortex{0%{opacity:0;transform:translateY(-14px) rotate(-9deg) scale(.82,1.18)}48%{opacity:1;transform:translateY(2px) rotate(3deg) scale(1.05,.96)}74%{transform:rotate(-1deg)}100%{transform:none}}
+@keyframes rtd-feel-boss-enter-mirror{0%{opacity:0;transform:translateY(-10px) scale(.48,1.12) skewX(-7deg)}38%{opacity:1;transform:translateY(2px) scale(1.12,.96) skewX(4deg)}64%{transform:scale(.96,1.03) skewX(-2deg)}100%{transform:none}}
+@keyframes rtd-feel-boss-enter-apex{0%{opacity:0;transform:translateX(-22px) translateY(-6px) scale(1.42,.72)}36%{opacity:1;transform:translateX(4px) scale(.95,1.06)}58%{transform:translateX(-2px) scale(1.025,.99)}100%{transform:none}}
+@keyframes rtd-feel-stage-crown{0%,100%{transform:none}18%{transform:translateY(3px) scale(.996)}36%{transform:translateY(-2px) scale(1.003)}54%{transform:translateY(1px)}}
+@keyframes rtd-feel-stage-vortex{0%,100%{transform:none}18%{transform:rotate(-.22deg) scale(.998)}38%{transform:rotate(.2deg) scale(1.002)}60%{transform:rotate(-.08deg)}}
+@keyframes rtd-feel-stage-mirror{0%,100%{transform:none}15%{transform:skewX(-.25deg) translateX(-2px)}31%{transform:skewX(.25deg) translateX(2px)}48%{transform:skewX(-.12deg) translateX(-1px)}}
+@keyframes rtd-feel-stage-apex{0%,100%{transform:none}14%{transform:translateX(-4px) scaleX(1.004)}28%{transform:translateX(3px) scaleX(.998)}42%{transform:translateX(-2px)}55%{transform:translateX(1px)}}
+@keyframes rtd-feel-phase-crown{0%,100%{transform:none}30%{transform:translateY(2px) scale(.997)}58%{transform:translateY(-1px) scale(1.003)}}
+@keyframes rtd-feel-phase-vortex{0%,100%{transform:none}30%{transform:rotate(-.18deg) scale(1.002)}62%{transform:rotate(.16deg) scale(.999)}}
+@keyframes rtd-feel-phase-mirror{0%,100%{transform:none}25%{transform:scaleX(.996) translateX(-2px)}50%{transform:scaleX(1.004) translateX(2px)}75%{transform:translateX(-1px)}}
+@keyframes rtd-feel-phase-apex{0%,100%{transform:none}22%{transform:translateX(-3px) scaleX(1.003)}44%{transform:translateX(3px) scaleX(.997)}66%{transform:translateX(-1px)}}
+
+/* ---------- Ability / doctrine body punctuation ---------- */
+.defense-tower.ability-cast.apex-cast .defense-rizo{animation-duration:.86s;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--tower-color) 58%,transparent))}
+.defense-tower.doctrine-strike .defense-power-mark{animation:rtd-feel-doctrine-mark .34s ease-out}
+@keyframes rtd-feel-doctrine-mark{0%{opacity:.3;transform:scale(.8)}42%{opacity:1;transform:scale(1.15)}100%{transform:none}}
+
+
+/* ---------- Pause is a true visual freeze for Worker-I motion ---------- */
+.defense-shell[data-defense-phase="paused"] .defense-tower:is(.feel-idle-breathe,.feel-idle-braced,.feel-idle-hover,.feel-idle-twitch) .defense-rizo,
+.defense-shell[data-defense-phase="paused"] .defense-tower:is(.firing,.ability-cast,.doctrine-strike) .defense-rizo,
+.defense-shell[data-defense-phase="paused"] .defense-tower.doctrine-strike .defense-power-mark,
+.defense-shell[data-defense-phase="paused"] .defense-tower:is(.feel-deployed,.feel-upgraded),
+.defense-shell[data-defense-phase="paused"] .defense-tower.feel-selected .defense-rizo,
+.defense-shell[data-defense-phase="paused"] .defense-enemy.hit .balloon-body,
+.defense-shell[data-defense-phase="paused"] .defense-enemy.hit .balloon-knot,
+.defense-shell[data-defense-phase="paused"] .defense-enemy.hit .balloon-string,
+.defense-shell[data-defense-phase="paused"] .defense-enemy.boss-entering .balloon-body,
+.defense-shell[data-defense-phase="paused"] .defense-enemy.feel-boss-windup .balloon-body,
+.defense-shell[data-defense-phase="paused"] .defense-stage-frame.feel-boss-arrival,
+.defense-shell[data-defense-phase="paused"] .defense-stage-frame.feel-boss-phase,
+.defense-shell[data-defense-phase="paused"] .defense-stage-frame.feel-boss-defeat,
+.defense-shell[data-defense-phase="paused"] .defense-upgrade-burst,
+.defense-shell[data-defense-phase="paused"] .defense-upgrade-burst *{animation-play-state:paused}
+
+/* ---------- Reduced motion keeps state emphasis without movement ---------- */
+body.reduce-motion .defense-tower:is(.feel-idle-breathe,.feel-idle-braced,.feel-idle-hover,.feel-idle-twitch):not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo,
+body.reduce-motion .defense-tower:is(.firing,.ability-cast,.doctrine-strike) .defense-rizo,
+body.reduce-motion .defense-tower.doctrine-strike .defense-power-mark,
+body.reduce-motion .defense-tower.feel-deployed,
+body.reduce-motion .defense-tower.feel-selected .defense-rizo,
+body.reduce-motion .defense-tower.feel-upgraded .defense-rizo,
+body.reduce-motion .defense-tower.feel-upgraded .defense-power-mark,
+body.reduce-motion .defense-enemy.hit .balloon-body,
+body.reduce-motion .defense-enemy.hit .balloon-knot,
+body.reduce-motion .defense-enemy.hit .balloon-string,
+body.reduce-motion .defense-enemy.boss-entering .balloon-body,
+body.reduce-motion .defense-enemy.feel-boss-windup .balloon-body,
+body.reduce-motion .defense-stage-frame.feel-boss-arrival,
+body.reduce-motion .defense-stage-frame.feel-boss-phase,
+body.reduce-motion .defense-stage-frame.feel-boss-defeat,
+body.reduce-motion .defense-upgrade-burst,
+body.reduce-motion .defense-upgrade-burst *{animation:none;transform:none}
+body.reduce-motion .defense-tower.feel-upgraded .defense-rizo{filter:brightness(1.18)}
+body.reduce-motion .defense-stage-frame:is(.feel-boss-arrival,.feel-boss-phase,.feel-boss-defeat){outline:2px solid color-mix(in srgb,var(--field-accent) 60%,transparent);outline-offset:-2px}
+
+@media(prefers-reduced-motion:reduce){
+  .defense-tower:is(.feel-idle-breathe,.feel-idle-braced,.feel-idle-hover,.feel-idle-twitch):not(.firing):not(.ability-cast):not(.doctrine-strike):not(.feel-selected):not(.feel-upgraded) .defense-rizo,
+  .defense-tower:is(.firing,.ability-cast,.doctrine-strike) .defense-rizo,.defense-tower.doctrine-strike .defense-power-mark,
+  .defense-tower.feel-deployed,.defense-tower.feel-selected .defense-rizo,.defense-tower.feel-upgraded .defense-rizo,.defense-tower.feel-upgraded .defense-power-mark,
+  .defense-enemy.hit .balloon-body,.defense-enemy.hit .balloon-knot,.defense-enemy.hit .balloon-string,.defense-enemy.boss-entering .balloon-body,.defense-enemy.feel-boss-windup .balloon-body,
+  .defense-stage-frame.feel-boss-arrival,.defense-stage-frame.feel-boss-phase,.defense-stage-frame.feel-boss-defeat,.defense-upgrade-burst,.defense-upgrade-burst *{animation:none;transform:none}
+}
