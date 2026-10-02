@@ -10,9 +10,8 @@ The Rizo Apparel Shopify theme (rizo.store): Rizo Portal with the seasonal
 | `docs/HALLOWEEN-2026-IMPLEMENTATION-REPORT.md` | What changed for Halloween 2026, the test results, and known limitations. |
 | `docs/screens/` | Reference screenshots (placeholder art). |
 | `tools/` | Local preview harness, browser audit and Theme Check. **Not part of the theme.** |
-| `game/` | Rizo.game (play.rizo.store), the static PWA: pet hub, training arcade and Rizo Defense. Deploy the folder's contents flat (`index.html` at the site root). **Not part of the theme.** |
 
-`docs/`, `tools/`, `game/` and this README are listed in `.shopifyignore`, so
+`docs/`, `tools/` and this README are listed in `.shopifyignore`, so
 `shopify theme push` uploads only the theme.
 
 ```
