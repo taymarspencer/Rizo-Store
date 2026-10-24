@@ -34,6 +34,8 @@ The five units were explicitly described as planned stock, not fully received. B
 
 ## Verification
 
+All 39 existing event-layer and commerce regression checks passed after updating the local preview image mapping. Total: 66 local Skeleton checks + 50 native Shopify checks + 39 regression checks = 155 passing checks.
+
 `tools/tests/skeleton.test.mjs`: 66 local browser checks, including 320/375/390/430/1440 widths, gate combinations, missing/wrong product, whole-image rendering, seven-image gallery, zoom/Escape, and simulated release cart flow. No real order or checkout was created.
 
 `tools/tests/skeleton-storefront.mjs`: 50 passed read-only native Shopify checks and screenshots against the unpublished theme; results in the accompanying native-checks.json.
