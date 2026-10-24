@@ -1,0 +1,158 @@
+[
+  {
+    "name": "OFF: normal Rizo loads no event CSS/JS and has no event markup",
+    "passed": true
+  },
+  {
+    "name": "Scheduled, outside window: CSS present but inert, runtime never requested",
+    "passed": true
+  },
+  {
+    "name": "Schedule switches the event on at its start time without a reload",
+    "passed": true
+  },
+  {
+    "name": "Schedule switches the event off at its end time and cleans up",
+    "passed": true
+  },
+  {
+    "name": "Manual override (Always on) ignores the schedule",
+    "passed": true
+  },
+  {
+    "name": "Theme editor previews the event outside its window (and can opt out)",
+    "passed": true
+  },
+  {
+    "name": "?rizo_event=on persists across pages for the tab; ?rizo_event=clear and =off work",
+    "passed": true
+  },
+  {
+    "name": "Each module can be switched off on its own",
+    "passed": true
+  },
+  {
+    "name": "On phones: \"sky, moon and countdown only\" drops fog and bats; \"Lighter\" halves bats and thins fog",
+    "passed": true
+  },
+  {
+    "name": "Colour settings override the preset's fog, sky and moonlight",
+    "passed": true
+  },
+  {
+    "name": "Signal bar shows the event message only while the event is live",
+    "passed": true
+  },
+  {
+    "name": "Countdown targets Oct 31 12:00 AM New York regardless of visitor timezone",
+    "passed": true
+  },
+  {
+    "name": "Countdown target without an offset is read in New York time, not the visitor's",
+    "passed": true
+  },
+  {
+    "name": "Countdown ticks each second, rewrites only changed digits and never shifts layout",
+    "passed": true
+  },
+  {
+    "name": "Countdown reaching zero shows the ended message (setting: message)",
+    "passed": true
+  },
+  {
+    "name": "Countdown reaching zero hides itself (setting: hide) and seconds can be turned off",
+    "passed": true
+  },
+  {
+    "name": "Server renders an already-past countdown in its ended state (no flash)",
+    "passed": true
+  },
+  {
+    "name": "Countdown pauses on a hidden tab and resyncs when visible",
+    "passed": true
+  },
+  {
+    "name": "Clicks and taps pass straight through moving bats",
+    "passed": true
+  },
+  {
+    "name": "SHOP still shops: hero CTA works with a bat parked on top of it",
+    "passed": true
+  },
+  {
+    "name": "Rapid tapping (200 taps) keeps the flock bounded",
+    "passed": true
+  },
+  {
+    "name": "Aggressive scrolling both ways wakes bats but stays bounded",
+    "passed": true
+  },
+  {
+    "name": "Bats leave and are recycled; the loop sleeps when nothing moves; fog paints at half rate",
+    "passed": true
+  },
+  {
+    "name": "Exactly one animation loop: the whole theme makes at most one rAF request per frame",
+    "passed": true
+  },
+  {
+    "name": "Open drawer/menu pauses the flock; closing resumes it",
+    "passed": true
+  },
+  {
+    "name": "Frame-time governor steps a struggling device down to lite, then still",
+    "passed": true
+  },
+  {
+    "name": "Theme editor section reloads (x8) never duplicate timers, observers or listeners",
+    "passed": true
+  },
+  {
+    "name": "Resize and orientation changes keep limits and layout sane",
+    "passed": true
+  },
+  {
+    "name": "Multiple reloads: one engine per page, no errors",
+    "passed": true
+  },
+  {
+    "name": "Reduced motion: night, moon, still fog and countdown stay; bats never load",
+    "passed": true
+  },
+  {
+    "name": "Reduced motion switched on mid-visit stops bats; switched off brings them back",
+    "passed": true
+  },
+  {
+    "name": "Decorative layers stay out of the accessibility tree; countdown is a labelled timer",
+    "passed": true
+  },
+  {
+    "name": "Keyboard focus order is identical with the event on and off",
+    "passed": true
+  },
+  {
+    "name": "Quick add (variant + single-variant), cart drawer, cart page and checkout work with bats flying",
+    "passed": true
+  },
+  {
+    "name": "Product page: variant picker, sold-out state, add to cart and sticky bar with the event live",
+    "passed": true
+  },
+  {
+    "name": "Menu, search and newsletter form work with the event live",
+    "passed": true
+  },
+  {
+    "name": "Every page type loads without errors with the event live",
+    "passed": true
+  },
+  {
+    "name": "Event layer adds no horizontal overflow at 320, 375, 390, 430, landscape, tablet and desktop widths",
+    "passed": true
+  },
+  {
+    "name": "Performance sample: frame pacing (event Off vs On) while the page scrolls; event asset weight",
+    "passed": true
+  }
+]

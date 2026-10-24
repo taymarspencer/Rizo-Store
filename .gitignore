@@ -2,3 +2,6 @@
 Thumbs.db
 node_modules/
 tools/test-results/
+
+docs/skeleton-review/*.png
+docs/skeleton-review/*-rendered.html

@@ -1,3 +1,5 @@
 node_modules
 test-results/
 *.local.mjs
+
+preview/catalog-images/skeleton-*.png

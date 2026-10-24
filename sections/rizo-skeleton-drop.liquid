@@ -1,0 +1,74 @@
+{%- liquid
+  assign drop = section.settings.product
+  assign launch_ready = false
+  if settings.skeleton_feature_enabled and drop.id == 8164322508878 and drop.published_at != blank
+    assign launch_ready = true
+  endif
+  assign editorial = section.settings.editorial_image
+  assign front = section.settings.front_image | default: drop.images[0]
+  assign back = section.settings.back_image | default: drop.images[1]
+  assign image_loading = 'lazy'
+  if section.index == 1
+    assign image_loading = 'eager'
+  endif
+-%}
+{%- if launch_ready or request.design_mode -%}
+  {{ 'rizo-skeleton.css' | asset_url | stylesheet_tag }}
+  <section class="skeleton-drop" aria-labelledby="SkeletonTitle-{{ section.id }}" data-rizo-event-quiet>
+    <div class="wrap wrap--wide">
+      {%- if request.design_mode and launch_ready == false -%}
+        <p class="skeleton-review v-note">{{ 'skeleton.drop.editor_note' | t }}</p>
+      {%- endif -%}
+      <div class="skeleton-topline v-label"><span>{{ 'skeleton.drop.label' | t }}</span><span>{{ 'skeleton.drop.edition' | t }}</span></div>
+      <div class="skeleton-spread">
+        <figure class="skeleton-portrait">
+          {%- if editorial != blank -%}
+            {{ editorial | image_url: width: 1600 | image_tag: loading: image_loading, widths: '360,540,720,960,1200,1600', sizes: '(min-width: 750px) 48vw, 92vw', alt: editorial.alt }}
+          {%- elsif request.design_mode -%}
+            {{ 'image' | placeholder_svg_tag }}
+          {%- endif -%}
+          <figcaption class="v-note">{{ 'skeleton.drop.photo_caption' | t }}</figcaption>
+        </figure>
+        <div class="skeleton-copy">
+          <div class="skeleton-intro">
+            <h2 id="SkeletonTitle-{{ section.id }}" class="skeleton-title">{{ 'skeleton.drop.heading' | t }}<span>{{ 'skeleton.drop.subheading' | t }}</span></h2>
+            <p class="skeleton-description">{{ 'skeleton.drop.introduction' | t }}</p>
+          </div>
+          <div class="skeleton-objects">
+            <figure>
+              {%- if front != blank -%}{{ front | image_url: width: 720 | image_tag: loading: 'lazy', widths: '180,360,540,720', sizes: '(min-width: 750px) 20vw, 44vw', alt: front.alt }}{%- endif -%}
+              <figcaption class="v-label">{{ 'skeleton.drop.front' | t }}</figcaption>
+            </figure>
+            <figure>
+              {%- if back != blank -%}{{ back | image_url: width: 720 | image_tag: loading: 'lazy', widths: '180,360,540,720', sizes: '(min-width: 750px) 20vw, 44vw', alt: back.alt }}{%- endif -%}
+              <figcaption class="v-label">{{ 'skeleton.drop.back' | t }}</figcaption>
+            </figure>
+          </div>
+          <div class="skeleton-purchase">
+            <div class="skeleton-meta"><p>{{ 'skeleton.drop.material' | t }}</p><span>{% if drop != blank %}{{ drop.price | money }}{% else %}{{ 3999 | money }}{% endif %}</span></div>
+            {%- if launch_ready -%}
+              <a class="btn btn--solid skeleton-link" href="{{ drop.url }}">{{ 'skeleton.drop.discover' | t }}<span aria-hidden="true">↗</span></a>
+            {%- else -%}
+              <p class="skeleton-unreleased">{{ 'skeleton.drop.not_released' | t }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Skeleton drop",
+  "enabled_on": { "templates": ["index"] },
+  "settings": [
+    { "type": "paragraph", "content": "Hidden until Theme settings → Skeleton release → Show feature is checked and the product is published. Purchasing has a separate approval control." },
+    { "type": "product", "id": "product", "label": "Skeleton crewneck" },
+    { "type": "image_picker", "id": "editorial_image", "label": "Lifestyle photograph" },
+    { "type": "image_picker", "id": "front_image", "label": "Front photograph", "info": "Uses the first product image when left blank." },
+    { "type": "image_picker", "id": "back_image", "label": "Back photograph", "info": "Uses the second product image when left blank." }
+  ],
+  "presets": [{ "name": "Skeleton drop" }]
+}
+{% endschema %}

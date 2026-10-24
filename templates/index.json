@@ -99,7 +99,12 @@
           }
         }
       },
-      "block_order": ["underpass", "night", "gym", "table"],
+      "block_order": [
+        "underpass",
+        "night",
+        "gym",
+        "table"
+      ],
       "settings": {
         "label": "The Circle",
         "heading": "",
@@ -124,7 +129,24 @@
         "space": "m",
         "fog": 0
       }
+    },
+    "skeleton": {
+      "type": "rizo-skeleton-drop",
+      "settings": {
+        "product": "raging-skeleton-crewneck-reworked",
+        "editorial_image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg",
+        "front_image": "shopify://shop_images/rizo-skeleton-crewneck-front_59729c08-c386-4716-bf92-1bd559f06d2b.png",
+        "back_image": "shopify://shop_images/rizo-skeleton-crewneck-back_71e675b2-fa4b-4f3b-b380-477484baf8c7.png"
+      }
     }
   },
-  "order": ["hero", "shop", "founder", "night", "circle", "signup"]
+  "order": [
+    "hero",
+    "skeleton",
+    "shop",
+    "founder",
+    "night",
+    "circle",
+    "signup"
+  ]
 }

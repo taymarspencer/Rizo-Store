@@ -1,4 +1,12 @@
 {%- liquid
+  assign skeleton_locked = false
+  assign is_skeleton = false
+  if product.id == 8164322508878
+    assign is_skeleton = true
+    if settings.skeleton_launch_enabled != true or product.published_at == blank
+      assign skeleton_locked = true
+    endif
+  endif
   assign selected_variant = product.selected_variant
   assign first_variant = product.selected_or_first_available_variant
   assign low_stock_threshold = settings.low_stock_threshold | default: 5
@@ -9,7 +17,9 @@
   endif
   assign media_count = product.media.size
 -%}
-<section class="pdp" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}" data-rizo-event-quiet>
+{% if is_skeleton %}{{ 'rizo-skeleton.css' | asset_url | stylesheet_tag }}{% endif %}
+{% if is_skeleton %}<script type="application/ld+json">{{ product | structured_data }}</script>{% endif %}
+<section class="pdp{% if is_skeleton %} pdp--skeleton{% endif %}" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}" data-rizo-event-quiet>
   {% render 'rizo-art', section: section %}
   <div class="wrap wrap--wide">
     <nav class="crumbs" aria-label="Breadcrumb">
@@ -57,7 +67,7 @@
       </div>
 
       <div class="pdp-info">
-        <div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>
+        {%- unless skeleton_locked -%}<div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>{%- endunless -%}
         <h1 class="pdp-title">{{ product.title }}</h1>
         {%- if product.metafields.custom.short_description != blank -%}
           <p class="pdp-line">{{ product.metafields.custom.short_description }}</p>
@@ -65,6 +75,15 @@
           <p class="pdp-line">{{ section.settings.fallback_line }}</p>
         {%- endif -%}
 
+        {%- if skeleton_locked -%}
+          <div class="skeleton-locked">
+            <p aria-label="{{ 'skeleton.drop.price_label' | t }}">{{ product.price | money }}</p>
+            <p class="v-label">{{ 'skeleton.drop.sizes' | t }}</p>
+            <div class="opt-values">{% for variant in product.variants %}<span class="opt">{{ variant.title | escape }}</span>{% endfor %}</div>
+            <p>{{ 'skeleton.drop.not_released' | t }}</p>
+            <p class="v-note">{{ 'skeleton.drop.locked_note' | t }}</p>
+          </div>
+        {%- else -%}
         {%- form 'product', product, class: 'pdp-form', data-ajax-product-form: '', data-product-form: '' -%}
           {%- render 'price', product: product, context: 'product', form: form -%}
 
@@ -131,6 +150,8 @@
           {%- if shop.refund_policy != blank -%}<p>{% render 'icon', name: 'return' %}<a href="{{ shop.refund_policy.url }}">Returns and exchanges</a></p>{%- endif -%}
         </div>
 
+        {%- endif -%}
+
         <div class="product-proof-apps">{%- for block in section.blocks -%}{%- if block.type == '@app' -%}{% render block %}{%- endif -%}{%- endfor -%}</div>
 
         <div class="details-list">
@@ -152,11 +173,14 @@
     </div>
   </div>
 
+  {%- unless skeleton_locked -%}
   <div class="sticky-buy" data-sticky-atc hidden>
     <div><strong>{{ product.title }}</strong><span data-sticky-variant>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}In stock{% else %}Choose a size{% endif %}</span></div>
     <span data-sticky-price>{{ first_variant.price | money }}</span>
     <button class="btn btn--solid" type="button" data-sticky-submit{% unless product.available %} disabled aria-disabled="true"{% endunless %}>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}Add{% else %}Choose{% endif %}</button>
   </div>
+
+  {%- endunless -%}
 
   <div class="overlay-shell" data-overlay="product-media" hidden>
     <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close"></button>

@@ -493,5 +493,24 @@
         "placeholder": "Tonight."
       }
     ]
+  },
+  {
+    "name": "Skeleton release",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "skeleton_feature_enabled",
+        "label": "Show feature",
+        "default": false,
+        "info": "Shows the editorial feature only after the selected product is published. Does not enable purchases."
+      },
+      {
+        "type": "checkbox",
+        "id": "skeleton_launch_enabled",
+        "label": "Purchasing approved — physical inventory confirmed",
+        "default": false,
+        "info": "Keep off until physical stock is received and the available quantities are correct. The product can be published for discovery while purchasing stays locked."
+      }
+    ]
   }
 ]

@@ -1,0 +1,401 @@
+--- a/assets/rizo-skeleton.css
++++ b/assets/rizo-skeleton.css
+@@ -0,0 +1,32 @@
++.skeleton-drop { padding-block: var(--pad-s) var(--pad); background: var(--ground); }
++.skeleton-review { margin-bottom: 24px; padding: 12px 16px; border: 1px dashed var(--line-2); }
++.skeleton-topline { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line-2); }
++.skeleton-spread { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); padding-top: 28px; }
++.skeleton-portrait img { width: 100%; height: auto; }
++.skeleton-portrait figcaption { margin-top: 12px; color: var(--bone-3); }
++.skeleton-copy { display: flex; flex-direction: column; justify-content: space-between; gap: 28px; padding-block: clamp(0px, 1.5vw, 24px) 30px; }
++.skeleton-title { font: 400 clamp(64px, 7.5vw, 112px)/.91 var(--f-sign); letter-spacing: -.015em; }
++.skeleton-title span { display: block; margin-top: 12px; font: 650 clamp(22px, 2.4vw, 34px)/1.15 var(--f-text); letter-spacing: -.04em; }
++.skeleton-description { max-width: 34ch; margin-top: 24px; color: var(--bone-2); }
++.skeleton-objects { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
++.skeleton-objects img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; }
++.skeleton-objects figure:last-child { padding-top: 24px; }
++.skeleton-objects figcaption { margin-top: 10px; color: var(--bone-3); }
++.skeleton-meta { display: flex; justify-content: space-between; gap: 20px; align-items: baseline; padding-block: 16px; border-top: 1px solid var(--line-2); font-size: var(--t-small); }
++.skeleton-meta p { color: var(--bone-2); max-width: 24ch; }
++.skeleton-meta span { white-space: nowrap; font-size: var(--t-4); }
++.skeleton-link { width: 100%; justify-content: space-between; }
++.skeleton-unreleased { padding-block: 14px; color: var(--bone-2); border-top: 1px solid var(--line); }
++.skeleton-locked { margin-block: 24px; padding-block: 20px; border-block: 1px solid var(--line-2); }
++.skeleton-locked > p + p { margin-top: 12px; }
++.skeleton-locked .opt-values { margin-block: 16px; }
++.skeleton-locked .opt { cursor: default; }
++.pdp--skeleton .pdp-media img { object-fit: contain; }
++@media (max-width: 749px) {
++  .skeleton-spread { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 16px; }
++  .skeleton-copy { gap: 28px; padding-block: 0; }
++  .skeleton-title { font-size: clamp(64px, 18vw, 92px); }
++  .skeleton-description { margin-top: 18px; }
++  .skeleton-objects { gap: 14px; }
++  .pdp--skeleton .pdp-media img { aspect-ratio: 1; }
++}
+--- a/config/settings_data.json
++++ b/config/settings_data.json
+@@ -1,12 +1,3 @@
+-/*
+- * ------------------------------------------------------------
+- * IMPORTANT: The contents of this file are auto-generated.
+- *
+- * This file may be updated by the Shopify admin theme editor
+- * or related systems. Please exercise caution as any changes
+- * made to this file may be overwritten.
+- * ------------------------------------------------------------
+- */
+ {
+   "current": {
+     "color_ink": "#07090c",
+@@ -49,8 +40,10 @@
+     "world_circle_label": "The Circle",
+     "world_circle_link": "/pages/circle",
+     "world_412_link": "/pages/412",
+-    "world_outside_link": "/pages/outside"
++    "world_outside_link": "/pages/outside",
++    "skeleton_feature_enabled": true,
++    "skeleton_launch_enabled": false,
++    "skeleton_social_image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg"
+   },
+   "presets": {}
+ }
+-
+--- a/config/settings_schema.json
++++ b/config/settings_schema.json
+@@ -551,6 +551,29 @@
+         "label": "Circle page"
+       }
+     ]
++  },
++  {
++    "name": "Skeleton release",
++    "settings": [
++      {
++        "type": "checkbox",
++        "id": "skeleton_feature_enabled",
++        "label": "Show feature",
++        "default": false,
++        "info": "Shows the editorial feature only after the selected product is published. Does not enable purchases."
++      },
++      {
++        "type": "checkbox",
++        "id": "skeleton_launch_enabled",
++        "label": "Purchasing approved — physical inventory confirmed",
++        "default": false,
++        "info": "Keep off until physical stock is received and the available quantities are correct. The product can be published for discovery while purchasing stays locked."
++      },
++      {
++        "type": "image_picker",
++        "id": "skeleton_social_image",
++        "label": "Skeleton sharing photograph"
++      }
++    ]
+   }
+ ]
+-
+--- a/layout/theme.liquid
++++ b/layout/theme.liquid
+@@ -91,6 +91,9 @@
+       case template.name
+         when 'product'
+           assign rizo_share_object = product.featured_image | default: rizo_share_object
++          if product.id == 8164322508878 and settings.skeleton_social_image != blank
++            assign rizo_share_object = settings.skeleton_social_image
++          endif
+         when 'collection'
+           assign rizo_share_object = collection.image | default: collection.products.first.featured_image | default: rizo_share_object
+         when 'article'
+--- a/locales/en.default.json
++++ b/locales/en.default.json
+@@ -1,12 +1,3 @@
+-/*
+- * ------------------------------------------------------------
+- * IMPORTANT: The contents of this file are auto-generated.
+- *
+- * This file may be updated by the Shopify admin language editor
+- * or related systems. Please exercise caution as any changes
+- * made to this file may be overwritten.
+- * ------------------------------------------------------------
+- */
+ {
+   "general": {
+     "brand_name": "Rizo Apparel",
+@@ -28,6 +19,24 @@
+   "products": {
+     "add_to_cart": "Add to cart",
+     "sold_out": "Sold out"
++  },
++  "skeleton": {
++    "drop": {
++      "label": "The Skeleton drop",
++      "edition": "RIZO / 2026",
++      "heading": "Skeleton.",
++      "subheading": "The crewneck returns.",
++      "introduction": "An original RIZO design, back with updated artwork and an upgraded sweatshirt.",
++      "photo_caption": "RIZO, worn outside.",
++      "front": "01 / Front",
++      "back": "02 / Back",
++      "material": "280 GSM fleece · Standard fit",
++      "discover": "Explore the crewneck",
++      "not_released": "Coming soon.",
++      "editor_note": "Editor preview only. This feature is hidden from customers.",
++      "locked_note": "This piece is not available to order yet.",
++      "sizes": "Sizes",
++      "price_label": "Price"
++    }
+   }
+ }
+-
+--- a/sections/main-product.liquid
++++ b/sections/main-product.liquid
+@@ -1,4 +1,12 @@
+ {%- liquid
++  assign skeleton_locked = false
++  assign is_skeleton = false
++  if product.id == 8164322508878
++    assign is_skeleton = true
++    if settings.skeleton_launch_enabled != true or product.published_at == blank
++      assign skeleton_locked = true
++    endif
++  endif
+   assign selected_variant = product.selected_variant
+   assign first_variant = product.selected_or_first_available_variant
+   assign low_stock_threshold = settings.low_stock_threshold | default: 5
+@@ -9,7 +17,9 @@
+   endif
+   assign media_count = product.media.size
+ -%}
+-<section class="pdp" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}" data-rizo-event-quiet>
++{% if is_skeleton %}{{ 'rizo-skeleton.css' | asset_url | stylesheet_tag }}{% endif %}
++{% if is_skeleton %}<script type="application/ld+json">{{ product | structured_data }}</script>{% endif %}
++<section class="pdp{% if is_skeleton %} pdp--skeleton{% endif %}" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}" data-rizo-event-quiet>
+   {% render 'rizo-art', section: section %}
+   <div class="wrap wrap--wide">
+     <nav class="crumbs" aria-label="Breadcrumb">
+@@ -57,7 +67,7 @@
+       </div>
+ 
+       <div class="pdp-info">
+-        <div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>
++        {%- unless skeleton_locked -%}<div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>{%- endunless -%}
+         <h1 class="pdp-title">{{ product.title }}</h1>
+         {%- if product.metafields.custom.short_description != blank -%}
+           <p class="pdp-line">{{ product.metafields.custom.short_description }}</p>
+@@ -65,6 +75,15 @@
+           <p class="pdp-line">{{ section.settings.fallback_line }}</p>
+         {%- endif -%}
+ 
++        {%- if skeleton_locked -%}
++          <div class="skeleton-locked">
++            <p aria-label="{{ 'skeleton.drop.price_label' | t }}">{{ product.price | money }}</p>
++            <p class="v-label">{{ 'skeleton.drop.sizes' | t }}</p>
++            <div class="opt-values">{% for variant in product.variants %}<span class="opt">{{ variant.title | escape }}</span>{% endfor %}</div>
++            <p>{{ 'skeleton.drop.not_released' | t }}</p>
++            <p class="v-note">{{ 'skeleton.drop.locked_note' | t }}</p>
++          </div>
++        {%- else -%}
+         {%- form 'product', product, class: 'pdp-form', data-ajax-product-form: '', data-product-form: '' -%}
+           {%- render 'price', product: product, context: 'product', form: form -%}
+ 
+@@ -131,6 +150,8 @@
+           {%- if shop.refund_policy != blank -%}<p>{% render 'icon', name: 'return' %}<a href="{{ shop.refund_policy.url }}">Returns and exchanges</a></p>{%- endif -%}
+         </div>
+ 
++        {%- endif -%}
++
+         <div class="product-proof-apps">{%- for block in section.blocks -%}{%- if block.type == '@app' -%}{% render block %}{%- endif -%}{%- endfor -%}</div>
+ 
+         <div class="details-list">
+@@ -152,11 +173,14 @@
+     </div>
+   </div>
+ 
++  {%- unless skeleton_locked -%}
+   <div class="sticky-buy" data-sticky-atc hidden>
+     <div><strong>{{ product.title }}</strong><span data-sticky-variant>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}In stock{% else %}Choose a size{% endif %}</span></div>
+     <span data-sticky-price>{{ first_variant.price | money }}</span>
+     <button class="btn btn--solid" type="button" data-sticky-submit{% unless product.available %} disabled aria-disabled="true"{% endunless %}>{% if product.available == false %}Sold out{% elsif product.has_only_default_variant %}Add{% else %}Choose{% endif %}</button>
+   </div>
++
++  {%- endunless -%}
+ 
+   <div class="overlay-shell" data-overlay="product-media" hidden>
+     <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close"></button>
+--- a/sections/rizo-skeleton-drop.liquid
++++ b/sections/rizo-skeleton-drop.liquid
+@@ -0,0 +1,74 @@
++{%- liquid
++  assign drop = section.settings.product
++  assign launch_ready = false
++  if settings.skeleton_feature_enabled and drop.id == 8164322508878 and drop.published_at != blank
++    assign launch_ready = true
++  endif
++  assign editorial = section.settings.editorial_image
++  assign front = section.settings.front_image | default: drop.images[0]
++  assign back = section.settings.back_image | default: drop.images[1]
++  assign image_loading = 'lazy'
++  if section.index == 1
++    assign image_loading = 'eager'
++  endif
++-%}
++{%- if launch_ready or request.design_mode -%}
++  {{ 'rizo-skeleton.css' | asset_url | stylesheet_tag }}
++  <section class="skeleton-drop" aria-labelledby="SkeletonTitle-{{ section.id }}" data-rizo-event-quiet>
++    <div class="wrap wrap--wide">
++      {%- if request.design_mode and launch_ready == false -%}
++        <p class="skeleton-review v-note">{{ 'skeleton.drop.editor_note' | t }}</p>
++      {%- endif -%}
++      <div class="skeleton-topline v-label"><span>{{ 'skeleton.drop.label' | t }}</span><span>{{ 'skeleton.drop.edition' | t }}</span></div>
++      <div class="skeleton-spread">
++        <figure class="skeleton-portrait">
++          {%- if editorial != blank -%}
++            {{ editorial | image_url: width: 1600 | image_tag: loading: image_loading, widths: '360,540,720,960,1200,1600', sizes: '(min-width: 750px) 48vw, 92vw', alt: editorial.alt }}
++          {%- elsif request.design_mode -%}
++            {{ 'image' | placeholder_svg_tag }}
++          {%- endif -%}
++          <figcaption class="v-note">{{ 'skeleton.drop.photo_caption' | t }}</figcaption>
++        </figure>
++        <div class="skeleton-copy">
++          <div class="skeleton-intro">
++            <h2 id="SkeletonTitle-{{ section.id }}" class="skeleton-title">{{ 'skeleton.drop.heading' | t }}<span>{{ 'skeleton.drop.subheading' | t }}</span></h2>
++            <p class="skeleton-description">{{ 'skeleton.drop.introduction' | t }}</p>
++          </div>
++          <div class="skeleton-objects">
++            <figure>
++              {%- if front != blank -%}{{ front | image_url: width: 720 | image_tag: loading: 'lazy', widths: '180,360,540,720', sizes: '(min-width: 750px) 20vw, 44vw', alt: front.alt }}{%- endif -%}
++              <figcaption class="v-label">{{ 'skeleton.drop.front' | t }}</figcaption>
++            </figure>
++            <figure>
++              {%- if back != blank -%}{{ back | image_url: width: 720 | image_tag: loading: 'lazy', widths: '180,360,540,720', sizes: '(min-width: 750px) 20vw, 44vw', alt: back.alt }}{%- endif -%}
++              <figcaption class="v-label">{{ 'skeleton.drop.back' | t }}</figcaption>
++            </figure>
++          </div>
++          <div class="skeleton-purchase">
++            <div class="skeleton-meta"><p>{{ 'skeleton.drop.material' | t }}</p><span>{% if drop != blank %}{{ drop.price | money }}{% else %}{{ 3999 | money }}{% endif %}</span></div>
++            {%- if launch_ready -%}
++              <a class="btn btn--solid skeleton-link" href="{{ drop.url }}">{{ 'skeleton.drop.discover' | t }}<span aria-hidden="true">↗</span></a>
++            {%- else -%}
++              <p class="skeleton-unreleased">{{ 'skeleton.drop.not_released' | t }}</p>
++            {%- endif -%}
++          </div>
++        </div>
++      </div>
++    </div>
++  </section>
++{%- endif -%}
++
++{% schema %}
++{
++  "name": "Skeleton drop",
++  "enabled_on": { "templates": ["index"] },
++  "settings": [
++    { "type": "paragraph", "content": "Hidden until Theme settings → Skeleton release → Show feature is checked and the product is published. Purchasing has a separate approval control." },
++    { "type": "product", "id": "product", "label": "Skeleton crewneck" },
++    { "type": "image_picker", "id": "editorial_image", "label": "Lifestyle photograph" },
++    { "type": "image_picker", "id": "front_image", "label": "Front photograph", "info": "Uses the first product image when left blank." },
++    { "type": "image_picker", "id": "back_image", "label": "Back photograph", "info": "Uses the second product image when left blank." }
++  ],
++  "presets": [{ "name": "Skeleton drop" }]
++}
++{% endschema %}
+--- a/snippets/product-badge.liquid
++++ b/snippets/product-badge.liquid
+@@ -39,6 +39,11 @@
+     endif
+   endif
+ 
++  if product.id == 8164322508878
++    if settings.skeleton_launch_enabled != true or product.published_at == blank
++      assign badge = 'skeleton.drop.not_released' | t
++    endif
++  endif
+   assign badge_label = badge | strip | upcase
+   assign badge_class = ''
+   if badge_label == 'SALE' or badge_label == 'LOW STOCK'
+--- a/templates/index.json
++++ b/templates/index.json
+@@ -1,12 +1,3 @@
+-/*
+- * ------------------------------------------------------------
+- * IMPORTANT: The contents of this file are auto-generated.
+- *
+- * This file may be updated by the Shopify admin theme editor
+- * or related systems. Please exercise caution as any changes
+- * made to this file may be overwritten.
+- * ------------------------------------------------------------
+- */
+ {
+   "sections": {
+     "hero": {
+@@ -178,10 +169,20 @@
+         "surface": "solid",
+         "image": "shopify://shop_images/rizo-412-brick-street-5029.webp"
+       }
++    },
++    "skeleton": {
++      "type": "rizo-skeleton-drop",
++      "settings": {
++        "product": "raging-skeleton-crewneck-reworked",
++        "editorial_image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg",
++        "front_image": "shopify://shop_images/rizo-skeleton-crewneck-front_59729c08-c386-4716-bf92-1bd559f06d2b.png",
++        "back_image": "shopify://shop_images/rizo-skeleton-crewneck-back_71e675b2-fa4b-4f3b-b380-477484baf8c7.png"
++      }
+     }
+   },
+   "order": [
+     "hero",
++    "skeleton",
+     "shop",
+     "territory",
+     "founder",
+@@ -190,4 +191,3 @@
+     "signup"
+   ]
+ }
+-
+--- a/templates/page.outside.json
++++ b/templates/page.outside.json
+@@ -1,12 +1,3 @@
+-/*
+- * ------------------------------------------------------------
+- * IMPORTANT: The contents of this file are auto-generated.
+- *
+- * This file may be updated by the Shopify admin theme editor
+- * or related systems. Please exercise caution as any changes
+- * made to this file may be overwritten.
+- * ------------------------------------------------------------
+- */
+ {
+   "sections": {
+     "head": {
+@@ -149,9 +140,21 @@
+             "caption": "",
+             "caption_right": ""
+           }
+-        }
+-      },
+-      "block_order": [
++        },
++        "skeleton-2026": {
++          "type": "photo",
++          "settings": {
++            "image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg",
++            "builtin_image": "none",
++            "alt": "Model wearing the black RIZO Skeleton Crewneck against a graffiti-covered brick wall",
++            "piece": "RIZO Skeleton Crewneck",
++            "year": "2026",
++            "full_frame": true
++          }
++        }
++      },
++      "block_order": [
++        "skeleton-2026",
+         "turquoise-front",
+         "twins-walking",
+         "pink"
+@@ -362,4 +365,3 @@
+     "home"
+   ]
+ }
+-

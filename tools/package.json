@@ -6,10 +6,12 @@
   "scripts": {
     "preview": "node preview/server.mjs",
     "check": "node schema/sync-art.mjs --check && node tests/theme-check.mjs",
-    "test": "node tests/event-layer.test.mjs",
+    "test": "node preview/prepare-skeleton.mjs && node tests/event-layer.test.mjs",
     "test:design": "node tests/design.test.mjs",
     "preview:catalog": "RIZO_PREVIEW_CATALOG=snapshot node preview/server.mjs",
-    "sync:art": "node schema/sync-art.mjs"
+    "sync:art": "node schema/sync-art.mjs",
+    "preview:skeleton": "node preview/prepare-skeleton.mjs && RIZO_PREVIEW_CATALOG=snapshot RIZO_PREVIEW_SKELETON=draft node preview/server.mjs",
+    "test:skeleton": "node preview/prepare-skeleton.mjs && node tests/skeleton.test.mjs"
   },
   "devDependencies": {
     "@shopify/theme-check-node": "^3.29.0",

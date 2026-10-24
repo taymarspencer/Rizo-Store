@@ -1,0 +1,266 @@
+[
+  {
+    "name": "Gate off hides feature (http://localhost:9393)",
+    "passed": true
+  },
+  {
+    "name": "Gate off loads no feature CSS (http://localhost:9393)",
+    "passed": true
+  },
+  {
+    "name": "Gate off omits purchase form (http://localhost:9393)",
+    "passed": true
+  },
+  {
+    "name": "Locked page has no false sold-out badge (http://localhost:9393)",
+    "passed": true
+  },
+  {
+    "name": "Gate off hides feature (http://localhost:9494)",
+    "passed": true
+  },
+  {
+    "name": "Gate off loads no feature CSS (http://localhost:9494)",
+    "passed": true
+  },
+  {
+    "name": "Gate off omits purchase form (http://localhost:9494)",
+    "passed": true
+  },
+  {
+    "name": "Locked page has no false sold-out badge (http://localhost:9494)",
+    "passed": true
+  },
+  {
+    "name": "Draft stays hidden with gate on",
+    "passed": true
+  },
+  {
+    "name": "Draft cannot buy even with gate on",
+    "passed": true
+  },
+  {
+    "name": "Wrong product cannot activate feature",
+    "passed": true
+  },
+  {
+    "name": "Editor feature renders at 320",
+    "passed": true
+  },
+  {
+    "name": "No draft commerce link at 320",
+    "passed": true
+  },
+  {
+    "name": "Homepage has no overflow at 320",
+    "passed": true
+  },
+  {
+    "name": "All photographs load without cropping at 320",
+    "passed": true
+  },
+  {
+    "name": "Product has no overflow at 320",
+    "passed": true
+  },
+  {
+    "name": "Seven approved gallery images at 320",
+    "passed": true
+  },
+  {
+    "name": "Entire artwork retained at 320",
+    "passed": true
+  },
+  {
+    "name": "Zoom opens at 320",
+    "passed": true
+  },
+  {
+    "name": "Escape closes zoom at 320",
+    "passed": true
+  },
+  {
+    "name": "Mobile gallery scrolls at 320",
+    "passed": true
+  },
+  {
+    "name": "Editor feature renders at 375",
+    "passed": true
+  },
+  {
+    "name": "No draft commerce link at 375",
+    "passed": true
+  },
+  {
+    "name": "Homepage has no overflow at 375",
+    "passed": true
+  },
+  {
+    "name": "All photographs load without cropping at 375",
+    "passed": true
+  },
+  {
+    "name": "Product has no overflow at 375",
+    "passed": true
+  },
+  {
+    "name": "Seven approved gallery images at 375",
+    "passed": true
+  },
+  {
+    "name": "Entire artwork retained at 375",
+    "passed": true
+  },
+  {
+    "name": "Zoom opens at 375",
+    "passed": true
+  },
+  {
+    "name": "Escape closes zoom at 375",
+    "passed": true
+  },
+  {
+    "name": "Mobile gallery scrolls at 375",
+    "passed": true
+  },
+  {
+    "name": "Editor feature renders at 390",
+    "passed": true
+  },
+  {
+    "name": "No draft commerce link at 390",
+    "passed": true
+  },
+  {
+    "name": "Homepage has no overflow at 390",
+    "passed": true
+  },
+  {
+    "name": "All photographs load without cropping at 390",
+    "passed": true
+  },
+  {
+    "name": "Product has no overflow at 390",
+    "passed": true
+  },
+  {
+    "name": "Seven approved gallery images at 390",
+    "passed": true
+  },
+  {
+    "name": "Entire artwork retained at 390",
+    "passed": true
+  },
+  {
+    "name": "Zoom opens at 390",
+    "passed": true
+  },
+  {
+    "name": "Escape closes zoom at 390",
+    "passed": true
+  },
+  {
+    "name": "Mobile gallery scrolls at 390",
+    "passed": true
+  },
+  {
+    "name": "Editor feature renders at 430",
+    "passed": true
+  },
+  {
+    "name": "No draft commerce link at 430",
+    "passed": true
+  },
+  {
+    "name": "Homepage has no overflow at 430",
+    "passed": true
+  },
+  {
+    "name": "All photographs load without cropping at 430",
+    "passed": true
+  },
+  {
+    "name": "Product has no overflow at 430",
+    "passed": true
+  },
+  {
+    "name": "Seven approved gallery images at 430",
+    "passed": true
+  },
+  {
+    "name": "Entire artwork retained at 430",
+    "passed": true
+  },
+  {
+    "name": "Zoom opens at 430",
+    "passed": true
+  },
+  {
+    "name": "Escape closes zoom at 430",
+    "passed": true
+  },
+  {
+    "name": "Mobile gallery scrolls at 430",
+    "passed": true
+  },
+  {
+    "name": "Editor feature renders at 1440",
+    "passed": true
+  },
+  {
+    "name": "No draft commerce link at 1440",
+    "passed": true
+  },
+  {
+    "name": "Homepage has no overflow at 1440",
+    "passed": true
+  },
+  {
+    "name": "All photographs load without cropping at 1440",
+    "passed": true
+  },
+  {
+    "name": "Product has no overflow at 1440",
+    "passed": true
+  },
+  {
+    "name": "Seven approved gallery images at 1440",
+    "passed": true
+  },
+  {
+    "name": "Entire artwork retained at 1440",
+    "passed": true
+  },
+  {
+    "name": "Zoom opens at 1440",
+    "passed": true
+  },
+  {
+    "name": "Escape closes zoom at 1440",
+    "passed": true
+  },
+  {
+    "name": "Published + available + approved exposes discovery link",
+    "passed": true
+  },
+  {
+    "name": "Approved release restores original size picker",
+    "passed": true
+  },
+  {
+    "name": "Established price preserved",
+    "passed": true
+  },
+  {
+    "name": "Size selects a mock variant",
+    "passed": true
+  },
+  {
+    "name": "Local simulated cart receives selected size",
+    "passed": true
+  },
+  {
+    "name": "No browser runtime errors",
+    "passed": true
+  }
+]
