@@ -1,0 +1,194 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rizo-hero",
+      "settings": {
+        "heading": "Pittsburgh’s\npersonal flame.",
+        "text": "Rizo is a statement.",
+        "shop_label": "Shop",
+        "shop_link": "shopify://collections/all",
+        "second_label": "How it started",
+        "second_link": "/pages/about",
+        "fog": 85,
+        "moon_custom": true,
+        "moon_x": 76,
+        "moon_y": 35,
+        "moon_size": 36,
+        "moon_mobile_x": 77,
+        "moon_mobile_y": 26,
+        "moon_mobile_size": 66
+      }
+    },
+    "shop": {
+      "type": "rizo-products",
+      "settings": {
+        "collection": "all",
+        "products_to_show": 4,
+        "layout": "grid",
+        "label": "Shop",
+        "show_count": true,
+        "heading": "",
+        "link_label": "All pieces",
+        "show_quick_add": true,
+        "show_sizes": false,
+        "surface": "solid",
+        "space": "m"
+      }
+    },
+    "founder": {
+      "type": "rizo-story",
+      "settings": {
+        "builtin_image": "founder",
+        "image_alt": "Taymar Spencer in a black Rizo outfit",
+        "caption": "",
+        "label": "Behind Rizo",
+        "heading": "Taymar Spencer",
+        "body": "<p>I started Rizo to prove something to myself. Somewhere along the way, the reason changed.</p><p>Rizo became my passion without me deciding it would.</p>",
+        "link_label": "How it started",
+        "link": "/pages/about",
+        "flip": false,
+        "show_pocket": true,
+        "pocket_label": "First drawing",
+        "pocket_alt": "Pencil sketch of the first Rizo flame face",
+        "pocket_note": "",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "night": {
+      "type": "rizo-interlude",
+      "settings": {
+        "line": "",
+        "align": "right",
+        "height": 45,
+        "fog": 75,
+        "fog_bias": "ground",
+        "height_mobile": 35,
+        "event_line": true
+      },
+      "blocks": {
+        "october-coal-watch": {
+          "type": "art",
+          "settings": {
+            "builtin_art": "event-rizo-pumpkin-coal",
+            "x": 23,
+            "y": 60,
+            "size": 24,
+            "mobile_x": 22,
+            "mobile_y": 54,
+            "mobile_size": 48,
+            "rotate": 0,
+            "opacity": 100,
+            "layer": "back",
+            "blend": "normal",
+            "show": "all",
+            "motion": "wobble",
+            "strength": 20,
+            "when": "event",
+            "name": "october-coal-watch"
+          }
+        }
+      },
+      "block_order": [
+        "october-coal-watch"
+      ]
+    },
+    "circle": {
+      "type": "rizo-gallery",
+      "settings": {
+        "heading": "RIZO, OUTSIDE.",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "label": "People / Places",
+        "link_label": "Open the archive",
+        "link": "/pages/outside",
+        "text": "<p>The little moments where Rizo becomes part of somebody else’s life.</p>"
+      },
+      "blocks": {
+        "blue-tee": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-blue-tee-1740.webp",
+            "builtin_image": "none",
+            "alt": "A person wearing a blue Rizo flame T-shirt, blue beanie and sunglasses in front of a metal shutter",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "twins": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-team-pink-blue-0834.webp",
+            "builtin_image": "none",
+            "alt": "Aiden and Christian wearing pink and blue Rizo hoodies outdoors",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true,
+            "person": "Aiden & Christian"
+          }
+        }
+      },
+      "block_order": [
+        "twins",
+        "blue-tee"
+      ]
+    },
+    "signup": {
+      "type": "rizo-signup",
+      "settings": {
+        "heading": "Hear about new pieces first.",
+        "text": "New pieces, restocks and Pittsburgh pop-ups.",
+        "button": "Sign up",
+        "note": "",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "territory": {
+      "type": "rizo-feature-world",
+      "settings": {
+        "eyebrow": "Pittsburgh, PA",
+        "heading": "412",
+        "builtin_mark": "mark_412",
+        "body": "<p>Anyone can be 412. You wear it because you know what it means.</p>",
+        "link_label": "Enter 412",
+        "link": "/pages/412",
+        "builtin_image": "none",
+        "image_alt": "A person in black and yellow Rizo clothing and a black jacket standing beside a brick building",
+        "caption": "",
+        "crop": "natural",
+        "secondary_builtin": "none",
+        "secondary_alt": "",
+        "secondary_caption": "",
+        "space": "m",
+        "surface": "solid",
+        "image": "shopify://shop_images/rizo-412-brick-street-5029.webp"
+      }
+    },
+    "skeleton": {
+      "type": "rizo-skeleton-drop",
+      "settings": {
+        "product": "raging-skeleton-crewneck-reworked",
+        "editorial_image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg",
+        "front_image": "shopify://shop_images/rizo-skeleton-crewneck-front-white-restored_fd69b84b-c775-44ef-acc9-7c23fc999fb9.png",
+        "back_image": "shopify://shop_images/rizo-skeleton-crewneck-back_71e675b2-fa4b-4f3b-b380-477484baf8c7.png",
+        "origin_portrait": "shopify://shop_images/rizo-skeleton-portrait-editorial-2026.png"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "skeleton",
+    "shop",
+    "territory",
+    "founder",
+    "night",
+    "circle",
+    "signup"
+  ]
+}

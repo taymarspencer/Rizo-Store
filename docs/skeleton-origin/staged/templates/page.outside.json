@@ -1,0 +1,374 @@
+{
+  "sections": {
+    "head": {
+      "type": "rizo-page-head",
+      "settings": {
+        "label": "People / Places",
+        "title": "RIZO, OUTSIDE.",
+        "voice": "sign",
+        "lead": "<p>People are the testimony.</p>",
+        "align": "left",
+        "crumbs": false,
+        "fog": 0,
+        "moon_custom": true,
+        "moon_x": 87,
+        "moon_y": 13,
+        "moon_size": 16,
+        "moon_mobile_x": 94,
+        "moon_mobile_y": 8,
+        "moon_mobile_size": 24
+      },
+      "blocks": {
+        "worn-link": {
+          "type": "chapter",
+          "settings": {
+            "label": "01 / Rizo, worn",
+            "link": "#worn"
+          }
+        },
+        "table-link": {
+          "type": "chapter",
+          "settings": {
+            "label": "02 / At the table",
+            "link": "#table"
+          }
+        },
+        "popups-link": {
+          "type": "chapter",
+          "settings": {
+            "label": "03 / Out selling",
+            "link": "#popups"
+          }
+        }
+      },
+      "block_order": [
+        "worn-link",
+        "table-link",
+        "popups-link"
+      ]
+    },
+    "event": {
+      "type": "rizo-gallery",
+      "settings": {
+        "heading": "The kids had fun. We did it.",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "label": "02 / WPSD / Pittsburgh, PA",
+        "text": "<p>The first tie-dye table was a test. We barely knew what we were doing. Years later, there is still chaos. Just better chaos.</p>",
+        "anchor": "table"
+      },
+      "blocks": {
+        "hands": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "wpsd_hands",
+            "alt": "An attendee tying a shirt at the community tie-dye table",
+            "caption": "WPSD Community Block Party",
+            "caption_right": "09.26.2026"
+          }
+        },
+        "making": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "wpsd_making",
+            "alt": "A child working on a shirt with dye bottles on the table",
+            "caption": "Shirt in progress.",
+            "caption_right": ""
+          }
+        },
+        "table": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "wpsd_table",
+            "alt": "Children and adults creating tie-dye shirts together around the table",
+            "caption": "Everybody helping somebody.",
+            "caption_right": ""
+          }
+        }
+      },
+      "block_order": [
+        "table",
+        "making",
+        "hands"
+      ]
+    },
+    "worn": {
+      "type": "rizo-gallery",
+      "settings": {
+        "heading": "They make it look better.",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "label": "01 / Rizo, worn",
+        "link_label": "",
+        "link": "",
+        "text": "<p>Somebody can put on something I already thought was cool and make it look better than I ever imagined.</p><p>I love when somebody treats Rizo like normal clothes and just lives in it. Or saves a piece for a vacation, or something special.</p>",
+        "anchor": "worn"
+      },
+      "blocks": {
+        "turquoise-front": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-turquoise-tee-front.webp",
+            "builtin_image": "none",
+            "alt": "A person wearing sunglasses and a turquoise Rizo flame T-shirt outdoors under a clear blue sky",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "twins-walking": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-team-walking-0795.webp",
+            "builtin_image": "none",
+            "alt": "Aiden and Christian walking outdoors in pink and blue Rizo hoodies, seen from behind",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true,
+            "person": "Aiden & Christian"
+          }
+        },
+        "pink": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_pink",
+            "alt": "A person wearing a pink Rizo hoodie outdoors at sunset",
+            "caption": "",
+            "caption_right": ""
+          }
+        },
+        "skeleton-2026": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg",
+            "builtin_image": "none",
+            "alt": "Model wearing the black RIZO Skeleton Crewneck against a graffiti-covered brick wall",
+            "piece": "RIZO Skeleton Crewneck",
+            "year": "2026",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "skeleton-2026",
+        "turquoise-front",
+        "twins-walking",
+        "pink"
+      ]
+    },
+    "home": {
+      "type": "rizo-text",
+      "settings": {
+        "label": "Home territory",
+        "heading": "412",
+        "body": "<p>Rizo’s Pittsburgh.</p>",
+        "link_label": "Enter 412",
+        "link": "/pages/412",
+        "surface": "raised",
+        "space": "s"
+      }
+    },
+    "event_story": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "body",
+        "label": "From the table",
+        "heading": "The community showed up for us.",
+        "body": "<p>The most recent WPSD day had plenty go wrong before we got there. Last-minute supplies, a fundraiser, a new ride, figuring out who was in charge of what.</p><p>Then people started helping. One kid went home and brought us Ziploc bags because we needed them. A woman running her own table kept checking on us, giving pointers and taking our pictures. Aiden had the table set up before I arrived and spent the day helping kids make shirts.</p><p>I was scared out of my mind. It was also the first time I really felt like a boss. The kids had fun. The community made us feel like we belonged there.</p>",
+        "align": "offset",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "seen": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "quote",
+        "label": "",
+        "body": "<p>Whenever somebody tells me they saw someone in Rizo, I always ask: Who? What did they look like? Where?</p>",
+        "cite": "Taymar Spencer",
+        "align": "offset",
+        "surface": "open",
+        "space": "l",
+        "fog": 25
+      }
+    },
+    "popups": {
+      "type": "rizo-gallery",
+      "settings": {
+        "label": "03 / Out selling",
+        "heading": "",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "s",
+        "fog": 0,
+        "open_photos": true,
+        "anchor": "popups"
+      },
+      "blocks": {
+        "table": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "popup_table",
+            "alt": "A person seated behind a Rizo pop-up table covered with colorful shirts and hoodies at an outdoor event",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "table"
+      ]
+    },
+    "worn-details": {
+      "type": "rizo-gallery",
+      "settings": {
+        "layout": "strip",
+        "surface": "solid",
+        "space": "s",
+        "fog": 0,
+        "open_photos": true
+      },
+      "blocks": {
+        "blacktee": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "outside_black_tee",
+            "alt": "A person wearing a black Rizo graphic T-shirt against a worn block wall",
+            "caption": "",
+            "caption_right": "",
+            "piece": "Rizo graphic tee",
+            "full_frame": true
+          }
+        },
+        "green777": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "outside_777_green",
+            "alt": "A person wearing a green Rizo 777 hoodie shown from the back",
+            "caption": "",
+            "caption_right": "",
+            "piece": "777",
+            "full_frame": true
+          }
+        },
+        "winter-hoodie": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-black-hoodie-street-3463.webp",
+            "builtin_image": "none",
+            "alt": "A person wearing a black Rizo graphic hoodie and knit hat on a city sidewalk",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "knit-hat": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-knit-hat-9898.webp",
+            "builtin_image": "none",
+            "alt": "A close-up of a person outdoors wearing a black knit hat with white Rizo lettering and a face covering",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "blacktee",
+        "green777",
+        "winter-hoodie",
+        "knit-hat"
+      ]
+    },
+    "worn-places": {
+      "type": "rizo-gallery",
+      "settings": {
+        "layout": "strip",
+        "surface": "solid",
+        "space": "s",
+        "fog": 0,
+        "open_photos": true,
+        "link_label": "Shop what’s here",
+        "link": "shopify://collections/all"
+      },
+      "blocks": {
+        "times-square-front": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-graphic-tee-times-square-7429.webp",
+            "builtin_image": "none",
+            "alt": "A person wearing a cap and black Rizo graphic T-shirt in Times Square",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "times-square-back": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-graphic-tee-times-square-back-2864.webp",
+            "builtin_image": "none",
+            "alt": "The back of a black Rizo T-shirt with small white graphics in Times Square",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "park-tee": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-graphic-tee-park-0230.webp",
+            "builtin_image": "none",
+            "alt": "A person wearing a cap and black Rizo graphic T-shirt beside trees outdoors",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "monument": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-pennsylvania-monument.webp",
+            "builtin_image": "none",
+            "alt": "A person wearing a black Rizo T-shirt beside a stone monument with Pennsylvania lettering",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "times-square-front",
+        "times-square-back",
+        "park-tee",
+        "monument"
+      ]
+    },
+    "skeleton-origin": {
+      "type": "rizo-skeleton-origin",
+      "settings": {
+        "drawing": "shopify://shop_images/rizo-skeleton-original-drawing-process.jpg"
+      }
+    }
+  },
+  "order": [
+    "head",
+    "worn",
+    "skeleton-origin",
+    "worn-details",
+    "worn-places",
+    "seen",
+    "event",
+    "event_story",
+    "popups",
+    "home"
+  ]
+}

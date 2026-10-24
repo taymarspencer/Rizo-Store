@@ -54,6 +54,17 @@
           </div>
         </div>
       </div>
+      {%- if section.settings.origin_portrait != blank -%}
+      <aside class="skeleton-origin-teaser" aria-labelledby="SkeletonOrigin-{{ section.id }}">
+        {{ section.settings.origin_portrait | image_url: width: 720 | image_tag: loading: 'lazy', widths: '180,360,540,720', sizes: '(min-width: 750px) 240px, 38vw' }}
+        <div>
+          <p class="v-label">{{ 'skeleton.origin.label' | t }}</p>
+          <h3 id="SkeletonOrigin-{{ section.id }}">{{ 'skeleton.origin.heading' | t }}</h3>
+          <p class="skeleton-origin-note">{{ 'skeleton.origin.teaser' | t }}</p>
+          <a class="link" href="/pages/outside#skeleton-origin">{{ 'skeleton.origin.link' | t }} <span aria-hidden="true">↗</span></a>
+        </div>
+      </aside>
+      {%- endif -%}
     </div>
   </section>
 {%- endif -%}
@@ -66,6 +77,7 @@
     { "type": "paragraph", "content": "Hidden until Theme settings → Skeleton release → Show feature is checked and the product is published. Purchasing has a separate approval control." },
     { "type": "product", "id": "product", "label": "Skeleton crewneck" },
     { "type": "image_picker", "id": "editorial_image", "label": "Lifestyle photograph" },
+    { "type": "image_picker", "id": "origin_portrait", "label": "Archive portrait" },
     { "type": "image_picker", "id": "front_image", "label": "Front photograph", "info": "Uses the first product image when left blank." },
     { "type": "image_picker", "id": "back_image", "label": "Back photograph", "info": "Uses the second product image when left blank." }
   ],

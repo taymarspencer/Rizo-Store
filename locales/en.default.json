@@ -1,9 +1,20 @@
 {
   "general": {
+    "brand_name": "Rizo Apparel",
+    "home_link": "Rizo Apparel, home",
+    "share_image_alt": "Rizo Apparel. The original blue flame. Rizo is a statement.",
     "cart": "Cart",
     "menu": "Menu",
     "close": "Close",
-    "search": "Search"
+    "search": "Search",
+    "page_sections": "Page chapters",
+    "view_image": "Look closer: {{ description }}",
+    "close_image": "Close image",
+    "image_viewer": "Photographs and drawings",
+    "light_flame": "Keep it lit.",
+    "share_title": "Rizo Apparel · Rizo is a statement.",
+    "share_description": "Independent clothing from Pittsburgh. Drawn, printed and carried into the world by the people around Rizo.",
+    "image_unavailable": "Product photograph unavailable"
   },
   "products": {
     "add_to_cart": "Add to cart",
@@ -26,6 +37,17 @@
       "locked_note": "This piece is not available to order yet.",
       "sizes": "Sizes",
       "price_label": "Price"
+    },
+    "origin": {
+      "label": "From the RIZO archive",
+      "heading": "Before it was worn.",
+      "teaser": "The bone lettering started with a drawing by Taymar Spencer. A piece of the process, kept here.",
+      "link": "See the original drawing",
+      "byline": "Artwork by Taymar Spencer",
+      "body": "Bones shaped into letters. A skull for the O. This photograph shows the original RIZO artwork open in Photoshop, still inside the working file.",
+      "body_second": "Drawn by Taymar Spencer, the lettering became part of RIZO’s Skeleton pieces. The photograph is preserved here as a small record of the work behind the clothes.",
+      "caption": "BONE.psd / Original process photograph",
+      "return": "Explore the Skeleton Crewneck"
     }
   }
 }

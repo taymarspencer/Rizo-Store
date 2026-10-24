@@ -22,7 +22,23 @@
 .skeleton-locked .opt-values { margin-block: 16px; }
 .skeleton-locked .opt { cursor: default; }
 .pdp--skeleton .pdp-media img { object-fit: contain; }
+.skeleton-origin-teaser { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: clamp(24px, 5vw, 80px); align-items: center; margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--line-2); }
+.skeleton-origin-teaser > img { width: 100%; height: auto; transform: rotate(-2deg); }
+.skeleton-origin-teaser h3 { margin-block: 12px 16px; font: 400 clamp(32px, 4vw, 58px)/1.05 var(--f-sign); }
+.skeleton-origin-note { max-width: 40ch; color: var(--bone-2); margin-bottom: 20px; }
+.skeleton-origin-teaser .link, .skeleton-origin-story .link { min-height: 44px; display: inline-flex; align-items: center; gap: 12px; }
+.skeleton-origin-story { scroll-margin-top: 100px; }
+.skeleton-origin-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 7vw, 100px); align-items: center; }
+.skeleton-origin-grid img { width: 100%; height: auto; }
+.skeleton-origin-grid figcaption { margin-top: 12px; color: var(--bone-3); }
+.skeleton-origin-prose h2 { margin-block: 16px; font: 400 clamp(40px, 5vw, 72px)/1.02 var(--f-sign); }
+.skeleton-origin-prose .rte { margin-block: 28px; max-width: 42ch; color: var(--bone-2); }
 @media (max-width: 749px) {
+  .skeleton-origin-teaser { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 20px; margin-top: 32px; }
+  .skeleton-origin-teaser h3 { font-size: clamp(28px, 8vw, 38px); }
+  .skeleton-origin-note { font-size: 14px; line-height: 1.5; }
+  .skeleton-origin-teaser .link { font-size: 13px; }
+  .skeleton-origin-grid { grid-template-columns: minmax(0, 1fr); }
   .skeleton-spread { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 16px; }
   .skeleton-copy { gap: 28px; padding-block: 0; }
   .skeleton-title { font-size: clamp(64px, 18vw, 92px); }
