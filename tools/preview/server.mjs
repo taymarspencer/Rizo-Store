@@ -80,6 +80,11 @@ const assetSize = (file) => {
 };
 // Image picker values in fixtures: "file.png" or "file.png#30,70" (focal point %).
 const pickedImage = (raw) => {
+  if (String(raw).startsWith('__skeleton-')) {
+    const index = Number(String(raw).split('-')[1]);
+    const source = JSON.parse(read('tools/preview/skeleton-snapshot.json')).images[index];
+    return { ...image(`skeleton-${index}.png`, index === 2 ? 1122 : 1200, index === 2 ? 1402 : 1200, source.altText), src: `/preview-catalog/skeleton-${index}.png`, url: `/preview-catalog/skeleton-${index}.png` };
+  }
   const [file, focal] = String(raw).split('#');
   const picked = image(file, ...assetSize(file), '');
   if (focal) { const [x, y] = focal.split(','); picked.presentation = { focal_point: `${Number(x).toFixed(1)}% ${Number(y).toFixed(1)}%` }; }
@@ -178,9 +183,19 @@ if (process.env.RIZO_PREVIEW_CATALOG === 'snapshot') {
     return { ...product, id: source.id, description: source.body_html, images, featured_image: images[0], media: images.map((photo, i) => ({ id: `${source.id}${i}`, media_type: 'image', alt: photo.alt, preview_image: photo, position: i + 1 })), variants, available: variants.some(v => v.available), selected_or_first_available_variant: variants.find(v => v.available) || variants[0], first_available_variant: variants.find(v => v.available) || variants[0] };
   });
 }
-const productByHandle = (handle) => PRODUCTS.find((product) => product.handle === handle);
+let skeletonPreview = null;
+if (process.env.RIZO_PREVIEW_SKELETON) {
+  const source = readJSON('tools/preview/skeleton-snapshot.json');
+  skeletonPreview = makeProduct(99, { title: source.title, handle: source.handle, price: source.price, options: [{ name: 'Size', values: source.sizes }], available: process.env.RIZO_PREVIEW_SKELETON === 'available' });
+  skeletonPreview.id = 8164322508878;
+  skeletonPreview.description = source.description;
+  skeletonPreview.images = source.images.map((_, index) => pickedImage(`__skeleton-${index}`));
+  skeletonPreview.featured_image = skeletonPreview.images[0];
+  skeletonPreview.media = skeletonPreview.images.map((photo, i) => ({ id: `skeleton-${i}`, media_type: 'image', alt: photo.alt, preview_image: photo, position: i + 1 }));
+}
+const productByHandle = (handle) => PRODUCTS.find((product) => product.handle === handle) || (skeletonPreview?.handle === handle ? skeletonPreview : null);
 const variantById = (id) => {
-  for (const product of PRODUCTS) {
+  for (const product of [...PRODUCTS, ...(skeletonPreview ? [skeletonPreview] : [])]) {
     const variant = product.variants.find((item) => String(item.id) === String(id));
     if (variant) return { product, variant };
   }

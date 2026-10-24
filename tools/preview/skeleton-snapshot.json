@@ -1,0 +1,52 @@
+{
+  "source_product_id": "gid://shopify/Product/8164322508878",
+  "captured_at": "2026-10-23",
+  "title": "RIZO Skeleton Crewneck",
+  "handle": "raging-skeleton-crewneck-reworked",
+  "price": 3999,
+  "description": "<p>The RIZO Skeleton Crewneck brings back an original design with updated artwork and an upgraded sweatshirt. Bone-inspired RIZO lettering sits above a detailed skeleton graphic, with hand-drawn accents throughout. On the back, RIZO\u2019s signature face and minimal markings complete the design.</p><p>Made from 8.5 oz (280 GSM) cotton/polyester three-end fleece, this crewneck features a standard fit, ring-spun cotton face yarn, and durable construction.</p><h3>Product details</h3><ul>\n<li>Color: Black with white printed graphics</li>\n<li>8.5 oz / 280 GSM cotton-polyester 3-end fleece</li>\n<li>Ring-spun cotton, 32-singles face yarn</li>\n<li>Standard fit</li>\n<li>Split-stitch double-needle sewing</li>\n<li>Twill neck tape</li>\n<li>1\u00d71 ribbed collar, cuffs, and hem</li>\n</ul><p>Designed by RIZO Apparel.</p>",
+  "images": [
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-front_59729c08-c386-4716-bf92-1bd559f06d2b.png?v=1792799349",
+      "altText": "Front view of black RIZO Skeleton Crewneck with bone lettering and flaming skeleton graphic",
+      "mediaId": "gid://shopify/MediaImage/41212559917134"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-back_71e675b2-fa4b-4f3b-b380-477484baf8c7.png?v=1792799349",
+      "altText": "Back view of black RIZO Skeleton Crewneck with white RIZO face and scattered marks",
+      "mediaId": "gid://shopify/MediaImage/41212559949902"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg?v=1792811095",
+      "altText": "Model wearing the RIZO Skeleton Crewneck in front of a graffiti-covered brick wall",
+      "mediaId": "gid://shopify/MediaImage/41214699929678"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-skeleton-detail_26827009-9085-4a93-be05-0fb40140c4cd.png?v=1792799350",
+      "altText": "Close-up of white skeleton print",
+      "mediaId": "gid://shopify/MediaImage/41212559982670"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-back-face-angled_30dd2b73-2e37-45be-bf7a-80b5396b4299.png?v=1792799350",
+      "altText": "Angled close-up of RIZO face at back neckline",
+      "mediaId": "gid://shopify/MediaImage/41212560015438"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-hem-detail_61eb30a8-baa1-4724-90c7-6d42086106ce.png?v=1792799350",
+      "altText": "Close-up of hem with white brushstroke marking",
+      "mediaId": "gid://shopify/MediaImage/41212560048206"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0279/0647/4062/files/rizo-skeleton-crewneck-back-face-straight_21ff0200-f57e-442c-9563-3290e4184713.png?v=1792799350",
+      "altText": "Straight-on detail of RIZO face marking",
+      "mediaId": "gid://shopify/MediaImage/41212560080974"
+    }
+  ],
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL"
+  ]
+}

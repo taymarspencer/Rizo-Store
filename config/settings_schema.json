@@ -493,5 +493,17 @@
         "placeholder": "Tonight."
       }
     ]
+  },
+  {
+    "name": "Skeleton release",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "skeleton_launch_enabled",
+        "label": "Launch approved — physical inventory confirmed",
+        "default": false,
+        "info": "Keep off until the crewnecks are received, inventory is corrected, and launch is approved. Controls the Skeleton homepage feature and product-page purchase buttons. Publishing the product is a separate step."
+      }
+    ]
   }
 ]

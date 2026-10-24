@@ -1,0 +1,32 @@
+.skeleton-drop { padding-block: var(--pad-s) var(--pad); background: var(--ground); }
+.skeleton-review { margin-bottom: 24px; padding: 12px 16px; border: 1px dashed var(--line-2); }
+.skeleton-topline { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line-2); }
+.skeleton-spread { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); padding-top: 28px; }
+.skeleton-portrait img { width: 100%; height: auto; }
+.skeleton-portrait figcaption { margin-top: 12px; color: var(--bone-3); }
+.skeleton-copy { display: flex; flex-direction: column; justify-content: space-between; gap: 28px; padding-block: clamp(0px, 1.5vw, 24px) 30px; }
+.skeleton-title { font: 400 clamp(64px, 7.5vw, 112px)/.91 var(--f-sign); letter-spacing: -.015em; }
+.skeleton-title span { display: block; margin-top: 12px; font: 650 clamp(22px, 2.4vw, 34px)/1.15 var(--f-text); letter-spacing: -.04em; }
+.skeleton-description { max-width: 34ch; margin-top: 24px; color: var(--bone-2); }
+.skeleton-objects { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.skeleton-objects img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; }
+.skeleton-objects figure:last-child { padding-top: 24px; }
+.skeleton-objects figcaption { margin-top: 10px; color: var(--bone-3); }
+.skeleton-meta { display: flex; justify-content: space-between; gap: 20px; align-items: baseline; padding-block: 16px; border-top: 1px solid var(--line-2); font-size: var(--t-small); }
+.skeleton-meta p { color: var(--bone-2); max-width: 24ch; }
+.skeleton-meta span { white-space: nowrap; font-size: var(--t-4); }
+.skeleton-link { width: 100%; justify-content: space-between; }
+.skeleton-unreleased { padding-block: 14px; color: var(--bone-2); border-top: 1px solid var(--line); }
+.skeleton-locked { margin-block: 24px; padding-block: 20px; border-block: 1px solid var(--line-2); }
+.skeleton-locked > p + p { margin-top: 12px; }
+.skeleton-locked .opt-values { margin-block: 16px; }
+.skeleton-locked .opt { cursor: default; }
+.pdp--skeleton .pdp-media img { object-fit: contain; }
+@media (max-width: 749px) {
+  .skeleton-spread { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 16px; }
+  .skeleton-copy { gap: 28px; padding-block: 0; }
+  .skeleton-title { font-size: clamp(64px, 18vw, 92px); }
+  .skeleton-description { margin-top: 18px; }
+  .skeleton-objects { gap: 14px; }
+  .pdp--skeleton .pdp-media img { aspect-ratio: 1; }
+}

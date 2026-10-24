@@ -1,1 +1,31 @@
-{"general":{"cart":"Cart","menu":"Menu","close":"Close","search":"Search"},"products":{"add_to_cart":"Add to cart","sold_out":"Sold out"}}
+{
+  "general": {
+    "cart": "Cart",
+    "menu": "Menu",
+    "close": "Close",
+    "search": "Search"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out"
+  },
+  "skeleton": {
+    "drop": {
+      "label": "The Skeleton drop",
+      "edition": "RIZO / 2026",
+      "heading": "Skeleton.",
+      "subheading": "The crewneck returns.",
+      "introduction": "An original RIZO design, back with updated artwork and an upgraded sweatshirt.",
+      "photo_caption": "RIZO, worn outside.",
+      "front": "01 / Front",
+      "back": "02 / Back",
+      "material": "280 GSM fleece · Standard fit",
+      "discover": "Explore the crewneck",
+      "not_released": "Not released yet.",
+      "editor_note": "Editor preview only. This drop is hidden from customers; purchasing is locked.",
+      "locked_note": "This piece is not available to order yet.",
+      "sizes": "Sizes",
+      "price_label": "Price"
+    }
+  }
+}

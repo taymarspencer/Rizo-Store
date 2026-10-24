@@ -1,0 +1,152 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rizo-hero",
+      "settings": {
+        "heading": "Pittsburgh’s\npersonal flame.",
+        "text": "Clothes made in Pittsburgh.",
+        "shop_label": "Shop",
+        "shop_link": "shopify://collections/all",
+        "second_label": "How it started",
+        "second_link": "/pages/about",
+        "fog": 85
+      }
+    },
+    "shop": {
+      "type": "rizo-products",
+      "settings": {
+        "collection": "all",
+        "products_to_show": 4,
+        "layout": "grid",
+        "label": "Shop",
+        "show_count": true,
+        "heading": "",
+        "link_label": "All pieces",
+        "show_quick_add": true,
+        "show_sizes": false,
+        "surface": "solid",
+        "space": "m"
+      }
+    },
+    "founder": {
+      "type": "rizo-story",
+      "settings": {
+        "builtin_image": "founder",
+        "image_alt": "Taymar Spencer in a black Rizo outfit",
+        "caption": "",
+        "label": "Founder",
+        "heading": "Taymar Spencer",
+        "body": "<p>“Rizo started through limitations. I was in a box, and I broke out.”</p><p>Every piece is still drawn, pressed and figured out in Pittsburgh.</p>",
+        "link_label": "How it started",
+        "link": "/pages/about",
+        "flip": false,
+        "show_pocket": true,
+        "pocket_label": "First drawing",
+        "pocket_alt": "Pencil sketch of the first Rizo flame face",
+        "pocket_note": "",
+        "surface": "raised",
+        "space": "l",
+        "fog": 0
+      }
+    },
+    "night": {
+      "type": "rizo-interlude",
+      "settings": {
+        "line": "",
+        "align": "left",
+        "height": 70,
+        "fog": 95,
+        "fog_bias": "ground"
+      }
+    },
+    "circle": {
+      "type": "rizo-gallery",
+      "blocks": {
+        "underpass": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "underpass",
+            "alt": "Two friends in black Rizo 412 sets under a concrete overpass",
+            "caption": "Pittsburgh",
+            "caption_right": ""
+          }
+        },
+        "night": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_night",
+            "alt": "Friends in Rizo hoodies at night",
+            "caption": "",
+            "caption_right": ""
+          }
+        },
+        "gym": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_gym",
+            "alt": "Two friends flexing in Rizo shirts",
+            "caption": "",
+            "caption_right": ""
+          }
+        },
+        "table": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "making",
+            "alt": "Rizo at an outdoor event table",
+            "caption": "",
+            "caption_right": ""
+          }
+        }
+      },
+      "block_order": [
+        "underpass",
+        "night",
+        "gym",
+        "table"
+      ],
+      "settings": {
+        "label": "The Circle",
+        "heading": "",
+        "text": "<p>Friends, late nights, familiar faces.</p>",
+        "layout": "spread",
+        "link_label": "Meet the Circle",
+        "link": "/pages/circle",
+        "anchor": "circle",
+        "surface": "open",
+        "space": "m",
+        "fog": 30
+      }
+    },
+    "signup": {
+      "type": "rizo-signup",
+      "settings": {
+        "heading": "Hear about new pieces first.",
+        "text": "Drops, restocks, and where we’ll be in Pittsburgh. Not much else.",
+        "button": "Sign up",
+        "note": "",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "skeleton": {
+      "type": "rizo-skeleton-drop",
+      "settings": {
+        "product": "raging-skeleton-crewneck-reworked",
+        "editorial_image": "__skeleton-2",
+        "front_image": "__skeleton-0",
+        "back_image": "__skeleton-1"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "skeleton",
+    "shop",
+    "founder",
+    "night",
+    "circle",
+    "signup"
+  ]
+}
