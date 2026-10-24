@@ -3,9 +3,9 @@
   assign is_skeleton = false
   if product.id == 8164322508878
     assign is_skeleton = true
-    unless settings.skeleton_launch_enabled
+    if settings.skeleton_launch_enabled != true or product.published_at == blank
       assign skeleton_locked = true
-    endunless
+    endif
   endif
   assign selected_variant = product.selected_variant
   assign first_variant = product.selected_or_first_available_variant
@@ -18,6 +18,7 @@
   assign media_count = product.media.size
 -%}
 {% if is_skeleton %}{{ 'rizo-skeleton.css' | asset_url | stylesheet_tag }}{% endif %}
+{% if is_skeleton %}<script type="application/ld+json">{{ product | structured_data }}</script>{% endif %}
 <section class="pdp{% if is_skeleton %} pdp--skeleton{% endif %}" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}" data-rizo-event-quiet>
   {% render 'rizo-art', section: section %}
   <div class="wrap wrap--wide">
@@ -66,7 +67,7 @@
       </div>
 
       <div class="pdp-info">
-        <div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>
+        {%- unless skeleton_locked -%}<div class="card-badges" style="position: static">{% render 'product-badge', product: product %}</div>{%- endunless -%}
         <h1 class="pdp-title">{{ product.title }}</h1>
         {%- if product.metafields.custom.short_description != blank -%}
           <p class="pdp-line">{{ product.metafields.custom.short_description }}</p>

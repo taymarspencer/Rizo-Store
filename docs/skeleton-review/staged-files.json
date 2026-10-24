@@ -1,0 +1,56 @@
+{
+  "source_theme": 154284458062,
+  "preview_theme": 155243118670,
+  "files": [
+    {
+      "path": "assets/rizo-skeleton.css",
+      "before_sha256": null,
+      "after_sha256": "c7db54973bb37d12581cef8d96d083ebfc5cec58fde2e7fa4707def1e724df71"
+    },
+    {
+      "path": "config/settings_data.json",
+      "before_sha256": "ec3a271e8fdd4d9fe4b34854883a045c1fbfc1c8e09f6e39635541642a5aedbe",
+      "after_sha256": "249f362f8168c08820e0c0769603845b9b00ae1e1f3013e64dc640fe16694bba"
+    },
+    {
+      "path": "config/settings_schema.json",
+      "before_sha256": "257f39f37bed91474bba3d11527471d48cda7d594f74fa7295a345b694a95fcb",
+      "after_sha256": "c080c6b3aa82ad944a508379d7784673b55fdb147fc5719f9dcba00302a67371"
+    },
+    {
+      "path": "layout/theme.liquid",
+      "before_sha256": "5d4383d6e4aefcdafc7f499c6b9d4993b2e4781a822e17f6377f1988357309a2",
+      "after_sha256": "3375318feafa58a6bbd707936130a9dcd9245339448da68168f9979fee992fad"
+    },
+    {
+      "path": "locales/en.default.json",
+      "before_sha256": "aa32a702e23a04fc01a2c6f8d517d4911d415724928cd60f5cb45743f84a3466",
+      "after_sha256": "2e3636fae2dd06a671e1afeed0fe2af795c08705e0f6c4d44e6ab78d836cbf48"
+    },
+    {
+      "path": "sections/main-product.liquid",
+      "before_sha256": "97ee9ac9e69276bf92cd2f43d72c602397fff5590d1d4a5c3f5bf0f0e65937c4",
+      "after_sha256": "62f07f3fdac7da22585a45505802e53e7bf31512c09c7d25200aaa6dc2ac0281"
+    },
+    {
+      "path": "sections/rizo-skeleton-drop.liquid",
+      "before_sha256": null,
+      "after_sha256": "77fafdaac9f9b832908961f8f570d67fc5eb318a2bfd2dfd26c54db8b02b5cc6"
+    },
+    {
+      "path": "snippets/product-badge.liquid",
+      "before_sha256": "29c39f74302e3e1e37b83b90498e4b655d480b0d2e7eeac17982d60df4cceb2f",
+      "after_sha256": "6215a3657847de9c6ff1eed5acba450c55797f83fe390ab85d99e6209b8d05d4"
+    },
+    {
+      "path": "templates/index.json",
+      "before_sha256": "1f6755e33232a55d5a22a93fa85871accef47fbce35e2bcf6d119ef0a162ffaf",
+      "after_sha256": "5115ca494720102ac7c56cbbeae1e1ba34e3cfee2e28d9c3642a1c7cd5409b95"
+    },
+    {
+      "path": "templates/page.outside.json",
+      "before_sha256": "fc7e603c96c3f661ee849bd4805abbcb88f69c48e7bf66247511acef1e17bb9e",
+      "after_sha256": "a331455729f504cc284b5ba38f7662ff1e5d2ae55a5ded45f46818f611b3b88f"
+    }
+  ]
+}

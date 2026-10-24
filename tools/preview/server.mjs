@@ -80,6 +80,12 @@ const assetSize = (file) => {
 };
 // Image picker values in fixtures: "file.png" or "file.png#30,70" (focal point %).
 const pickedImage = (raw) => {
+  if (String(raw).startsWith('shopify://shop_images/rizo-skeleton-crewneck-')) {
+    const snapshot = JSON.parse(read('tools/preview/skeleton-snapshot.json'));
+    const filename = String(raw).split('/').pop();
+    const index = snapshot.images.findIndex(photo => new URL(photo.url).pathname.split('/').pop() === filename);
+    if (index >= 0) return pickedImage(`__skeleton-${index}`);
+  }
   if (String(raw).startsWith('__skeleton-')) {
     const index = Number(String(raw).split('-')[1]);
     const source = JSON.parse(read('tools/preview/skeleton-snapshot.json')).images[index];
@@ -188,6 +194,7 @@ if (process.env.RIZO_PREVIEW_SKELETON) {
   const source = readJSON('tools/preview/skeleton-snapshot.json');
   skeletonPreview = makeProduct(99, { title: source.title, handle: source.handle, price: source.price, options: [{ name: 'Size', values: source.sizes }], available: process.env.RIZO_PREVIEW_SKELETON === 'available' });
   skeletonPreview.id = 8164322508878;
+  skeletonPreview.published_at = process.env.RIZO_PREVIEW_SKELETON === 'available' ? '2026-10-23T12:00:00Z' : null;
   skeletonPreview.description = source.description;
   skeletonPreview.images = source.images.map((_, index) => pickedImage(`__skeleton-${index}`));
   skeletonPreview.featured_image = skeletonPreview.images[0];

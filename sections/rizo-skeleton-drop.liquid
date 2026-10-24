@@ -1,7 +1,7 @@
 {%- liquid
   assign drop = section.settings.product
   assign launch_ready = false
-  if settings.skeleton_launch_enabled and drop.id == 8164322508878 and drop.available
+  if settings.skeleton_feature_enabled and drop.id == 8164322508878 and drop.published_at != blank
     assign launch_ready = true
   endif
   assign editorial = section.settings.editorial_image
@@ -63,7 +63,7 @@
   "name": "Skeleton drop",
   "enabled_on": { "templates": ["index"] },
   "settings": [
-    { "type": "paragraph", "content": "Hidden from customers until Theme settings → Skeleton release → Launch approved is checked AND the selected product is published and available. Keep the product draft until physical inventory is confirmed. The editor shows a non-purchasable preview." },
+    { "type": "paragraph", "content": "Hidden until Theme settings → Skeleton release → Show feature is checked and the product is published. Purchasing has a separate approval control." },
     { "type": "product", "id": "product", "label": "Skeleton crewneck" },
     { "type": "image_picker", "id": "editorial_image", "label": "Lifestyle photograph" },
     { "type": "image_picker", "id": "front_image", "label": "Front photograph", "info": "Uses the first product image when left blank." },
