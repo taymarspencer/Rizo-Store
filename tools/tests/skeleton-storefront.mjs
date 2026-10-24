@@ -11,6 +11,7 @@ const verify = (name, value) => { assert.ok(value, name); checks.push({ name, pa
 const origin = 'https://rizo.store';
 const preview = '?preview_theme_id=155243118670';
 const product = '/products/raging-skeleton-crewneck-reworked';
+const currentProduct = await (await page.request.get(origin + product + '.js')).json();
 const hideChrome = '.header,.dock,.skip-link,iframe,[id*="preview-bar"],[class*="preview-bar"],shopify-preview-bar { visibility:hidden!important }';
 try {
   for (const width of [320,375,390,430,1440]) {
@@ -34,7 +35,7 @@ try {
     verify(`Discovery reaches product ${width}`, await page.locator('.pdp-title').textContent() === 'RIZO Skeleton Crewneck');
     verify(`Native product fits ${width}`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     verify(`No purchase controls ${width}`, !await page.locator('[data-product-form], [data-sticky-atc], [name="id"]').count());
-    verify(`All original images ${width}`, await page.locator('.pdp-media').count() === 7);
+    verify(`All current product images ${width}`, await page.locator('.pdp-media').count() === currentProduct.images.length);
     verify(`Native gallery contains whole image ${width}`, await page.locator('.pdp-media img').first().evaluate(i => getComputedStyle(i).objectFit === 'contain'));
     await page.locator('[data-media-zoom]').first().click();
     verify(`Native full-size viewer ${width}`, await page.locator('[data-overlay="product-media"]').isVisible());
