@@ -1,3 +1,20 @@
+{% liquid
+  assign ops_theme_enabled = shop.metafields.rizo_ops.theme_enabled.value
+  assign gate_heading = section.settings.heading
+  assign gate_shop_label = section.settings.shop_label
+  assign ops_gate_intro = blank
+  if ops_theme_enabled == true
+    assign ops_heading = shop.metafields.rizo_ops.hero_heading.value
+    if ops_heading != blank
+      assign gate_heading = ops_heading
+    endif
+    assign ops_gate_intro = shop.metafields.rizo_ops.hero_intro.value
+    assign ops_label = shop.metafields.rizo_ops.hero_shop_label.value
+    if ops_label != blank
+      assign gate_shop_label = ops_label
+    endif
+  endif
+%}
 <section class="world-gate" id="RizoWorldGate" data-world-gate data-world-reactive>
   <div class="world-gate-camo" aria-hidden="true"></div>
   <div class="world-gate-grid" aria-hidden="true"></div>
@@ -10,11 +27,11 @@
     {% if section.settings.show_dateline %}{% render 'rizo-dateline', label: section.settings.dateline_label %}{% endif %}
     <div class="section-mark-line section-mark-line--gate">{% render 'rizo-brand-stamp', variant: 'face', class: 'section-secondary-mark world-gate-secondary-face' %}{% if section.settings.eyebrow != blank %}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}</div>
     {% render 'rizo-event-countdown', placement: 'before_heading', id: section.id %}
-    {% if section.settings.heading != blank %}<h1>{{ section.settings.heading }}</h1>{% endif %}
-    {% if section.settings.text != blank %}<div class="rte world-gate-intro">{{ section.settings.text }}</div>{% endif %}
+    {% if gate_heading != blank %}<h1>{{ gate_heading | escape }}</h1>{% endif %}
+    {% if ops_theme_enabled == true and ops_gate_intro != blank %}<div class="rte world-gate-intro"><p>{{ ops_gate_intro | escape | newline_to_br }}</p></div>{% elsif section.settings.text != blank %}<div class="rte world-gate-intro">{{ section.settings.text }}</div>{% endif %}
 
     <div class="world-gate-actions">
-      <a class="button button-hot" href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}">{{ section.settings.shop_label }} {% render 'icon', name: 'arrow' %}</a>
+      <a class="button button-hot" href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}">{{ gate_shop_label | escape }} {% render 'icon', name: 'arrow' %}</a>
       <a class="button button-ghost" href="#RizoWorldMap" data-world-enter>{{ section.settings.enter_label }}</a>
     </div>
     {% render 'rizo-event-countdown', placement: 'after_actions', id: section.id %}
