@@ -1,0 +1,40 @@
+name: Shopify theme QA
+
+on:
+  pull_request:
+    paths:
+      - "sections/**"
+      - "snippets/**"
+      - "layout/**"
+      - "templates/**"
+      - "config/**"
+      - "assets/**"
+      - "tools/**"
+      - ".github/workflows/shopify-theme-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  theme-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: tools
+    steps:
+      - name: Checkout theme
+        uses: actions/checkout@v4
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install QA tools
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Shopify Theme Check
+        run: npm run check
+      - name: Local storefront browser regression tests
+        run: npm test
