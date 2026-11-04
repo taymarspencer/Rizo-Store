@@ -607,11 +607,32 @@ const server = http.createServer(async (req, res) => {
     const overrides = {};
     for (const [key, value] of url.searchParams) if (key.startsWith('set.')) overrides[key.slice(4)] = value;
     const designMode = url.searchParams.get('design_mode') === '1';
+
+    // Mock Shopify SHOP metafields for opt-in Rizo OPS storefront testing.
+    // Only the local preview recognizes ?ops.*; production Liquid reads typed
+    // Shopify metafields and never trusts query parameters for these values.
+    const opsFields = {
+      theme_enabled: { value: url.searchParams.get('ops.theme_enabled') === 'true' }
+    };
+    for (const key of ['hero_heading', 'hero_intro', 'hero_shop_label', 'announcement_text']) {
+      if (url.searchParams.has('ops.' + key)) {
+        opsFields[key] = { value: url.searchParams.get('ops.' + key) };
+      }
+    }
+    const mockCollection = url.searchParams.get('ops.home_collection');
+    if (mockCollection === 'all') opsFields.home_collection = { value: COLLECTION_ALL };
+    if (mockCollection === 'limited') opsFields.home_collection = {
+      value: { ...COLLECTION_ALL, id: 2, handle: 'limited', url: '/collections/limited', title: 'Limited preview',
+        products: PRODUCTS.slice(0, 1), all_products_count: 1, products_count: 1 }
+    };
+    const mockFeatured = productByHandle(url.searchParams.get('ops.featured_product'));
+    if (mockFeatured) opsFields.featured_product = { value: mockFeatured };
+
     const templateName = route.template;
     const [name, suffix] = templateName.split('.');
     const globals = {
       settings: globalSettings(overrides),
-      shop: { name: 'Rizo Apparel', url: `http://localhost:${PORT}`, customer_accounts_enabled: false, refund_policy: { url: '/policies/refund-policy', title: 'Refund policy' } },
+      shop: { name: 'Rizo Apparel', url: `http://localhost:${PORT}`, customer_accounts_enabled: false, refund_policy: { url: '/policies/refund-policy', title: 'Refund policy' }, metafields: { rizo_ops: opsFields } },
       routes: { root_url: '/', cart_url: '/cart', cart_add_url: '/cart/add', cart_change_url: '/cart/change', account_url: '/account', collections_url: '/collections', all_products_collection_url: '/collections/all', search_url: '/search', predictive_search_url: '/search/suggest', product_recommendations_url: '/recommendations/products' },
       request: { design_mode: designMode, page_type: route.pageType, path: pathname, host: `localhost:${PORT}`, locale: { iso_code: 'en' } },
       template: { name, suffix: suffix || null, directory: null },
