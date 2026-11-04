@@ -1,7 +1,17 @@
+{% liquid
+  assign ops_theme_enabled = shop.metafields.rizo_ops.theme_enabled.value
+  assign live_collection = section.settings.collection
+  if ops_theme_enabled == true
+    assign ops_collection = shop.metafields.rizo_ops.home_collection.value
+    if ops_collection != blank
+      assign live_collection = ops_collection
+    endif
+  endif
+%}
 <section class="live-products page-width" id="RizoLiveShop" data-product-impressions>
-  <header class="section-heading"><div><p class="eyebrow">{{ section.settings.eyebrow }}</p><h2>{{ section.settings.heading }}</h2>{% if section.settings.text != blank %}<p class="section-intro">{{ section.settings.text }}</p>{% endif %}</div>{% if section.settings.collection != blank %}<a class="text-link" href="{{ section.settings.collection.url }}">{{ section.settings.view_all_label }} {% render 'icon', name: 'arrow' %}</a>{% endif %}</header>
-  {% assign source = section.settings.collection.products %}
-  {% if section.settings.collection != blank and source.size > 0 %}
+  <header class="section-heading"><div><p class="eyebrow">{{ section.settings.eyebrow }}</p><h2>{{ section.settings.heading }}</h2>{% if section.settings.text != blank %}<p class="section-intro">{{ section.settings.text }}</p>{% endif %}</div>{% if live_collection != blank %}<a class="text-link" href="{{ live_collection.url }}">{{ section.settings.view_all_label }} {% render 'icon', name: 'arrow' %}</a>{% endif %}</header>
+  {% assign source = live_collection.products %}
+  {% if live_collection != blank and source.size > 0 %}
     <div class="live-products-guide"><span>{{ source.size }} PIECES IN THIS SIGNAL</span><span>Tap a piece for fit, story, and details.</span></div>
     <div class="product-grid product-grid--{{ section.settings.mobile_layout }}">
       {% for product in source limit: section.settings.products_to_show %}{% render 'product-card', product: product, show_quick_add: section.settings.show_quick_add, show_vendor: false, show_artifact_link: section.settings.show_artifact_link, show_size_preview: section.settings.show_size_preview %}{% endfor %}
