@@ -2,6 +2,12 @@
   assign world_state = settings.world_state | default: 'quiet'
   assign status = section.settings.drop_status
   assign featured_product = section.settings.featured_product
+  if shop.metafields.rizo_ops.theme_enabled.value == true
+    assign ops_featured_product = shop.metafields.rizo_ops.featured_product.value
+    if ops_featured_product != blank
+      assign featured_product = ops_featured_product
+    endif
+  endif
   if status == blank and section.settings.use_world_state
     assign status = world_state | replace: '-', ' ' | upcase
   endif
