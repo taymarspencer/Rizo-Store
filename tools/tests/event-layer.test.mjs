@@ -91,6 +91,38 @@ const htmlClasses = (page) => page.evaluate(() => [...document.documentElement.c
 const noErrors = (errors, where) => assert(errors.length === 0, `console/page errors ${where}`, errors.slice(0, 5));
 
 /* ------------------------------------------------------------------ */
+/* OPS theme bridge: opt-in, fallback, and Shopify-referenced content    */
+/* ------------------------------------------------------------------ */
+
+test('OPS disabled: storefront does not use unapproved remote copy or collection', async () => {
+  const t = await open('/?set.event_layer=off&ops.hero_heading=UNAPPROVED&ops.announcement_text=UNAPPROVED&ops.home_collection=limited');
+  assert(!(await t.page.locator('#RizoWorldGate h1').innerText()).includes('UNAPPROVED'), 'disabled remote heading leaked');
+  assert((await t.page.locator('#RizoLiveShop [data-product-card]').count()) > 1, 'disabled collection override unexpectedly applied');
+  assert(!(await t.page.locator('body').innerText()).includes('UNAPPROVED'), 'disabled remote announcement leaked');
+  noErrors(t.errors, 'OPS disabled');
+  await t.close();
+});
+
+test('OPS enabled: homepage heading, intro, announcement and collection are controlled by typed SHOP metafields', async () => {
+  const t = await open('/?set.event_layer=off&ops.theme_enabled=true&ops.hero_heading=OPS%20WORLD&ops.hero_intro=Made%20in%20Pittsburgh&ops.hero_shop_label=SEE%20PIECES&ops.announcement_text=OPS%20ANNOUNCEMENT&ops.home_collection=limited');
+  assert((await t.page.locator('#RizoWorldGate h1').innerText()).includes('OPS WORLD'), 'OPS gate heading missing');
+  assert((await t.page.locator('#RizoWorldGate .world-gate-intro').innerText()).includes('Made in Pittsburgh'), 'OPS intro missing');
+  assert((await t.page.locator('#RizoWorldGate .button-hot').innerText()).includes('SEE PIECES'), 'OPS shop label missing');
+  assert((await t.page.locator('#RizoLiveShop [data-product-card]').count()) === 1, 'OPS collection not selected');
+  assert((await t.page.locator('.announcement-copy').allInnerTexts()).some((text) => text.includes('OPS ANNOUNCEMENT')), 'OPS announcement not present');
+  noErrors(t.errors, 'OPS enabled');
+  await t.close();
+});
+
+test('OPS enabled: optional live-drop section resolves Shopify product reference', async () => {
+  const t = await open('/?sections=rizo-live-hero&ops.theme_enabled=true&ops.featured_product=flame-cap&set.event_layer=off');
+  assert((await t.page.locator('.hero-product-signal').count()) === 1, 'OPS featured product signal not visible');
+  assert((await t.page.locator('.hero-product-signal').innerText()).includes('Flame Cap'), 'OPS product reference not resolved');
+  noErrors(t.errors, 'OPS featured product');
+  await t.close();
+});
+
+/* ------------------------------------------------------------------ */
 /* Activation, scheduling, reversibility                               */
 /* ------------------------------------------------------------------ */
 
