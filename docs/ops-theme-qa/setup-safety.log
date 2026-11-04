@@ -1,0 +1,50 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: definition dry run cannot create values or definitions
+ok 1 - definition dry run cannot create values or definitions
+  ---
+  duration_ms: 1.889707
+  type: 'test'
+  ...
+# Subtest: wrong definition types and existing unstructured values stop setup
+ok 2 - wrong definition types and existing unstructured values stop setup
+  ---
+  duration_ms: 0.899686
+  type: 'test'
+  ...
+# Subtest: plans require typed allowlisted values and explicit create-only CAS
+ok 3 - plans require typed allowlisted values and explicit create-only CAS
+  ---
+  duration_ms: 1.759151
+  type: 'test'
+  ...
+# Subtest: stale edits fail before a write and original compareDigest reaches Shopify
+ok 4 - stale edits fail before a write and original compareDigest reaches Shopify
+  ---
+  duration_ms: 2.151506
+  type: 'test'
+  ...
+# Subtest: production Rizo rejects every sample value write, including a claimed sandbox
+ok 5 - production Rizo rejects every sample value write, including a claimed sandbox
+  ---
+  duration_ms: 1.350945
+  type: 'test'
+  ...
+# Subtest: concurrent API conflict and failed read-back are never reported as success
+ok 6 - concurrent API conflict and failed read-back are never reported as success
+  ---
+  duration_ms: 0.686714
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 153.531559

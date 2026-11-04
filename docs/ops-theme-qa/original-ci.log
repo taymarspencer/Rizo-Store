@@ -1,0 +1,462 @@
+﻿2026-11-04T04:28:02.9784761Z Current runner version: '2.338.2'
+2026-11-04T04:28:02.9810411Z ##[group]Runner Image Provisioner
+2026-11-04T04:28:02.9811299Z Hosted Compute Agent
+2026-11-04T04:28:02.9811896Z Version: 20261021.618
+2026-11-04T04:28:02.9812642Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T04:28:02.9813381Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T04:28:02.9814143Z Worker ID: {2ac4e0f5-668f-4cc4-8610-65d0fff9f88a}
+2026-11-04T04:28:02.9814873Z Region: westus
+2026-11-04T04:28:02.9815421Z Cloud: Azure
+2026-11-04T04:28:02.9816363Z ##[endgroup]
+2026-11-04T04:28:02.9817839Z ##[group]Operating System
+2026-11-04T04:28:02.9818508Z Ubuntu
+2026-11-04T04:28:02.9819133Z 26.04.1
+2026-11-04T04:28:02.9819651Z LTS
+2026-11-04T04:28:02.9820243Z ##[endgroup]
+2026-11-04T04:28:02.9820799Z ##[group]Runner Image
+2026-11-04T04:28:02.9821408Z Image: ubuntu-26.04
+2026-11-04T04:28:02.9822038Z Version: 20261025.179.1
+2026-11-04T04:28:02.9823305Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261025.179/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-04T04:28:02.9824977Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261025.179
+2026-11-04T04:28:02.9826372Z ##[endgroup]
+2026-11-04T04:28:02.9827605Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T04:28:02.9829580Z Contents: read
+2026-11-04T04:28:02.9830310Z Metadata: read
+2026-11-04T04:28:02.9830915Z ##[endgroup]
+2026-11-04T04:28:02.9833250Z Secret source: Actions
+2026-11-04T04:28:02.9834261Z Cache mode: write
+2026-11-04T04:28:02.9835019Z Prepare workflow directory
+2026-11-04T04:28:03.0261709Z Prepare all required actions
+2026-11-04T04:28:03.0311261Z Getting action download info
+2026-11-04T04:28:03.3648990Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-04T04:28:03.4964655Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-04T04:28:03.7023997Z Complete job name: theme-qa
+2026-11-04T04:28:03.8028334Z ##[group]Run actions/checkout@v4
+2026-11-04T04:28:03.8029299Z with:
+2026-11-04T04:28:03.8029776Z   repository: taymarspencer/Rizo-Store
+2026-11-04T04:28:03.8033871Z   token: ***
+2026-11-04T04:28:03.8034325Z   ssh-strict: true
+2026-11-04T04:28:03.8034767Z   ssh-user: git
+2026-11-04T04:28:03.8035229Z   persist-credentials: true
+2026-11-04T04:28:03.8035921Z   clean: true
+2026-11-04T04:28:03.8036390Z   sparse-checkout-cone-mode: true
+2026-11-04T04:28:03.8036922Z   fetch-depth: 1
+2026-11-04T04:28:03.8037367Z   fetch-tags: false
+2026-11-04T04:28:03.8037828Z   show-progress: true
+2026-11-04T04:28:03.8038285Z   lfs: false
+2026-11-04T04:28:03.8038706Z   submodules: false
+2026-11-04T04:28:03.8039182Z   set-safe-directory: true
+2026-11-04T04:28:03.8039693Z   allow-unsafe-pr-checkout: false
+2026-11-04T04:28:03.8040473Z ##[endgroup]
+2026-11-04T04:28:04.1309635Z Syncing repository: taymarspencer/Rizo-Store
+2026-11-04T04:28:04.1311892Z ##[group]Getting Git version info
+2026-11-04T04:28:04.1313263Z Working directory is '/home/runner/work/Rizo-Store/Rizo-Store'
+2026-11-04T04:28:04.1314547Z [command]/usr/bin/git version
+2026-11-04T04:28:04.1333292Z git version 2.56.0
+2026-11-04T04:28:04.1355685Z ##[endgroup]
+2026-11-04T04:28:04.1371340Z Temporarily overriding HOME='/home/runner/work/_temp/48b25dbb-f932-4fa6-8c8d-552b21e3d7ba' before making global git config changes
+2026-11-04T04:28:04.1373825Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T04:28:04.1377270Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Rizo-Store/Rizo-Store
+2026-11-04T04:28:04.1453210Z Deleting the contents of '/home/runner/work/Rizo-Store/Rizo-Store'
+2026-11-04T04:28:04.1456738Z ##[group]Initializing the repository
+2026-11-04T04:28:04.1462181Z [command]/usr/bin/git init /home/runner/work/Rizo-Store/Rizo-Store
+2026-11-04T04:28:04.1573817Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T04:28:04.1575935Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T04:28:04.1577970Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T04:28:04.1579301Z hint: call:
+2026-11-04T04:28:04.1580073Z hint:
+2026-11-04T04:28:04.1581066Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T04:28:04.1582169Z hint:
+2026-11-04T04:28:04.1583216Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T04:28:04.1584856Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T04:28:04.1586392Z hint:
+2026-11-04T04:28:04.1587206Z hint: 	git branch -m <name>
+2026-11-04T04:28:04.1588092Z hint:
+2026-11-04T04:28:04.1589211Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T04:28:04.1591095Z Initialized empty Git repository in /home/runner/work/Rizo-Store/Rizo-Store/.git/
+2026-11-04T04:28:04.1601688Z [command]/usr/bin/git remote add origin https://github.com/taymarspencer/Rizo-Store
+2026-11-04T04:28:04.1659946Z ##[endgroup]
+2026-11-04T04:28:04.1661547Z ##[group]Disabling automatic garbage collection
+2026-11-04T04:28:04.1664897Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T04:28:04.1704866Z ##[endgroup]
+2026-11-04T04:28:04.1706837Z ##[group]Setting up auth
+2026-11-04T04:28:04.1715276Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T04:28:04.1756846Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T04:28:04.2258346Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T04:28:04.2294008Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T04:28:04.2580567Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T04:28:04.2629680Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T04:28:04.2991710Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T04:28:04.3047972Z ##[endgroup]
+2026-11-04T04:28:04.3057869Z ##[group]Fetching the repository
+2026-11-04T04:28:04.3059702Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b3cc2659dafaaaf9a3f499b23daefd15e52eb5e0:refs/remotes/pull/5/merge
+2026-11-04T04:28:04.8327635Z From https://github.com/taymarspencer/Rizo-Store
+2026-11-04T04:28:04.8328944Z  * [new ref]         b3cc2659dafaaaf9a3f499b23daefd15e52eb5e0 -> pull/5/merge
+2026-11-04T04:28:04.8331674Z ##[endgroup]
+2026-11-04T04:28:04.8332777Z ##[group]Determining the checkout info
+2026-11-04T04:28:04.8342246Z ##[endgroup]
+2026-11-04T04:28:04.8342943Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T04:28:04.8402421Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T04:28:04.8439130Z ##[group]Checking out the ref
+2026-11-04T04:28:04.8443740Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/5/merge
+2026-11-04T04:28:04.8666457Z Note: switching to 'refs/remotes/pull/5/merge'.
+2026-11-04T04:28:04.8667877Z
+2026-11-04T04:28:04.8669009Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-04T04:28:04.8671385Z changes and commit them, and you can discard any commits you make in this
+2026-11-04T04:28:04.8672999Z state without impacting any branches by switching back to a branch.
+2026-11-04T04:28:04.8673851Z
+2026-11-04T04:28:04.8674551Z If you want to create a new branch to retain commits you create, you may
+2026-11-04T04:28:04.8676241Z do so (now or later) by using -c with the switch command. Example:
+2026-11-04T04:28:04.8677065Z
+2026-11-04T04:28:04.8677604Z   git switch -c <new-branch-name>
+2026-11-04T04:28:04.8678493Z
+2026-11-04T04:28:04.8678954Z Or undo this operation with:
+2026-11-04T04:28:04.8679514Z
+2026-11-04T04:28:04.8679932Z   git switch -
+2026-11-04T04:28:04.8680378Z
+2026-11-04T04:28:04.8681172Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-04T04:28:04.8682245Z
+2026-11-04T04:28:04.8683538Z HEAD is now at b3cc265 Merge 705656ba4faa013a93f1258525e64b3d04db776e into 95b469f44d4400e9f420853efcbf2edc34e601f6
+2026-11-04T04:28:04.8689101Z ##[endgroup]
+2026-11-04T04:28:04.8737797Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T04:28:04.8764736Z b3cc2659dafaaaf9a3f499b23daefd15e52eb5e0
+2026-11-04T04:28:04.9263960Z ##[group]Run actions/setup-node@v4
+2026-11-04T04:28:04.9265277Z with:
+2026-11-04T04:28:04.9266384Z   node-version: 22
+2026-11-04T04:28:04.9267388Z   always-auth: false
+2026-11-04T04:28:04.9268413Z   check-latest: false
+2026-11-04T04:28:04.9280310Z   token: ***
+2026-11-04T04:28:04.9281264Z ##[endgroup]
+2026-11-04T04:28:05.1364525Z (node:2383) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T04:28:05.1366617Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T04:28:05.1376427Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-04T04:28:05.1377715Z ##[group]Environment details
+2026-11-04T04:28:07.8967470Z node: v22.23.4
+2026-11-04T04:28:07.8968017Z npm: 10.9.9
+2026-11-04T04:28:07.8968383Z yarn: 1.22.22
+2026-11-04T04:28:07.8970049Z ##[endgroup]
+2026-11-04T04:28:07.9124147Z ##[group]Run npm install --no-audit --no-fund
+2026-11-04T04:28:07.9124604Z [36;1mnpm install --no-audit --no-fund[0m
+2026-11-04T04:28:07.9208509Z shell: /usr/bin/bash -e {0}
+2026-11-04T04:28:07.9208815Z ##[endgroup]
+2026-11-04T04:28:11.4499616Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2026-11-04T04:28:11.5066495Z npm warn deprecated glob@8.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-11-04T04:28:12.4485775Z
+2026-11-04T04:28:12.4486422Z added 48 packages in 4s
+2026-11-04T04:28:12.4730047Z ##[group]Run npx playwright install --with-deps chromium
+2026-11-04T04:28:12.4730526Z [36;1mnpx playwright install --with-deps chromium[0m
+2026-11-04T04:28:12.4761571Z shell: /usr/bin/bash -e {0}
+2026-11-04T04:28:12.4761863Z ##[endgroup]
+2026-11-04T04:28:13.3669883Z Installing dependencies...
+2026-11-04T04:28:13.3800921Z Switching to root user to install dependencies...
+2026-11-04T04:28:13.5167990Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-04T04:28:13.5266671Z Get:3 https://packages.microsoft.com/ubuntu/26.04/prod resolute InRelease [3964 B]
+2026-11-04T04:28:13.5498381Z Hit:2 http://azure.archive.ubuntu.com/ubuntu resolute InRelease
+2026-11-04T04:28:13.5517802Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute-updates InRelease [137 kB]
+2026-11-04T04:28:13.5626734Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute-backports InRelease [137 kB]
+2026-11-04T04:28:13.5718076Z Get:6 http://azure.archive.ubuntu.com/ubuntu resolute-security InRelease [137 kB]
+2026-11-04T04:28:13.5871572Z Get:7 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main amd64 Packages [141 kB]
+2026-11-04T04:28:13.6097954Z Get:8 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main arm64 Packages [129 kB]
+2026-11-04T04:28:13.6361933Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages [804 kB]
+2026-11-04T04:28:13.6417434Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main Translation-en [184 kB]
+2026-11-04T04:28:13.6437339Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe amd64v3 Packages [375 kB]
+2026-11-04T04:28:13.6457780Z Get:12 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe Translation-en [118 kB]
+2026-11-04T04:28:13.6548079Z Get:13 http://azure.archive.ubuntu.com/ubuntu resolute-updates/restricted amd64v3 Packages [543 kB]
+2026-11-04T04:28:13.6552436Z Get:14 http://azure.archive.ubuntu.com/ubuntu resolute-updates/restricted Translation-en [112 kB]
+2026-11-04T04:28:13.6691991Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages [654 kB]
+2026-11-04T04:28:13.6723451Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute-security/main Translation-en [147 kB]
+2026-11-04T04:28:13.6748771Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe amd64v3 Packages [207 kB]
+2026-11-04T04:28:13.6753356Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe Translation-en [68.2 kB]
+2026-11-04T04:28:13.7208657Z Get:19 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted amd64v3 Packages [529 kB]
+2026-11-04T04:28:13.7236299Z Get:20 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted Translation-en [108 kB]
+2026-11-04T04:28:17.9436085Z Fetched 4535 kB in 0s (10.7 MB/s)
+2026-11-04T04:28:18.6394745Z Reading package lists...
+2026-11-04T04:28:18.6664066Z Reading package lists...
+2026-11-04T04:28:18.8308629Z Building dependency tree...
+2026-11-04T04:28:18.8316528Z Reading state information...
+2026-11-04T04:28:18.8648200Z libasound2t64 is already the newest version (1.2.15.3-1ubuntu1.1).
+2026-11-04T04:28:18.8649192Z libasound2t64 set to manually installed.
+2026-11-04T04:28:18.8649891Z libatk-bridge2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-04T04:28:18.8650614Z libatk-bridge2.0-0t64 set to manually installed.
+2026-11-04T04:28:18.8651335Z libatk1.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-04T04:28:18.8651953Z libatk1.0-0t64 set to manually installed.
+2026-11-04T04:28:18.8652599Z libatspi2.0-0t64 is already the newest version (2.60.4-0ubuntu0.1).
+2026-11-04T04:28:18.8653261Z libatspi2.0-0t64 set to manually installed.
+2026-11-04T04:28:18.8653817Z libcairo2 is already the newest version (1.18.4-3).
+2026-11-04T04:28:18.8654379Z libcairo2 set to manually installed.
+2026-11-04T04:28:18.8654988Z libcups2t64 is already the newest version (2.4.16-1ubuntu1.3).
+2026-11-04T04:28:18.8655577Z libcups2t64 set to manually installed.
+2026-11-04T04:28:18.8656916Z libdbus-1-3 is already the newest version (1.16.2-2ubuntu4).
+2026-11-04T04:28:18.8657553Z libdbus-1-3 set to manually installed.
+2026-11-04T04:28:18.8658089Z libdrm2 is already the newest version (2.4.131-1).
+2026-11-04T04:28:18.8658614Z libdrm2 set to manually installed.
+2026-11-04T04:28:18.8659179Z libgbm1 is already the newest version (26.0.8-1ubuntu0.3).
+2026-11-04T04:28:18.8659739Z libgbm1 set to manually installed.
+2026-11-04T04:28:18.8660343Z libglib2.0-0t64 is already the newest version (2.88.0-1ubuntu0.1).
+2026-11-04T04:28:18.8660986Z libglib2.0-0t64 set to manually installed.
+2026-11-04T04:28:18.8661619Z libnspr4 is already the newest version (2:4.38.2-1ubuntu1).
+2026-11-04T04:28:18.8662211Z libnspr4 set to manually installed.
+2026-11-04T04:28:18.8662784Z libnss3 is already the newest version (2:3.120-1ubuntu2.2).
+2026-11-04T04:28:18.8663332Z libnss3 set to manually installed.
+2026-11-04T04:28:18.8663887Z libpango-1.0-0 is already the newest version (1.57.0-1).
+2026-11-04T04:28:18.8664467Z libpango-1.0-0 set to manually installed.
+2026-11-04T04:28:18.8665109Z libx11-6 is already the newest version (2:1.8.13-1ubuntu0.1).
+2026-11-04T04:28:18.8665848Z libx11-6 set to manually installed.
+2026-11-04T04:28:18.8666444Z libxcb1 is already the newest version (1.17.0-2ubuntu1).
+2026-11-04T04:28:18.8667066Z libxcb1 set to manually installed.
+2026-11-04T04:28:18.8667686Z libxcomposite1 is already the newest version (1:0.4.6-1build1).
+2026-11-04T04:28:18.8668295Z libxcomposite1 set to manually installed.
+2026-11-04T04:28:18.8668873Z libxdamage1 is already the newest version (1:1.1.7-1).
+2026-11-04T04:28:18.8669424Z libxdamage1 set to manually installed.
+2026-11-04T04:28:18.8670284Z libxext6 is already the newest version (2:1.3.4-1build3).
+2026-11-04T04:28:18.8670826Z libxext6 set to manually installed.
+2026-11-04T04:28:18.8671421Z libxfixes3 is already the newest version (1:6.0.0-2build2).
+2026-11-04T04:28:18.8671984Z libxfixes3 set to manually installed.
+2026-11-04T04:28:18.8672545Z libxkbcommon0 is already the newest version (1.13.1-1).
+2026-11-04T04:28:18.8673098Z libxkbcommon0 set to manually installed.
+2026-11-04T04:28:18.8673691Z libxrandr2 is already the newest version (2:1.5.4-1build1).
+2026-11-04T04:28:18.8674260Z libxrandr2 set to manually installed.
+2026-11-04T04:28:18.8674841Z xvfb is already the newest version (2:21.1.22-1ubuntu1.3).
+2026-11-04T04:28:18.8675572Z fonts-noto-color-emoji is already the newest version (2.051-1build1).
+2026-11-04T04:28:18.8676532Z libfontconfig1 is already the newest version (2.17.1-3ubuntu1).
+2026-11-04T04:28:18.8677148Z libfontconfig1 set to manually installed.
+2026-11-04T04:28:18.8677829Z libfreetype6 is already the newest version (2.14.2+dfsg-1ubuntu0.2).
+2026-11-04T04:28:18.8678473Z libfreetype6 set to manually installed.
+2026-11-04T04:28:18.8679125Z fonts-liberation is already the newest version (1:2.1.5-3build1).
+2026-11-04T04:28:18.8679758Z fonts-liberation set to manually installed.
+2026-11-04T04:28:18.9218555Z Solving dependencies...
+2026-11-04T04:28:19.0155252Z The following additional packages will be installed:
+2026-11-04T04:28:19.0156201Z   xfonts-encodings xfonts-utils
+2026-11-04T04:28:19.0161712Z Recommended packages:
+2026-11-04T04:28:19.0162256Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-11-04T04:28:19.0376640Z The following NEW packages will be installed:
+2026-11-04T04:28:19.0377530Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-11-04T04:28:19.0387149Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-11-04T04:28:19.0387868Z   xfonts-utils
+2026-11-04T04:28:19.0601885Z 0 upgraded, 9 newly installed, 0 to remove and 25 not upgraded.
+2026-11-04T04:28:19.0602653Z Need to get 21.9 MB of archives.
+2026-11-04T04:28:19.0603390Z After this operation, 80.2 MB of additional disk space will be used.
+2026-11-04T04:28:19.0604240Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-04T04:28:19.1371687Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-ipafont-gothic all 00303-23ubuntu1 [3703 kB]
+2026-11-04T04:28:19.7882975Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 fonts-freefont-ttf all 20211204+svn4273-4build1 [5656 kB]
+2026-11-04T04:28:20.7597746Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-tlwg-loma-otf all 1:0.7.3-1build1 [106 kB]
+2026-11-04T04:28:20.8366219Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-unifont all 1:16.0.04-1build1 [3169 kB]
+2026-11-04T04:28:21.4072812Z Get:6 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 fonts-wqy-zenhei all 0.9.45-8build1 [7863 kB]
+2026-11-04T04:28:22.7374685Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-encodings all 1:1.0.5-0ubuntu3 [576 kB]
+2026-11-04T04:28:22.8905299Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 xfonts-utils amd64 1:7.7+7build1 [97.3 kB]
+2026-11-04T04:28:22.9633886Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-cyrillic all 1:1.0.5+nmu1build1 [384 kB]
+2026-11-04T04:28:23.0879857Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 xfonts-scalable all 1:1.0.3-1.3build1 [304 kB]
+2026-11-04T04:28:23.8512839Z Fetched 21.9 MB in 4s (5352 kB/s)
+2026-11-04T04:28:23.9077989Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-11-04T04:28:23.9409484Z (Reading database ...
+2026-11-04T04:28:23.9410186Z (Reading database ... 5%
+2026-11-04T04:28:23.9410777Z (Reading database ... 10%
+2026-11-04T04:28:23.9411354Z (Reading database ... 15%
+2026-11-04T04:28:23.9411953Z (Reading database ... 20%
+2026-11-04T04:28:23.9412520Z (Reading database ... 25%
+2026-11-04T04:28:23.9414285Z (Reading database ... 30%
+2026-11-04T04:28:23.9414806Z (Reading database ... 35%
+2026-11-04T04:28:23.9415359Z (Reading database ... 40%
+2026-11-04T04:28:23.9416514Z (Reading database ... 45%
+2026-11-04T04:28:23.9417044Z (Reading database ... 50%
+2026-11-04T04:28:24.2047620Z (Reading database ... 55%
+2026-11-04T04:28:24.4759539Z (Reading database ... 60%
+2026-11-04T04:28:24.8337999Z (Reading database ... 65%
+2026-11-04T04:28:25.0963278Z (Reading database ... 70%
+2026-11-04T04:28:25.2997841Z (Reading database ... 75%
+2026-11-04T04:28:25.7457478Z (Reading database ... 80%
+2026-11-04T04:28:26.3883826Z (Reading database ... 85%
+2026-11-04T04:28:26.9277963Z (Reading database ... 90%
+2026-11-04T04:28:27.4558366Z (Reading database ... 95%
+2026-11-04T04:28:27.4559016Z (Reading database ... 100%
+2026-11-04T04:28:27.4559930Z (Reading database ... 212715 files and directories currently installed.)
+2026-11-04T04:28:27.4602026Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-23ubuntu1_all.deb ...
+2026-11-04T04:28:27.4703698Z Unpacking fonts-ipafont-gothic (00303-23ubuntu1) ...
+2026-11-04T04:28:27.5404885Z Selecting previously unselected package fonts-freefont-ttf.
+2026-11-04T04:28:27.5541529Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-4build1_all.deb ...
+2026-11-04T04:28:27.5549087Z Unpacking fonts-freefont-ttf (20211204+svn4273-4build1) ...
+2026-11-04T04:28:27.6386588Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-11-04T04:28:27.6524168Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1build1_all.deb ...
+2026-11-04T04:28:27.6531843Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1build1) ...
+2026-11-04T04:28:27.6761878Z Selecting previously unselected package fonts-unifont.
+2026-11-04T04:28:27.6900368Z Preparing to unpack .../3-fonts-unifont_1%3a16.0.04-1build1_all.deb ...
+2026-11-04T04:28:27.6908600Z Unpacking fonts-unifont (1:16.0.04-1build1) ...
+2026-11-04T04:28:27.8032956Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-11-04T04:28:27.8168284Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8build1_all.deb ...
+2026-11-04T04:28:27.8353916Z Unpacking fonts-wqy-zenhei (0.9.45-8build1) ...
+2026-11-04T04:28:27.9221488Z Selecting previously unselected package xfonts-encodings.
+2026-11-04T04:28:27.9359385Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu3_all.deb ...
+2026-11-04T04:28:27.9366924Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu3) ...
+2026-11-04T04:28:27.9695051Z Selecting previously unselected package xfonts-utils.
+2026-11-04T04:28:27.9833318Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+7build1_amd64v3.deb ...
+2026-11-04T04:28:27.9841294Z Unpacking xfonts-utils (1:7.7+7build1) ...
+2026-11-04T04:28:28.0263390Z Selecting previously unselected package xfonts-cyrillic.
+2026-11-04T04:28:28.0401901Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1build1_all.deb ...
+2026-11-04T04:28:28.0410377Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1build1) ...
+2026-11-04T04:28:28.0792778Z Selecting previously unselected package xfonts-scalable.
+2026-11-04T04:28:28.0930035Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3build1_all.deb ...
+2026-11-04T04:28:28.0938505Z Unpacking xfonts-scalable (1:1.0.3-1.3build1) ...
+2026-11-04T04:28:28.1374203Z Setting up fonts-wqy-zenhei (0.9.45-8build1) ...
+2026-11-04T04:28:28.1533521Z Setting up fonts-freefont-ttf (20211204+svn4273-4build1) ...
+2026-11-04T04:28:28.1555529Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1build1) ...
+2026-11-04T04:28:28.1577588Z Setting up xfonts-encodings (1:1.0.5-0ubuntu3) ...
+2026-11-04T04:28:28.1598686Z Setting up fonts-ipafont-gothic (00303-23ubuntu1) ...
+2026-11-04T04:28:28.1663191Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-11-04T04:28:28.1679167Z Setting up fonts-unifont (1:16.0.04-1build1) ...
+2026-11-04T04:28:28.1698488Z Setting up xfonts-utils (1:7.7+7build1) ...
+2026-11-04T04:28:28.1767628Z Setting up xfonts-cyrillic (1:1.0.5+nmu1build1) ...
+2026-11-04T04:28:28.2248894Z Setting up xfonts-scalable (1:1.0.3-1.3build1) ...
+2026-11-04T04:28:28.2663918Z Processing triggers for man-db (2.13.1-1build1) ...
+2026-11-04T04:28:28.2731238Z Not building database; man-db/auto-update is not 'true'.
+2026-11-04T04:28:28.2750002Z Processing triggers for fontconfig (2.17.1-3ubuntu1) ...
+2026-11-04T04:28:29.4108828Z
+2026-11-04T04:28:29.4109596Z Running kernel seems to be up-to-date.
+2026-11-04T04:28:29.4109967Z
+2026-11-04T04:28:29.4110114Z Restarting services...
+2026-11-04T04:28:29.4206766Z
+2026-11-04T04:28:29.4207281Z Service restarts being deferred:
+2026-11-04T04:28:29.4208854Z  systemctl restart hosted-compute-agent.service
+2026-11-04T04:28:29.4209270Z
+2026-11-04T04:28:29.4210022Z No containers need to be restarted.
+2026-11-04T04:28:29.4210331Z
+2026-11-04T04:28:29.4210645Z No user sessions are running outdated binaries.
+2026-11-04T04:28:29.4211008Z
+2026-11-04T04:28:29.4211502Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-04T04:28:30.3464814Z Downloading Chrome for Testing 156.0.8078.4 (playwright chromium v1248) from https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/chrome-linux64.zip
+2026-11-04T04:28:30.8001693Z |                                                                                |   0% of 191.1 MiB
+2026-11-04T04:28:30.9528783Z |■■■■■■■■                                                                        |  10% of 191.1 MiB
+2026-11-04T04:28:31.0502159Z |■■■■■■■■■■■■■■■■                                                                |  20% of 191.1 MiB
+2026-11-04T04:28:31.1515318Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 191.1 MiB
+2026-11-04T04:28:31.2640438Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 191.1 MiB
+2026-11-04T04:28:31.4048982Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 191.1 MiB
+2026-11-04T04:28:31.5401482Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 191.1 MiB
+2026-11-04T04:28:31.6476621Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 191.1 MiB
+2026-11-04T04:28:31.7539058Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 191.1 MiB
+2026-11-04T04:28:31.8583549Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 191.1 MiB
+2026-11-04T04:28:31.9768045Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 191.1 MiB
+2026-11-04T04:28:34.5314595Z Chrome for Testing 156.0.8078.4 (playwright chromium v1248) downloaded to /home/runner/.cache/ms-playwright/chromium-1248
+2026-11-04T04:28:34.5318958Z Downloading FFmpeg (playwright ffmpeg v1013) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1013/ffmpeg-linux.zip
+2026-11-04T04:28:34.9066908Z |                                                                                |   0% of 2.2 MiB
+2026-11-04T04:28:34.9111329Z |■■■■■■■■                                                                        |  10% of 2.2 MiB
+2026-11-04T04:28:34.9140801Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.2 MiB
+2026-11-04T04:28:34.9156142Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.2 MiB
+2026-11-04T04:28:34.9179470Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.2 MiB
+2026-11-04T04:28:34.9216931Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.2 MiB
+2026-11-04T04:28:34.9234362Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.2 MiB
+2026-11-04T04:28:34.9247121Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.2 MiB
+2026-11-04T04:28:34.9255956Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.2 MiB
+2026-11-04T04:28:34.9276707Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.2 MiB
+2026-11-04T04:28:34.9284396Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.2 MiB
+2026-11-04T04:28:34.9985234Z FFmpeg (playwright ffmpeg v1013) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1013
+2026-11-04T04:28:34.9988590Z Downloading Chrome Headless Shell 156.0.8078.4 (playwright chromium-headless-shell v1248) from https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/chrome-headless-shell-linux64.zip
+2026-11-04T04:28:35.4509506Z |                                                                                |   0% of 120 MiB
+2026-11-04T04:28:35.5594283Z |■■■■■■■■                                                                        |  10% of 120 MiB
+2026-11-04T04:28:35.6641812Z |■■■■■■■■■■■■■■■■                                                                |  20% of 120 MiB
+2026-11-04T04:28:35.7543145Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 120 MiB
+2026-11-04T04:28:35.8648876Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 120 MiB
+2026-11-04T04:28:35.9534120Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 120 MiB
+2026-11-04T04:28:36.0307997Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 120 MiB
+2026-11-04T04:28:36.1338679Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 120 MiB
+2026-11-04T04:28:36.2268108Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 120 MiB
+2026-11-04T04:28:36.3442246Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 120 MiB
+2026-11-04T04:28:36.4125238Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 120 MiB
+2026-11-04T04:28:38.2294456Z Chrome Headless Shell 156.0.8078.4 (playwright chromium-headless-shell v1248) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1248
+2026-11-04T04:28:38.2547430Z ##[group]Run npm run check
+2026-11-04T04:28:38.2547729Z [36;1mnpm run check[0m
+2026-11-04T04:28:38.2578356Z shell: /usr/bin/bash -e {0}
+2026-11-04T04:28:38.2578616Z ##[endgroup]
+2026-11-04T04:28:38.3733308Z
+2026-11-04T04:28:38.3734054Z > check
+2026-11-04T04:28:38.3734402Z > node tests/theme-check.mjs
+2026-11-04T04:28:38.3734613Z
+2026-11-04T04:28:40.2394310Z baseline ERROR ImgWidthAndHeight sections/main-product.liquid:157 Missing width and height attributes on img tag
+2026-11-04T04:28:40.2396347Z baseline WARN RemoteAsset sections/main-product.liquid:157 Use one of the asset_url filters to serve assets for better performance.
+2026-11-04T04:28:40.2398254Z baseline WARN UnusedAssign sections/main-product.liquid:15 The variable 'has_multiple_options' is assigned but not used
+2026-11-04T04:28:40.2399153Z
+2026-11-04T04:28:40.2399407Z 3 offense(s), 0 new since v2.3.
+2026-11-04T04:28:40.2658477Z ##[group]Run npm test
+2026-11-04T04:28:40.2658748Z [36;1mnpm test[0m
+2026-11-04T04:28:40.2688847Z shell: /usr/bin/bash -e {0}
+2026-11-04T04:28:40.2689096Z ##[endgroup]
+2026-11-04T04:28:40.3824031Z
+2026-11-04T04:28:40.3824416Z > test
+2026-11-04T04:28:40.3824986Z > node tests/event-layer.test.mjs
+2026-11-04T04:28:40.3825335Z
+2026-11-04T04:28:41.9346937Z PASS  OPS disabled: storefront does not use unapproved remote copy or collection
+2026-11-04T04:28:42.2730429Z PASS  OPS enabled: homepage heading, intro, announcement and collection are controlled by typed SHOP metafields
+2026-11-04T04:28:42.5273734Z PASS  OPS enabled: optional live-drop section resolves Shopify product reference
+2026-11-04T04:28:43.2918986Z PASS  OFF: normal Rizo loads no event CSS/JS and has no event markup
+2026-11-04T04:28:44.1237797Z PASS  Scheduled, outside window: CSS present but inert, runtime never requested
+2026-11-04T04:28:44.6058003Z PASS  Schedule switches the event on at its start time without a reload
+2026-11-04T04:28:45.4382019Z PASS  Schedule switches the event off at its end time and cleans up
+2026-11-04T04:28:45.9327337Z PASS  Manual override (Always on) ignores the schedule
+2026-11-04T04:28:46.6687541Z PASS  Theme editor previews the event outside its window (and can opt out)
+2026-11-04T04:28:47.9482847Z PASS  ?rizo_event=on persists across pages for the tab; ?rizo_event=clear and =off work
+2026-11-04T04:28:52.4715604Z PASS  Each module can be switched off on its own
+2026-11-04T04:28:53.2347696Z PASS  Signal bar shows the event message only while the event is live
+2026-11-04T04:28:55.3988476Z PASS  Countdown targets Oct 31 12:00 AM New York regardless of visitor timezone
+2026-11-04T04:28:55.7991919Z PASS  Countdown target without an offset is read in New York time, not the visitor's
+2026-11-04T04:29:00.4027129Z FAIL  Countdown ticks each second, rewrites only changed digits and never shifts layout
+2026-11-04T04:29:00.4028753Z       seconds did not tick — {"boxes":["390.3x24.5"],"units":4,"seconds":1,"mutations":0}
+2026-11-04T04:29:01.2252568Z PASS  Countdown reaching zero shows the ended message (setting: message)
+2026-11-04T04:29:06.8397051Z PASS  Countdown reaching zero hides itself (setting: hide) and seconds can be turned off
+2026-11-04T04:29:07.0649313Z PASS  Server renders an already-past countdown in its ended state (no flash)
+2026-11-04T04:29:15.6037627Z FAIL  Countdown pauses on a hidden tab and resyncs when visible
+2026-11-04T04:29:15.6066317Z       page.waitForFunction: Timeout 8000ms exceeded.
+2026-11-04T04:29:26.0501880Z PASS  Clicks and taps pass straight through moving bats
+2026-11-04T04:29:26.8797586Z PASS  SHOP still shops: hero CTA works with a bat parked on top of it
+2026-11-04T04:30:04.7832796Z PASS  Rapid tapping (200 taps) keeps the flock bounded
+2026-11-04T04:30:18.8609864Z PASS  Aggressive scrolling both ways wakes bats but stays bounded
+2026-11-04T04:30:22.8073226Z PASS  Bats leave and are recycled; the loop sleeps during quiet periods
+2026-11-04T04:30:34.6592171Z PASS  Exactly one animation loop: at most one event-layer rAF request per frame
+2026-11-04T04:30:39.3007351Z PASS  Open drawer/menu pauses the flock; closing resumes it
+2026-11-04T04:31:04.6101926Z PASS  Frame-time governor steps a struggling device down to lite, then still
+2026-11-04T04:31:12.9984250Z FAIL  Theme editor section reloads (x8) never duplicate timers, observers or listeners
+2026-11-04T04:31:12.9984828Z       page.waitForFunction: Timeout 8000ms exceeded.
+2026-11-04T04:31:15.9761791Z PASS  Resize and orientation changes keep limits and layout sane
+2026-11-04T04:31:17.8313944Z PASS  Multiple reloads: one engine per page, no errors
+2026-11-04T04:31:18.9854272Z PASS  Reduced motion: night, moon, still fog and countdown stay; bats never load
+2026-11-04T04:31:22.1986503Z PASS  Reduced motion switched on mid-visit stops bats; switched off brings them back
+2026-11-04T04:31:24.6305506Z FAIL  Decorative layers stay out of the accessibility tree; countdown is a labelled timer
+2026-11-04T04:31:24.6307870Z       unexpected countdown accessibility snapshot — - paragraph: HALLOWEEN IS HERE
+2026-11-04T04:31:26.4166519Z PASS  Keyboard focus order is identical with the event on and off
+2026-11-04T04:31:37.5545021Z PASS  Quick add (variant + single-variant), cart drawer, cart page and checkout work with bats flying
+2026-11-04T04:31:40.3347673Z FAIL  Product page: variant picker, sold-out state, add to cart and sticky bar with the event live
+2026-11-04T04:31:40.3350364Z       product page should be a quiet zone for effects
+2026-11-04T04:31:46.1469936Z PASS  Menu, search and newsletter form work with the event live
+2026-11-04T04:31:57.1147709Z PASS  Every page type loads without errors with the event live
+2026-11-04T04:32:53.0044370Z PASS  Event layer adds no horizontal overflow at 320, 375, 390, 430, landscape, tablet and desktop widths
+2026-11-04T04:33:22.7881894Z PASS  Performance sample: frame pacing (event Off vs On) while the page scrolls; event asset weight
+2026-11-04T04:33:22.8965252Z
+2026-11-04T04:33:22.8966364Z Notes
+2026-11-04T04:33:22.8970262Z   - Countdown at 2026-10-01T12:34:56Z → America/New_York: 29d 15h 25m 04s | America/Los_Angeles: 29d 15h 25m 04s | Europe/London: 29d 15h 25m 04s | Asia/Tokyo: 29d 15h 25m 04s | Pacific/Auckland: 29d 15h 25m 04s
+2026-11-04T04:33:22.8973836Z   - Desktop: 16 clicks aimed at moving bats; every one reached page content (HEADER).
+2026-11-04T04:33:22.8975178Z   - Phone: 7 clicks aimed at moving bats; every one reached page content (H1, DIV, A).
+2026-11-04T04:33:22.8976716Z   - desktop: 200 taps → spawned 2, scattered 52, peak 2/16 active, 2 pooled elements (cap 16).
+2026-11-04T04:33:22.8978420Z   - mobile: 200 taps → spawned 61, scattered 119, peak 7/8 active, 7 pooled elements (cap 8).
+2026-11-04T04:33:22.8979761Z   - desktop: 40 fast scroll bursts + two full-page jumps → 7 bats woken, peak 4/10.
+2026-11-04T04:33:22.8982600Z   - mobile: 40 fast scroll bursts + two full-page jumps → 2 bats woken, peak 2/5.
+2026-11-04T04:33:22.8985629Z   - rAF audit: 90 event-layer requests over 90 frames while bats flew and the page scrolled.
+2026-11-04T04:33:22.8996154Z   - Governor: with 60ms of work per frame the layer stepped down to lite + still (bat limit 2).
+2026-11-04T04:33:22.8998876Z   - Pre-existing overflow (same with the event Off, not caused by the event layer): /products/night-signal-hoodie at 320px: +18px; /collections/all at 320px: +4px; /products/night-signal-hoodie at 375px: +18px; /products/night-signal-hoodie at 390px: +18px; /products/night-signal-hoodie at 430px: +18px
+2026-11-04T04:33:22.9003712Z   - desktop 1440x900 (CPU-composited headless): Off 4.5 fps (p95 616.6ms) vs On 2.5 fps (p95 550ms), peak bats 5, fog canvases 0.74 MP. Event assets 119.8 KB uncompressed: rizo-event-layer.css 20.0, event-halloween.css 2.5, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9
+2026-11-04T04:33:22.9009988Z   - phone 390x844@3x (CPU-composited headless): Off 4.8 fps (p95 583.3ms) vs On 5.3 fps (p95 216.7ms), peak bats 6, fog canvases 0.13 MP. Event assets 119.8 KB uncompressed: rizo-event-layer.css 20.0, event-halloween.css 2.5, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9
+2026-11-04T04:33:22.9012771Z
+2026-11-04T04:33:22.9013065Z 35/40 passed
+2026-11-04T04:33:22.9276486Z ##[error]Process completed with exit code 1.
+2026-11-04T04:33:22.9431457Z Post job cleanup.
+2026-11-04T04:33:23.0331169Z [command]/usr/bin/git version
+2026-11-04T04:33:23.0381719Z git version 2.56.0
+2026-11-04T04:33:23.0430071Z Temporarily overriding HOME='/home/runner/work/_temp/c781b8bd-d95d-492f-9439-e529675c2ef4' before making global git config changes
+2026-11-04T04:33:23.0431554Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T04:33:23.0436755Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Rizo-Store/Rizo-Store
+2026-11-04T04:33:23.0479237Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T04:33:23.0518419Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T04:33:23.0830121Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T04:33:23.0860465Z http.https://github.com/.extraheader
+2026-11-04T04:33:23.0873892Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T04:33:23.0930150Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T04:33:23.1282811Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T04:33:23.1339129Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T04:33:23.1811504Z Cleaning up orphan processes
+2026-11-04T04:33:23.2225068Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

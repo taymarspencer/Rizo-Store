@@ -44,7 +44,7 @@
   </a>
   <div class="product-card-info">
     <div>
-      <a href="{{ card_product.url }}"><strong>{{ card_product.title }}</strong></a>
+      <a href="{{ card_product.url }}"><strong>{{ card_product.title | escape }}</strong></a>
       <div class="product-card-meta">
         {% if color_count > 0 %}<small>{{ color_count }} color{% if color_count != 1 %}s{% endif %}</small>{% endif %}
         {% if card_product.vendor != blank and show_vendor %}<small>{{ card_product.vendor }}</small>{% endif %}

@@ -1,2 +1,6 @@
 node_modules
 test-results/
+qa-results.json
+qa-artifacts/
+tests/*.tmp.mjs
+ops/*.local.json

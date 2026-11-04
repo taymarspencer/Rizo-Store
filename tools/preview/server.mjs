@@ -104,6 +104,7 @@ const makeProduct = (index, { title, handle, price, options = [], variants: vari
     price_varies: false,
     compare_at_price_max: 0,
     available: variants.some((variant) => variant.available),
+    published_at: '2026-01-01T00:00:00Z',
     vendor: 'Rizo Apparel',
     tags: [],
     description: `<p>${title} — founder-made in Pittsburgh. Mock product for local preview.</p>`,
@@ -304,6 +305,10 @@ engine.registerFilter('image_url', (value, ...args) => {
   return out.width ? `${src}${src.includes('?') ? '&' : '?'}width=${out.width}` : src;
 });
 engine.registerFilter('img_url', (value) => imageSrc(value));
+const liquidDate = engine.filters.date;
+engine.registerFilter('date', function (value, ...args) {
+  return liquidDate.call(this, value === 'now' && process.env.PREVIEW_NOW ? new Date(process.env.PREVIEW_NOW) : value, ...args);
+});
 engine.registerFilter('image_tag', (src, ...args) => {
   const { out } = kwargs(args);
   const attrs = [`src="${escapeAttr(src)}"`];
@@ -607,11 +612,38 @@ const server = http.createServer(async (req, res) => {
     const overrides = {};
     for (const [key, value] of url.searchParams) if (key.startsWith('set.')) overrides[key.slice(4)] = value;
     const designMode = url.searchParams.get('design_mode') === '1';
+
+    // Mock Shopify SHOP metafields for opt-in Rizo OPS storefront testing.
+    // Only the local preview recognizes ?ops.*; production Liquid reads typed
+    // Shopify metafields and never trusts query parameters for these values.
+    const opsFields = {
+      theme_enabled: { value: url.searchParams.get('ops.theme_enabled') === 'true' }
+    };
+    for (const key of ['hero_heading', 'hero_intro', 'hero_shop_label', 'announcement_text']) {
+      if (url.searchParams.has('ops.' + key)) {
+        opsFields[key] = { value: url.searchParams.get('ops.' + key) };
+      }
+    }
+    const mockCollection = url.searchParams.get('ops.home_collection');
+    if (mockCollection === 'all') opsFields.home_collection = { value: COLLECTION_ALL };
+    if (mockCollection === 'limited') opsFields.home_collection = {
+      value: { ...COLLECTION_ALL, id: 2, handle: 'limited', url: '/collections/limited', title: 'Limited preview',
+        products: PRODUCTS.slice(0, 1), all_products_count: 1, products_count: 1 }
+    };
+    if (mockCollection === 'empty') opsFields.home_collection = {
+      value: { ...COLLECTION_ALL, id: 3, handle: 'empty', url: '/collections/empty', products: [], products_count: 0, all_products_count: 0 }
+    };
+    const mockFeatured = productByHandle(url.searchParams.get('ops.featured_product'));
+    if (mockFeatured) opsFields.featured_product = { value: mockFeatured };
+    if (['draft', 'archived'].includes(url.searchParams.get('ops.featured_product'))) {
+      opsFields.featured_product = { value: { ...PRODUCTS[0], published_at: null } };
+    }
+
     const templateName = route.template;
     const [name, suffix] = templateName.split('.');
     const globals = {
       settings: globalSettings(overrides),
-      shop: { name: 'Rizo Apparel', url: `http://localhost:${PORT}`, customer_accounts_enabled: false, refund_policy: { url: '/policies/refund-policy', title: 'Refund policy' } },
+      shop: { name: 'Rizo Apparel', url: `http://localhost:${PORT}`, customer_accounts_enabled: false, refund_policy: { url: '/policies/refund-policy', title: 'Refund policy' }, metafields: { rizo_ops: opsFields } },
       routes: { root_url: '/', cart_url: '/cart', cart_add_url: '/cart/add', cart_change_url: '/cart/change', account_url: '/account', collections_url: '/collections', all_products_collection_url: '/collections/all', search_url: '/search', predictive_search_url: '/search/suggest', product_recommendations_url: '/recommendations/products' },
       request: { design_mode: designMode, page_type: route.pageType, path: pathname, host: `localhost:${PORT}`, locale: { iso_code: 'en' } },
       template: { name, suffix: suffix || null, directory: null },

@@ -2,6 +2,12 @@
   assign world_state = settings.world_state | default: 'quiet'
   assign status = section.settings.drop_status
   assign featured_product = section.settings.featured_product
+  if shop.metafields.rizo_ops.theme_enabled.value == true
+    assign ops_featured_product = shop.metafields.rizo_ops.featured_product.value
+    if ops_featured_product.id != blank and ops_featured_product.url != blank and ops_featured_product.published_at != blank
+      assign featured_product = ops_featured_product
+    endif
+  endif
   if status == blank and section.settings.use_world_state
     assign status = world_state | replace: '-', ' ' | upcase
   endif
@@ -45,7 +51,7 @@
     {% if featured_product != blank and section.settings.show_product_signal %}
       <a class="hero-product-signal" href="{{ featured_product.url }}" data-analytics="product_clicked">
         {% if featured_product.featured_image != blank %}{{ featured_product.featured_image | image_url: width: 240 | image_tag: loading: 'eager', widths: '120,180,240', sizes: '72px', alt: featured_product.title }}{% endif %}
-        <span><small>{% if featured_product.available %}AVAILABLE NOW{% else %}SIGNAL ENDED{% endif %}</small><strong>{{ featured_product.title }}</strong><b>{{ featured_product.price | money }}</b></span>
+        <span><small>{% if featured_product.available %}AVAILABLE NOW{% else %}SIGNAL ENDED{% endif %}</small><strong>{{ featured_product.title | escape }}</strong><b>{{ featured_product.price | money }}</b></span>
         {% render 'icon', name: 'arrow' %}
       </a>
     {% endif %}

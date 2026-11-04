@@ -1,0 +1,8 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS  Exactly one animation loop: at most one event-layer rAF request per frame
+
+Notes
+  - rAF audit: 90 event-layer requests over 90 frames while bats flew and the page scrolled.
+
+1/1 passed

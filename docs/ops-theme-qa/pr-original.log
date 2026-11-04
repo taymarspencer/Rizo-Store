@@ -1,0 +1,62 @@
+(node:8) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS  OPS disabled: storefront does not use unapproved remote copy or collection
+PASS  OPS enabled: homepage heading, intro, announcement and collection are controlled by typed SHOP metafields
+PASS  OPS enabled: optional live-drop section resolves Shopify product reference
+PASS  OFF: normal Rizo loads no event CSS/JS and has no event markup
+PASS  Scheduled, outside window: CSS present but inert, runtime never requested
+PASS  Schedule switches the event on at its start time without a reload
+PASS  Schedule switches the event off at its end time and cleans up
+PASS  Manual override (Always on) ignores the schedule
+PASS  Theme editor previews the event outside its window (and can opt out)
+PASS  ?rizo_event=on persists across pages for the tab; ?rizo_event=clear and =off work
+PASS  Each module can be switched off on its own
+PASS  Signal bar shows the event message only while the event is live
+PASS  Countdown targets Oct 31 12:00 AM New York regardless of visitor timezone
+PASS  Countdown target without an offset is read in New York time, not the visitor's
+FAIL  Countdown ticks each second, rewrites only changed digits and never shifts layout
+      seconds did not tick — {"boxes":["426.1x24.5"],"units":4,"seconds":1,"mutations":0}
+PASS  Countdown reaching zero shows the ended message (setting: message)
+PASS  Countdown reaching zero hides itself (setting: hide) and seconds can be turned off
+PASS  Server renders an already-past countdown in its ended state (no flash)
+FAIL  Countdown pauses on a hidden tab and resyncs when visible
+      page.waitForFunction: Timeout 8000ms exceeded.
+PASS  Clicks and taps pass straight through moving bats
+PASS  SHOP still shops: hero CTA works with a bat parked on top of it
+PASS  Rapid tapping (200 taps) keeps the flock bounded
+PASS  Aggressive scrolling both ways wakes bats but stays bounded
+PASS  Bats leave and are recycled; the loop sleeps during quiet periods
+PASS  Exactly one animation loop: at most one event-layer rAF request per frame
+PASS  Open drawer/menu pauses the flock; closing resumes it
+FAIL  Frame-time governor steps a struggling device down to lite, then still
+      page.waitForFunction: Timeout 45000ms exceeded.
+FAIL  Theme editor section reloads (x8) never duplicate timers, observers or listeners
+      page.waitForFunction: Timeout 8000ms exceeded.
+PASS  Resize and orientation changes keep limits and layout sane
+PASS  Multiple reloads: one engine per page, no errors
+PASS  Reduced motion: night, moon, still fog and countdown stay; bats never load
+PASS  Reduced motion switched on mid-visit stops bats; switched off brings them back
+FAIL  Decorative layers stay out of the accessibility tree; countdown is a labelled timer
+      unexpected countdown accessibility snapshot — - paragraph: HALLOWEEN IS HERE
+PASS  Keyboard focus order is identical with the event on and off
+PASS  Quick add (variant + single-variant), cart drawer, cart page and checkout work with bats flying
+FAIL  Product page: variant picker, sold-out state, add to cart and sticky bar with the event live
+      product page should be a quiet zone for effects
+PASS  Menu, search and newsletter form work with the event live
+PASS  Every page type loads without errors with the event live
+PASS  Event layer adds no horizontal overflow at 320, 375, 390, 430, landscape, tablet and desktop widths
+PASS  Performance sample: frame pacing (event Off vs On) while the page scrolls; event asset weight
+
+Notes
+  - Countdown at 2026-10-01T12:34:56Z → America/New_York: 29d 15h 25m 04s | America/Los_Angeles: 29d 15h 25m 04s | Europe/London: 29d 15h 25m 04s | Asia/Tokyo: 29d 15h 25m 04s | Pacific/Auckland: 29d 15h 25m 04s
+  - Desktop: 14 clicks aimed at moving bats; every one reached page content (HEADER, DIV).
+  - Phone: 8 clicks aimed at moving bats; every one reached page content (SPAN, DIV).
+  - desktop: 200 taps → spawned 13, scattered 138, peak 10/16 active, 10 pooled elements (cap 16).
+  - mobile: 200 taps → spawned 87, scattered 154, peak 8/8 active, 8 pooled elements (cap 8).
+  - desktop: 40 fast scroll bursts + two full-page jumps → 20 bats woken, peak 10/10.
+  - mobile: 40 fast scroll bursts + two full-page jumps → 2 bats woken, peak 2/5.
+  - rAF audit: 90 event-layer requests over 90 frames while bats flew and the page scrolled.
+  - desktop 1440x900 (CPU-composited headless): Off 1.5 fps (p95 1216.7ms) vs On 1.5 fps (p95 800ms), peak bats 5, fog canvases 0.74 MP. Event assets 119.8 KB uncompressed: rizo-event-layer.css 20.0, event-halloween.css 2.5, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9
+  - phone 390x844@3x (CPU-composited headless): Off 2.3 fps (p95 850ms) vs On 1 fps (p95 2049.8ms), peak bats 6, fog canvases 0.13 MP. Event assets 119.8 KB uncompressed: rizo-event-layer.css 20.0, event-halloween.css 2.5, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9
+
+34/40 passed

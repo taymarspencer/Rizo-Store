@@ -1,0 +1,117 @@
+{
+  "browser": "153.0.8010.0",
+  "results": [
+    {
+      "name": "320px missing/false OFF screenshot parity",
+      "ok": true
+    },
+    {
+      "name": "320px homepage OFF pixel parity with main",
+      "ok": true
+    },
+    {
+      "name": "320px ON controls and native product media",
+      "ok": true
+    },
+    {
+      "name": "320px baseline product dimensions",
+      "diagnostic": {
+        "inner": 338,
+        "scroll": 338,
+        "client": 320
+      }
+    },
+    {
+      "name": "320px product has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "320px baseline collection dimensions",
+      "diagnostic": {
+        "inner": 327,
+        "scroll": 327,
+        "client": 320
+      }
+    },
+    {
+      "name": "320px collection has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "390px missing/false OFF screenshot parity",
+      "ok": true
+    },
+    {
+      "name": "390px homepage OFF pixel parity with main",
+      "ok": true
+    },
+    {
+      "name": "390px ON controls and native product media",
+      "ok": true
+    },
+    {
+      "name": "390px baseline product dimensions",
+      "diagnostic": {
+        "inner": 408,
+        "scroll": 408,
+        "client": 390
+      }
+    },
+    {
+      "name": "390px product has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "390px baseline collection dimensions",
+      "diagnostic": {
+        "inner": 390,
+        "scroll": 390,
+        "client": 390
+      }
+    },
+    {
+      "name": "390px collection has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "1440px missing/false OFF screenshot parity",
+      "ok": true
+    },
+    {
+      "name": "1440px homepage OFF pixel parity with main",
+      "ok": true
+    },
+    {
+      "name": "1440px ON controls and native product media",
+      "ok": true
+    },
+    {
+      "name": "1440px baseline product dimensions",
+      "diagnostic": {
+        "inner": 1440,
+        "scroll": 1440,
+        "client": 1440
+      }
+    },
+    {
+      "name": "1440px product has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "1440px baseline collection dimensions",
+      "diagnostic": {
+        "inner": 1440,
+        "scroll": 1440,
+        "client": 1440
+      }
+    },
+    {
+      "name": "1440px collection has no horizontal overflow",
+      "ok": true
+    },
+    {
+      "name": "Featured product remains linked and purchasable without JavaScript",
+      "ok": true
+    }
+  ]
+}

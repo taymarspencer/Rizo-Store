@@ -3,15 +3,18 @@
   "private": true,
   "description": "Local preview harness + automated checks for the Rizo Portal Shopify theme. Not part of the theme upload.",
   "type": "module",
+  "engines": { "node": "22.23.4" },
   "scripts": {
     "preview": "node preview/server.mjs",
     "check": "node tests/theme-check.mjs",
-    "test": "node tests/event-layer.test.mjs",
+    "test": "node --test tests/ops-setup.test.mjs && node tests/event-layer.test.mjs && node tests/ops-visual.test.mjs",
+    "test:event": "node tests/event-layer.test.mjs",
+    "test:ops": "node --test tests/ops-setup.test.mjs",
     "placeholders": "node assets/generate-halloween-placeholders.mjs"
   },
   "devDependencies": {
-    "@shopify/theme-check-node": "^3.29.0",
-    "liquidjs": "^10.29.0",
-    "playwright": "^1.56.0"
+    "@shopify/theme-check-node": "3.31.0",
+    "liquidjs": "10.30.1",
+    "playwright": "1.64.1"
   }
 }
