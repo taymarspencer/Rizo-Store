@@ -1,0 +1,206 @@
+{
+  "query": "mutation OpsCreateDefinitions($d0:MetafieldDefinitionInput!,$d1:MetafieldDefinitionInput!,$d2:MetafieldDefinitionInput!,$d3:MetafieldDefinitionInput!,$d4:MetafieldDefinitionInput!,$d5:MetafieldDefinitionInput!,$d6:MetafieldDefinitionInput!) { d0:metafieldDefinitionCreate(definition:$d0) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } }\nd1:metafieldDefinitionCreate(definition:$d1) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } }\nd2:metafieldDefinitionCreate(definition:$d2) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } }\nd3:metafieldDefinitionCreate(definition:$d3) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } }\nd4:metafieldDefinitionCreate(definition:$d4) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } }\nd5:metafieldDefinitionCreate(definition:$d5) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } }\nd6:metafieldDefinitionCreate(definition:$d6) { createdDefinition { id key namespace ownerType type { name } access { admin storefront } } userErrors { field message code } } }",
+  "variables": {
+    "d0": {
+      "name": "RIZO OPS theme enabled",
+      "namespace": "rizo_ops",
+      "key": "theme_enabled",
+      "type": "boolean",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    },
+    "d1": {
+      "name": "RIZO OPS hero heading",
+      "namespace": "rizo_ops",
+      "key": "hero_heading",
+      "type": "single_line_text_field",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    },
+    "d2": {
+      "name": "RIZO OPS hero introduction",
+      "namespace": "rizo_ops",
+      "key": "hero_intro",
+      "type": "multi_line_text_field",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    },
+    "d3": {
+      "name": "RIZO OPS shop button label",
+      "namespace": "rizo_ops",
+      "key": "hero_shop_label",
+      "type": "single_line_text_field",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    },
+    "d4": {
+      "name": "RIZO OPS announcement",
+      "namespace": "rizo_ops",
+      "key": "announcement_text",
+      "type": "single_line_text_field",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    },
+    "d5": {
+      "name": "RIZO OPS homepage collection",
+      "namespace": "rizo_ops",
+      "key": "home_collection",
+      "type": "collection_reference",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    },
+    "d6": {
+      "name": "RIZO OPS featured product",
+      "namespace": "rizo_ops",
+      "key": "featured_product",
+      "type": "product_reference",
+      "ownerType": "SHOP",
+      "access": {
+        "storefront": "NONE"
+      },
+      "description": "Merchant-owned RIZO OPS storefront bridge. Definitions alone do not enable overrides. Never store private inventory here."
+    }
+  },
+  "result": {
+    "shop": {
+      "id": "gid://shopify/Shop/27906474062",
+      "metafields": {
+        "nodes": [],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        }
+      }
+    },
+    "metafieldDefinitions": {
+      "nodes": [
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641345102",
+          "key": "theme_enabled",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "boolean"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        },
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641377870",
+          "key": "hero_heading",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "single_line_text_field"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        },
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641410638",
+          "key": "hero_intro",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "multi_line_text_field"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        },
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641443406",
+          "key": "hero_shop_label",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "single_line_text_field"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        },
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641476174",
+          "key": "announcement_text",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "single_line_text_field"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        },
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641508942",
+          "key": "home_collection",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "collection_reference"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        },
+        {
+          "id": "gid://shopify/MetafieldDefinition/553641541710",
+          "key": "featured_product",
+          "namespace": "rizo_ops",
+          "ownerType": "SHOP",
+          "type": {
+            "name": "product_reference"
+          },
+          "access": {
+            "admin": "PUBLIC_READ_WRITE",
+            "storefront": "NONE"
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false,
+        "endCursor": "eyJsYXN0X2lkIjo1NTM2NDE1NDE3MTAsImxhc3RfdmFsdWUiOiI1NTM2NDE1NDE3MTAifQ=="
+      }
+    },
+    "themes": {
+      "nodes": [
+        {
+          "id": "gid://shopify/OnlineStoreTheme/155243118670",
+          "name": "RIZO Skeleton \u2014 review only",
+          "role": "MAIN"
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false,
+        "endCursor": "eyJsYXN0X2lkIjoxNTUyNDMxMTg2NzAsImxhc3RfdmFsdWUiOjE1NTI0MzExODY3MH0="
+      }
+    }
+  }
+}

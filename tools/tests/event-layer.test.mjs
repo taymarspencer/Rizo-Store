@@ -13,6 +13,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import fs from 'node:fs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.TEST_PORT || 9393);
@@ -23,6 +24,7 @@ const LIMITS = { desktop: 16, mobile: 8, lite: 5 };
 const DESKTOP = { viewport: { width: 1440, height: 900 } };
 const PHONE = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 };
 const EVENT_ASSET = /rizo-event|event-halloween/;
+const TEST_NOW = process.env.TEST_NOW || '2026-10-15T16:00:00.000Z';
 
 /* ------------------------------------------------------------------ */
 /* Tiny runner                                                         */
@@ -44,7 +46,7 @@ let browser;
 // this CPU-composited sandbox; the governor has its own test.
 const open = async (url, options = {}, setup) => {
   const { clock, governor, ...contextOptions } = options;
-  const context = await browser.newContext({ ...DESKTOP, ...contextOptions });
+  const context = await browser.newContext({ ...DESKTOP, timezoneId: 'America/New_York', ...contextOptions });
   const page = await context.newPage();
   await page.addInitScript(() => {
     document.addEventListener('DOMContentLoaded', () => {
@@ -61,6 +63,15 @@ const open = async (url, options = {}, setup) => {
   page.on('request', (request) => requests.push(request.url()));
   if (clock?.install) await page.clock.install({ time: clock.install });
   if (clock?.fixed) await page.clock.setFixedTime(clock.fixed);
+  if (!clock) await page.addInitScript((now) => {
+    const NativeDate = window.Date;
+    const started = NativeDate.now();
+    class TestDate extends NativeDate {
+      constructor(...args) { super(...(args.length ? args : [now + NativeDate.now() - started])); }
+      static now() { return now + NativeDate.now() - started; }
+    }
+    window.Date = TestDate;
+  }, new Date(TEST_NOW).getTime());
   if (setup) await setup(page);
   if (url) await page.goto(`${BASE}${url}`, { waitUntil: 'load' });
   return { context, page, errors, requests, close: () => context.close() };
@@ -119,6 +130,81 @@ test('OPS enabled: optional live-drop section resolves Shopify product reference
   assert((await t.page.locator('.hero-product-signal').count()) === 1, 'OPS featured product signal not visible');
   assert((await t.page.locator('.hero-product-signal').innerText()).includes('Flame Cap'), 'OPS product reference not resolved');
   noErrors(t.errors, 'OPS featured product');
+  await t.close();
+});
+
+test('OPS homepage feature uses the native product card once, including sold-out state', async () => {
+  for (const handle of ['flame-cap', '412-crewneck']) {
+    const t = await open(`/?set.event_layer=off&ops.theme_enabled=true&ops.featured_product=${handle}`, PHONE);
+    const feature = t.page.locator('[data-ops-featured-product]');
+    assert(await feature.count() === 1, 'homepage feature missing');
+    assert(await t.page.locator(`#RizoLiveShop [data-product-url="/products/${handle}"][data-product-card]`).count() === 1, 'featured product duplicated');
+    assert(await feature.locator('.product-card-media img').first().getAttribute('src'), 'native product media missing');
+    if (handle === '412-crewneck') {
+      assert(await feature.locator('.quick-add--disabled').count() === 1, 'sold-out feature became buyable');
+      assert(await feature.locator('form, [data-quick-add-open]').count() === 0, 'sold-out feature has purchase action');
+    } else {
+      await press(t.page, feature.locator('button[type="submit"]'), true);
+      await waitFor(t.page, () => !document.getElementById('RizoCart').hidden && document.querySelector('[data-cart-count]').textContent.trim() === '1');
+    }
+    noErrors(t.errors, 'homepage product feature');
+    await t.close();
+  }
+});
+
+test('OPS empty copy and invalid, deleted, draft or archived references fall back safely', async () => {
+  for (const handle of ['', 'missing', 'draft', 'archived']) {
+    const t = await open(`/?set.event_layer=off&ops.theme_enabled=true&ops.hero_heading=&ops.hero_intro=&ops.hero_shop_label=&ops.announcement_text=&ops.home_collection=missing&ops.featured_product=${handle}`);
+    assert(await t.page.locator('#RizoWorldGate h1').innerText() === 'THE WORLD IS WEARABLE.', 'empty heading erased fallback');
+    assert((await t.page.locator('.world-gate-intro').innerText()).includes('Built from limits'), 'empty intro erased fallback');
+    assert((await t.page.locator('#RizoWorldGate .button-hot').innerText()).includes('SHOP WHAT IS LIVE'), 'empty CTA erased fallback');
+    assert(await t.page.locator('[data-ops-featured-product]').count() === 0, 'unpublished/invalid product rendered');
+    assert(await t.page.locator('#RizoLiveShop [data-product-card]').count() === 6, 'invalid collection erased fallback');
+    noErrors(t.errors, 'OPS empty/invalid fallback');
+    await t.close();
+  }
+  const empty = await open('/?set.event_layer=off&ops.theme_enabled=true&ops.home_collection=empty');
+  assert(await empty.page.locator('#RizoLiveShop [data-product-card]').count() === 0, 'valid empty collection fell back to all products');
+  assert(await empty.page.locator('#RizoLiveShop .empty-state').isVisible(), 'empty collection has no explanation');
+  await empty.close();
+});
+
+test('OPS plain text is escaped, preserves intro line breaks and cannot inject script or HTML', async () => {
+  const hostile = '<img src=x onerror="window.__opsInjected=true"><script>window.__opsInjected=true</script> & RIZO';
+  const query = new URLSearchParams({ 'set.event_layer': 'off', 'ops.theme_enabled': 'true', 'ops.hero_heading': hostile, 'ops.hero_intro': `${hostile}\nSecond line`, 'ops.hero_shop_label': hostile, 'ops.announcement_text': hostile });
+  const t = await open(`/?${query}`);
+  for (const selector of ['#RizoWorldGate h1', '.world-gate-intro', '#RizoWorldGate .button-hot', '.announcement-copy']) {
+    const node = t.page.locator(selector).first();
+    assert((await node.textContent()).includes(hostile), 'plain-text content was interpreted as HTML', selector);
+    assert(await node.locator('script, img').count() === 0, 'injected HTML element rendered', selector);
+  }
+  assert(await t.page.locator('.world-gate-intro br').count() === 1, 'intro line break lost');
+  assert(await t.page.evaluate(() => !window.__opsInjected), 'injected script ran');
+  noErrors(t.errors, 'OPS hostile input');
+  await t.close();
+});
+
+test('OPS announcement respects seasonal priority and returns after event expiry', async () => {
+  const t = await open('/?ops.theme_enabled=true&ops.announcement_text=OPS%20ANNOUNCEMENT&set.event_announcement=OCTOBER%20SIGNAL', { clock: { install: new Date('2026-11-01T05:59:57-05:00') } });
+  await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
+  const copies = t.page.locator('.announcement-copy:visible');
+  assert((await copies.allInnerTexts()).every((text) => !text.includes('OPS ANNOUNCEMENT')), 'OPS text outranks active seasonal copy');
+  await t.page.clock.runFor(5000);
+  await waitFor(t.page, () => window.RizoEventBoot?.active === false);
+  assert((await t.page.locator('.announcement-copy:visible').allInnerTexts()).some((text) => text.includes('OPS ANNOUNCEMENT')), 'OPS message did not return after event');
+  noErrors(t.errors, 'OPS seasonal precedence');
+  await t.close();
+});
+
+test('OPS first load remains usable while the theme script is delayed', async () => {
+  const t = await open('/?set.event_layer=off&ops.theme_enabled=true&ops.featured_product=flame-cap', PHONE, async (page) => {
+    await page.route('**/cdn/assets/rizo-theme.js', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      await route.continue();
+    });
+  });
+  assert(await t.page.locator('[data-ops-featured-product] .product-card-media').getAttribute('href') === '/products/flame-cap', 'server-rendered product destination missing');
+  noErrors(t.errors, 'OPS delayed script');
   await t.close();
 });
 
@@ -497,6 +583,8 @@ test('Exactly one animation loop: at most one event-layer rAF request per frame'
       return original(callback);
     };
   }));
+  await waitForFlock(t.page);
+  await t.page.mouse.click(1000, 400);
   await waitForBats(t.page, 2);
   const result = await t.page.evaluate(() => new Promise((resolve) => {
     const before = window.__eventRaf;
@@ -738,6 +826,7 @@ test('Quick add (variant + single-variant), cart drawer, cart page and checkout 
 test('Product page: variant picker, sold-out state, add to cart and sticky bar with the event live', async () => {
   const t = await open('/products/night-signal-hoodie?rizo_event=on', PHONE);
   await waitFor(t.page, () => window.RizoEventLayer?.state.running === true);
+  await waitFor(t.page, () => window.RizoEventLayer?.state.quiet === true);
   const quiet = await t.page.evaluate(() => window.RizoEventLayer.state.quiet);
   const soldOut = await t.page.locator('[data-option-button][data-value="M"]').evaluate((node) => node.disabled || node.getAttribute('aria-disabled') === 'true' || node.classList.contains('is-unavailable'));
   await press(t.page, t.page.locator('[data-option-button][data-value="XL"]'), true);
@@ -864,14 +953,14 @@ test('Performance sample: frame pacing (event Off vs On) while the page scrolls;
 /* Run                                                                 */
 /* ------------------------------------------------------------------ */
 
-const server = spawn(process.execPath, [path.join(HERE, '../preview/server.mjs')], { env: { ...process.env, PORT: String(PORT) }, stdio: ['ignore', 'pipe', 'pipe'] });
+const server = spawn(process.execPath, [path.join(HERE, '../preview/server.mjs')], { env: { ...process.env, PORT: String(PORT), PREVIEW_NOW: TEST_NOW, TZ: 'America/New_York' }, stdio: ['ignore', 'pipe', 'pipe'] });
 await new Promise((resolve, reject) => {
   server.stdout.on('data', (chunk) => { if (String(chunk).includes('Rizo preview')) resolve(); });
   server.on('exit', (code) => reject(new Error(`preview server exited ${code}`)));
   setTimeout(() => reject(new Error('preview server did not start')), 10000);
 });
 
-browser = await chromium.launch();
+browser = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH });
 const results = [];
 for (const { name, fn } of tests) {
   if (FILTER && !FILTER.test(name)) continue;
@@ -893,4 +982,5 @@ console.log('\nNotes');
 notes.forEach((text) => console.log(`  - ${text}`));
 const failed = results.filter((result) => !result.ok);
 console.log(`\n${results.length - failed.length}/${results.length} passed`);
+if (process.env.QA_RESULTS) fs.writeFileSync(process.env.QA_RESULTS, JSON.stringify({ now: TEST_NOW, node: process.version, results, notes }, null, 2));
 process.exit(failed.length ? 1 : 0);

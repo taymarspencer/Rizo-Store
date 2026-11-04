@@ -1,7 +1,6 @@
 {% liquid
   assign selected_variant = product.selected_variant
   assign first_variant = product.selected_or_first_available_variant
-  assign has_multiple_options = false
   assign serial_source = product.id | append: ''
   assign product_serial = serial_source | slice: -4, 4
   assign low_stock_threshold = settings.low_stock_threshold | default: 5
@@ -10,9 +9,6 @@
   assign return_note = section.settings.return_note
   if first_variant.available and first_variant.inventory_management != blank and first_variant.inventory_policy == 'deny' and first_variant.inventory_quantity > 0 and first_variant.inventory_quantity <= low_stock_threshold
     assign first_variant_low_stock = true
-  endif
-  if product.variants.size > 1
-    assign has_multiple_options = true
   endif
 %}
 <section class="product-page-shell" data-product-root data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}" data-selected-variant="{{ selected_variant.id }}">
@@ -154,7 +150,7 @@
 
   <div class="overlay-shell media-viewer-shell" data-overlay="product-media" hidden>
     <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="Close full-size image"></button>
-    <section class="media-viewer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-label="Full-size product image"><button class="media-viewer-close" type="button" data-overlay-close aria-label="Close full-size image">{% render 'icon', name: 'close' %}</button><img data-media-viewer-image src="" alt=""></section>
+    <section class="media-viewer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-label="Full-size product image"><button class="media-viewer-close" type="button" data-overlay-close aria-label="Close full-size image">{% render 'icon', name: 'close' %}</button><img data-media-viewer-image width="{{ product.featured_image.width | default: 2000 }}" height="{{ product.featured_image.height | default: 2500 }}" alt=""></section>
   </div>
 
   {% if product.metafields.custom.size_guide != blank or section.settings.size_guide_page != blank %}

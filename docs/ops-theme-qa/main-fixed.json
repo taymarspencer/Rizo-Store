@@ -1,0 +1,209 @@
+{
+  "now": "2026-10-15T16:00:00.000Z",
+  "node": "v22.23.4",
+  "results": [
+    {
+      "name": "OFF: normal Rizo loads no event CSS/JS and has no event markup",
+      "ok": true,
+      "ms": 1277
+    },
+    {
+      "name": "Scheduled, outside window: CSS present but inert, runtime never requested",
+      "ok": true,
+      "ms": 1587
+    },
+    {
+      "name": "Schedule switches the event on at its start time without a reload",
+      "ok": true,
+      "ms": 1189
+    },
+    {
+      "name": "Schedule switches the event off at its end time and cleans up",
+      "ok": true,
+      "ms": 1175
+    },
+    {
+      "name": "Manual override (Always on) ignores the schedule",
+      "ok": true,
+      "ms": 965
+    },
+    {
+      "name": "Theme editor previews the event outside its window (and can opt out)",
+      "ok": true,
+      "ms": 1957
+    },
+    {
+      "name": "?rizo_event=on persists across pages for the tab; ?rizo_event=clear and =off work",
+      "ok": true,
+      "ms": 4423
+    },
+    {
+      "name": "Each module can be switched off on its own",
+      "ok": true,
+      "ms": 11370
+    },
+    {
+      "name": "Signal bar shows the event message only while the event is live",
+      "ok": true,
+      "ms": 1899
+    },
+    {
+      "name": "Countdown targets Oct 31 12:00 AM New York regardless of visitor timezone",
+      "ok": true,
+      "ms": 5787
+    },
+    {
+      "name": "Countdown target without an offset is read in New York time, not the visitor's",
+      "ok": true,
+      "ms": 1628
+    },
+    {
+      "name": "Countdown ticks each second, rewrites only changed digits and never shifts layout",
+      "ok": true,
+      "ms": 4942
+    },
+    {
+      "name": "Countdown reaching zero shows the ended message (setting: message)",
+      "ok": true,
+      "ms": 1448
+    },
+    {
+      "name": "Countdown reaching zero hides itself (setting: hide) and seconds can be turned off",
+      "ok": true,
+      "ms": 9245
+    },
+    {
+      "name": "Server renders an already-past countdown in its ended state (no flash)",
+      "ok": true,
+      "ms": 508
+    },
+    {
+      "name": "Countdown pauses on a hidden tab and resyncs when visible",
+      "ok": true,
+      "ms": 3759
+    },
+    {
+      "name": "Clicks and taps pass straight through moving bats",
+      "ok": true,
+      "ms": 11437
+    },
+    {
+      "name": "SHOP still shops: hero CTA works with a bat parked on top of it",
+      "ok": true,
+      "ms": 1634
+    },
+    {
+      "name": "Rapid tapping (200 taps) keeps the flock bounded",
+      "ok": true,
+      "ms": 11495
+    },
+    {
+      "name": "Aggressive scrolling both ways wakes bats but stays bounded",
+      "ok": true,
+      "ms": 10218
+    },
+    {
+      "name": "Bats leave and are recycled; the loop sleeps during quiet periods",
+      "ok": true,
+      "ms": 2922
+    },
+    {
+      "name": "Exactly one animation loop: at most one event-layer rAF request per frame",
+      "ok": false,
+      "ms": 13008,
+      "error": "page.waitForFunction: Timeout 12000ms exceeded."
+    },
+    {
+      "name": "Open drawer/menu pauses the flock; closing resumes it",
+      "ok": true,
+      "ms": 4517
+    },
+    {
+      "name": "Frame-time governor steps a struggling device down to lite, then still",
+      "ok": true,
+      "ms": 35313
+    },
+    {
+      "name": "Theme editor section reloads (x8) never duplicate timers, observers or listeners",
+      "ok": true,
+      "ms": 3403
+    },
+    {
+      "name": "Resize and orientation changes keep limits and layout sane",
+      "ok": true,
+      "ms": 3859
+    },
+    {
+      "name": "Multiple reloads: one engine per page, no errors",
+      "ok": true,
+      "ms": 3582
+    },
+    {
+      "name": "Reduced motion: night, moon, still fog and countdown stay; bats never load",
+      "ok": true,
+      "ms": 2095
+    },
+    {
+      "name": "Reduced motion switched on mid-visit stops bats; switched off brings them back",
+      "ok": true,
+      "ms": 3670
+    },
+    {
+      "name": "Decorative layers stay out of the accessibility tree; countdown is a labelled timer",
+      "ok": true,
+      "ms": 3142
+    },
+    {
+      "name": "Keyboard focus order is identical with the event on and off",
+      "ok": true,
+      "ms": 2384
+    },
+    {
+      "name": "Quick add (variant + single-variant), cart drawer, cart page and checkout work with bats flying",
+      "ok": true,
+      "ms": 12078
+    },
+    {
+      "name": "Product page: variant picker, sold-out state, add to cart and sticky bar with the event live",
+      "ok": true,
+      "ms": 2339
+    },
+    {
+      "name": "Menu, search and newsletter form work with the event live",
+      "ok": true,
+      "ms": 6105
+    },
+    {
+      "name": "Every page type loads without errors with the event live",
+      "ok": true,
+      "ms": 21722
+    },
+    {
+      "name": "Event layer adds no horizontal overflow at 320, 375, 390, 430, landscape, tablet and desktop widths",
+      "ok": true,
+      "ms": 96620
+    },
+    {
+      "name": "Performance sample: frame pacing (event Off vs On) while the page scrolls; event asset weight",
+      "ok": true,
+      "ms": 30362
+    }
+  ],
+  "notes": [
+    "Countdown at 2026-10-01T12:34:56Z → America/New_York: 29d 15h 25m 04s | America/Los_Angeles: 29d 15h 25m 04s | Europe/London: 29d 15h 25m 04s | Asia/Tokyo: 29d 15h 25m 04s | Pacific/Auckland: 29d 15h 25m 04s",
+    "Countdown: 8 DOM mutations over ~4s of ticking; box stayed 426.1x69.8",
+    "Hidden-tab behaviour verified by simulating document.hidden + visibilitychange (headless Chromium cannot background a tab).",
+    "Desktop: 18 clicks aimed at moving bats; every one reached page content (HEADER, DIV).",
+    "Phone: 6 clicks aimed at moving bats; every one reached page content (DIV, HEADER).",
+    "desktop: 200 taps → spawned 2, scattered 60, peak 2/16 active, 2 pooled elements (cap 16).",
+    "mobile: 200 taps → spawned 19, scattered 52, peak 6/8 active, 6 pooled elements (cap 8).",
+    "desktop: 40 fast scroll bursts + two full-page jumps → 5 bats woken, peak 3/10.",
+    "mobile: 40 fast scroll bursts + two full-page jumps → 2 bats woken, peak 2/5.",
+    "Governor: with 60ms of work per frame the layer stepped down to lite + still (bat limit 2).",
+    "Editor reloads x8: countdown timers 1→1, heroes 1→1, event visibility listeners 2→2.",
+    "Countdown ARIA: - paragraph: HALLOWEEN IN / - timer \"HALLOWEEN IN\": Halloween begins Saturday, October 31, 2026 at 12:00 AM EDT.",
+    "Pre-existing overflow (same with the event Off, not caused by the event layer): /products/night-signal-hoodie at 320px: +18px; /collections/all at 320px: +7px; /products/night-signal-hoodie at 375px: +18px; /products/night-signal-hoodie at 390px: +18px; /products/night-signal-hoodie at 430px: +18px",
+    "desktop 1440x900 (CPU-composited headless): Off 10.3 fps (p95 200.1ms) vs On 6.3 fps (p95 349.9ms), peak bats 6, fog canvases 0.77 MP. Event assets 119.8 KB uncompressed: event-halloween.css 2.5, rizo-event-layer.css 20.0, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9",
+    "phone 390x844@3x (CPU-composited headless): Off 9.3 fps (p95 166.7ms) vs On 7.5 fps (p95 316.7ms), peak bats 7, fog canvases 0.13 MP. Event assets 119.8 KB uncompressed: rizo-event-layer.css 20.0, event-halloween.css 2.5, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9"
+  ]
+}

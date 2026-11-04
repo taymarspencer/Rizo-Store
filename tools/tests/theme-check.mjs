@@ -1,7 +1,5 @@
 // Runs Shopify Theme Check (the same linter as `shopify theme check`) on
-// the theme (repository root) and lists every offense. Exit code 1 if any new offense
-// appears beyond the three that already existed in Rizo Portal v2.3
-// (all in sections/main-product.liquid).
+// the theme (repository root). Every offense fails CI.
 //
 //   node tests/theme-check.mjs
 
@@ -11,11 +9,7 @@ import { themeCheckRun } from '@shopify/theme-check-node';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const THEME = path.resolve(HERE, '../..');
-const BASELINE = new Set([
-  'ImgWidthAndHeight sections/main-product.liquid',
-  'RemoteAsset sections/main-product.liquid',
-  'UnusedAssign sections/main-product.liquid'
-]);
+const BASELINE = new Set();
 
 const { offenses } = await themeCheckRun(THEME, undefined, () => {});
 let fresh = 0;
@@ -26,5 +20,5 @@ for (const offense of offenses) {
   const severity = ['ERROR', 'WARN', 'INFO'][offense.severity] || offense.severity;
   console.log(`${known ? 'baseline' : 'NEW     '} ${severity} ${offense.check} ${file}:${(offense.start?.line ?? 0) + 1} ${offense.message}`);
 }
-console.log(`\n${offenses.length} offense(s), ${fresh} new since v2.3.`);
+console.log(`\n${offenses.length} offense(s).`);
 process.exit(fresh ? 1 : 0);

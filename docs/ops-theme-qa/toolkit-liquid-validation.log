@@ -1,0 +1,65 @@
+Loaded resource from /root/.cache/theme-liquid-docs-nodejs/manifest_theme.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/translations.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/theme_settings.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/theme_block.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/settings.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/strict_settings.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/setting.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/app_block_entry.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/theme_block_entry.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/section.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/targetted_block_entry.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/preset_blocks.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/preset.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/default_setting_values.json
+Loaded schema from /root/.cache/theme-liquid-docs-nodejs/local_block_entry.json
+Loaded resource from /root/.cache/theme-liquid-docs-nodejs/tags.json
+Loaded resource from /root/.cache/theme-liquid-docs-nodejs/filters.json
+Loaded resource from /root/.cache/theme-liquid-docs-nodejs/objects.json
+Loaded resource from /root/.cache/theme-liquid-docs-nodejs/shopify_system_translations.json
+## Validation Summary
+
+**Overall Status:** ✅ VALID
+**Total Files:** 5
+
+## Detailed Results
+
+### File 1
+**Artifact ID:** rizo-ops-theme
+**Revision:** 1
+*Use same ID & increment revision when retrying on an improvement of this artifact*
+
+**Status:** ✅ SUCCESS
+**Details:** assets/rizo-theme.css passed all checks.
+
+### File 2
+**Artifact ID:** rizo-ops-theme
+**Revision:** 1
+*Use same ID & increment revision when retrying on an improvement of this artifact*
+
+**Status:** ✅ SUCCESS
+**Details:** sections/rizo-live-products.liquid passed all checks.
+
+### File 3
+**Artifact ID:** rizo-ops-theme
+**Revision:** 1
+*Use same ID & increment revision when retrying on an improvement of this artifact*
+
+**Status:** ✅ SUCCESS
+**Details:** sections/rizo-live-hero.liquid passed all checks.
+
+### File 4
+**Artifact ID:** rizo-ops-theme
+**Revision:** 1
+*Use same ID & increment revision when retrying on an improvement of this artifact*
+
+**Status:** ✅ SUCCESS
+**Details:** sections/main-product.liquid passed all checks.
+
+### File 5
+**Artifact ID:** rizo-ops-theme
+**Revision:** 1
+*Use same ID & increment revision when retrying on an improvement of this artifact*
+
+**Status:** ✅ SUCCESS
+**Details:** snippets/product-card.liquid passed all checks.

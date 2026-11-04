@@ -1,0 +1,14 @@
+{
+  "now": "2026-10-15T16:00:00.000Z",
+  "node": "v22.23.4",
+  "results": [
+    {
+      "name": "Exactly one animation loop: at most one event-layer rAF request per frame",
+      "ok": true,
+      "ms": 6020
+    }
+  ],
+  "notes": [
+    "rAF audit: 90 event-layer requests over 90 frames while bats flew and the page scrolled."
+  ]
+}

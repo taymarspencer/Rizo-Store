@@ -3696,7 +3696,7 @@ body.rizo-celebrating .cart-rizo-signal img { animation: rizoBagCelebrate .75s v
   }
   .product-gallery::-webkit-scrollbar { display: none; }
   .product-media,
-  .product-placeholder--large { flex: 0 0 calc(100vw - (var(--edge) * 2)); min-height: 0; aspect-ratio: 4/5; scroll-snap-align: center; }
+  .product-placeholder--large { flex: 0 0 calc(100vw - (var(--edge) * 2)); min-height: 0; margin-inline: 0; aspect-ratio: 4/5; scroll-snap-align: center; }
   .product-media img,
   .product-media video,
   .product-media iframe,
@@ -6718,4 +6718,21 @@ body.template-404 .header-primary-logo {
     align-items: flex-start;
     flex-direction: column;
   }
+}
+
+.ops-featured-product {
+  max-width: 28rem;
+  margin: 0 auto 2rem;
+}
+
+@media (max-width: 600px) {
+  .product-gallery-shell { margin-inline: 0; }
+}
+
+@media (max-width: 430px) {
+  .collection-toolbar,
+  .collection-toolbar-actions { flex-wrap: wrap; }
+  .collection-toolbar { gap: 10px; }
+  .collection-toolbar-actions { max-width: 100%; }
+  .collection-toolbar select { min-width: 0; max-width: 100%; }
 }

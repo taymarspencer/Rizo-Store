@@ -1,0 +1,59 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS  OFF: normal Rizo loads no event CSS/JS and has no event markup
+PASS  Scheduled, outside window: CSS present but inert, runtime never requested
+PASS  Schedule switches the event on at its start time without a reload
+PASS  Schedule switches the event off at its end time and cleans up
+PASS  Manual override (Always on) ignores the schedule
+PASS  Theme editor previews the event outside its window (and can opt out)
+PASS  ?rizo_event=on persists across pages for the tab; ?rizo_event=clear and =off work
+PASS  Each module can be switched off on its own
+PASS  Signal bar shows the event message only while the event is live
+PASS  Countdown targets Oct 31 12:00 AM New York regardless of visitor timezone
+PASS  Countdown target without an offset is read in New York time, not the visitor's
+PASS  Countdown ticks each second, rewrites only changed digits and never shifts layout
+PASS  Countdown reaching zero shows the ended message (setting: message)
+PASS  Countdown reaching zero hides itself (setting: hide) and seconds can be turned off
+PASS  Server renders an already-past countdown in its ended state (no flash)
+PASS  Countdown pauses on a hidden tab and resyncs when visible
+PASS  Clicks and taps pass straight through moving bats
+PASS  SHOP still shops: hero CTA works with a bat parked on top of it
+PASS  Rapid tapping (200 taps) keeps the flock bounded
+PASS  Aggressive scrolling both ways wakes bats but stays bounded
+PASS  Bats leave and are recycled; the loop sleeps during quiet periods
+FAIL  Exactly one animation loop: at most one event-layer rAF request per frame
+      page.waitForFunction: Timeout 12000ms exceeded.
+PASS  Open drawer/menu pauses the flock; closing resumes it
+PASS  Frame-time governor steps a struggling device down to lite, then still
+PASS  Theme editor section reloads (x8) never duplicate timers, observers or listeners
+PASS  Resize and orientation changes keep limits and layout sane
+PASS  Multiple reloads: one engine per page, no errors
+PASS  Reduced motion: night, moon, still fog and countdown stay; bats never load
+PASS  Reduced motion switched on mid-visit stops bats; switched off brings them back
+PASS  Decorative layers stay out of the accessibility tree; countdown is a labelled timer
+PASS  Keyboard focus order is identical with the event on and off
+PASS  Quick add (variant + single-variant), cart drawer, cart page and checkout work with bats flying
+PASS  Product page: variant picker, sold-out state, add to cart and sticky bar with the event live
+PASS  Menu, search and newsletter form work with the event live
+PASS  Every page type loads without errors with the event live
+PASS  Event layer adds no horizontal overflow at 320, 375, 390, 430, landscape, tablet and desktop widths
+PASS  Performance sample: frame pacing (event Off vs On) while the page scrolls; event asset weight
+
+Notes
+  - Countdown at 2026-10-01T12:34:56Z → America/New_York: 29d 15h 25m 04s | America/Los_Angeles: 29d 15h 25m 04s | Europe/London: 29d 15h 25m 04s | Asia/Tokyo: 29d 15h 25m 04s | Pacific/Auckland: 29d 15h 25m 04s
+  - Countdown: 8 DOM mutations over ~4s of ticking; box stayed 426.1x69.8
+  - Hidden-tab behaviour verified by simulating document.hidden + visibilitychange (headless Chromium cannot background a tab).
+  - Desktop: 18 clicks aimed at moving bats; every one reached page content (HEADER, DIV).
+  - Phone: 6 clicks aimed at moving bats; every one reached page content (DIV, HEADER).
+  - desktop: 200 taps → spawned 2, scattered 60, peak 2/16 active, 2 pooled elements (cap 16).
+  - mobile: 200 taps → spawned 19, scattered 52, peak 6/8 active, 6 pooled elements (cap 8).
+  - desktop: 40 fast scroll bursts + two full-page jumps → 5 bats woken, peak 3/10.
+  - mobile: 40 fast scroll bursts + two full-page jumps → 2 bats woken, peak 2/5.
+  - Governor: with 60ms of work per frame the layer stepped down to lite + still (bat limit 2).
+  - Editor reloads x8: countdown timers 1→1, heroes 1→1, event visibility listeners 2→2.
+  - Countdown ARIA: - paragraph: HALLOWEEN IN / - timer "HALLOWEEN IN": Halloween begins Saturday, October 31, 2026 at 12:00 AM EDT.
+  - Pre-existing overflow (same with the event Off, not caused by the event layer): /products/night-signal-hoodie at 320px: +18px; /collections/all at 320px: +7px; /products/night-signal-hoodie at 375px: +18px; /products/night-signal-hoodie at 390px: +18px; /products/night-signal-hoodie at 430px: +18px
+  - desktop 1440x900 (CPU-composited headless): Off 10.3 fps (p95 200.1ms) vs On 6.3 fps (p95 349.9ms), peak bats 6, fog canvases 0.77 MP. Event assets 119.8 KB uncompressed: event-halloween.css 2.5, rizo-event-layer.css 20.0, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9
+  - phone 390x844@3x (CPU-composited headless): Off 9.3 fps (p95 166.7ms) vs On 7.5 fps (p95 316.7ms), peak bats 7, fog canvases 0.13 MP. Event assets 119.8 KB uncompressed: rizo-event-layer.css 20.0, event-halloween.css 2.5, event-halloween-moon.svg 0.7, rizo-event-layer.js 30.0, rizo-event-flock.js 12.7, event-halloween.js 9.1, event-halloween-fog.webp 42.1, event-halloween-bat-1.svg 0.9, event-halloween-bat-1-b.svg 0.9, event-halloween-bat-2.svg 0.9
+
+36/37 passed

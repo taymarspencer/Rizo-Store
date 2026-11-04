@@ -104,6 +104,7 @@ const makeProduct = (index, { title, handle, price, options = [], variants: vari
     price_varies: false,
     compare_at_price_max: 0,
     available: variants.some((variant) => variant.available),
+    published_at: '2026-01-01T00:00:00Z',
     vendor: 'Rizo Apparel',
     tags: [],
     description: `<p>${title} — founder-made in Pittsburgh. Mock product for local preview.</p>`,
@@ -304,6 +305,10 @@ engine.registerFilter('image_url', (value, ...args) => {
   return out.width ? `${src}${src.includes('?') ? '&' : '?'}width=${out.width}` : src;
 });
 engine.registerFilter('img_url', (value) => imageSrc(value));
+const liquidDate = engine.filters.date;
+engine.registerFilter('date', function (value, ...args) {
+  return liquidDate.call(this, value === 'now' && process.env.PREVIEW_NOW ? new Date(process.env.PREVIEW_NOW) : value, ...args);
+});
 engine.registerFilter('image_tag', (src, ...args) => {
   const { out } = kwargs(args);
   const attrs = [`src="${escapeAttr(src)}"`];
@@ -625,8 +630,14 @@ const server = http.createServer(async (req, res) => {
       value: { ...COLLECTION_ALL, id: 2, handle: 'limited', url: '/collections/limited', title: 'Limited preview',
         products: PRODUCTS.slice(0, 1), all_products_count: 1, products_count: 1 }
     };
+    if (mockCollection === 'empty') opsFields.home_collection = {
+      value: { ...COLLECTION_ALL, id: 3, handle: 'empty', url: '/collections/empty', products: [], products_count: 0, all_products_count: 0 }
+    };
     const mockFeatured = productByHandle(url.searchParams.get('ops.featured_product'));
     if (mockFeatured) opsFields.featured_product = { value: mockFeatured };
+    if (['draft', 'archived'].includes(url.searchParams.get('ops.featured_product'))) {
+      opsFields.featured_product = { value: { ...PRODUCTS[0], published_at: null } };
+    }
 
     const templateName = route.template;
     const [name, suffix] = templateName.split('.');

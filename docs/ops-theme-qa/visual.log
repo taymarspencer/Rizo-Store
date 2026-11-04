@@ -1,0 +1,25 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS  320px missing/false OFF screenshot parity
+PASS  320px homepage OFF pixel parity with main
+PASS  320px ON controls and native product media
+NOTE  320px baseline product dimensions {"inner":338,"scroll":338,"client":320}
+PASS  320px product has no horizontal overflow
+NOTE  320px baseline collection dimensions {"inner":327,"scroll":327,"client":320}
+PASS  320px collection has no horizontal overflow
+PASS  390px missing/false OFF screenshot parity
+PASS  390px homepage OFF pixel parity with main
+PASS  390px ON controls and native product media
+NOTE  390px baseline product dimensions {"inner":408,"scroll":408,"client":390}
+PASS  390px product has no horizontal overflow
+NOTE  390px baseline collection dimensions {"inner":390,"scroll":390,"client":390}
+PASS  390px collection has no horizontal overflow
+PASS  1440px missing/false OFF screenshot parity
+PASS  1440px homepage OFF pixel parity with main
+PASS  1440px ON controls and native product media
+NOTE  1440px baseline product dimensions {"inner":1440,"scroll":1440,"client":1440}
+PASS  1440px product has no horizontal overflow
+NOTE  1440px baseline collection dimensions {"inner":1440,"scroll":1440,"client":1440}
+PASS  1440px collection has no horizontal overflow
+PASS  Featured product remains linked and purchasable without JavaScript
+16 visual/browser checks passed

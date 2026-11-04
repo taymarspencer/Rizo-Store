@@ -1,84 +1,113 @@
-# RIZO OPS 2.0 — storefront control contract (theme PR)
+# RIZO OPS storefront contract
 
-**Status: candidate, not deployed.** This branch changes the Rizo Portal Shopify theme only. It does **not** modify live Shopify product, variant, inventory, collection, metafield, or order data. It does not authorize a theme publish. Verify against an unpublished theme before merging.
+Candidate on `feat/rizo-ops-theme-contract`, existing draft PR #5. **Production release: NO-GO.** The published Shopify theme is a newer implementation than this repository's `main`; see the release gate below. This PR is verified against the repository theme, not an interchangeable replacement for the current live design.
 
-## Purpose and separation of responsibilities
+## Verified state, November 4, 2026
 
-- **Shopify is authoritative** for sellable variants, product media, collection membership, publication, orders and location-specific inventory.
-- **RIZO OPS (private backend)** is authoritative for blank garments, print transfers, production batches, vending events, costs, staff and audit ledger. It maps each finished garment to a Shopify inventory item and location.
-- **Shopify Liquid theme** reads a deliberately small, merchant-owned `SHOP` metafield contract for storefront merchandising. No private RIZO OPS credentials or production data are sent to browser JavaScript.
-- **GitHub theme repository** remains authoritative for layout, CSS, JS, artwork, templates and structural/theme-code changes. The OPS app must not use the Theme Files API to mutate Liquid or JSON template files in normal operations.
+| Item | Observed result |
+| --- | --- |
+| Store | `rizo.store` / `rizo-apperal.myshopify.com` |
+| SHOP owner | `gid://shopify/Shop/27906474062` |
+| Published theme | `gid://shopify/OnlineStoreTheme/155243118670`, `RIZO Skeleton — review only`, role `MAIN` |
+| Repository homepage | `rizo-world-gate` + `rizo-live-products` |
+| Published homepage | `rizo-hero`, `rizo-skeleton-drop`, `rizo-products`, `rizo-feature-world`, `rizo-story`, `rizo-interlude`, `rizo-gallery`, `rizo-signup` |
+| Definitions | Seven created and re-read; IDs below |
+| Metafield values | None before or after setup; bridge OFF |
+| Products, quantities, theme files, publication | Unchanged |
+| Native candidate preview | Not uploaded/tested; source reconciliation required first |
+| GitHub → published-theme auto-deploy | Not verified; never infer it from merge status |
 
-## The opt-in storefront controls
+The published manifest contains 146 files. Only 25 match `main` byte-for-byte; newer source includes different product/cart/event components, 412 content, fonts and images. No inspected repository branch matches the published manifest. Files and checksums are retained in `docs/ops-theme-qa/published-source-manifest.json`. The separate `Rizo-World-` repository was not edited.
 
-Create **definitions first** with the Shopify Admin GraphQL API (or manually in Shopify Admin), then write values via `metafieldsSet`, then verify by reading them back and testing Liquid. These are merchant-owned on purpose: the separately developed OPS app, Shopify Admin and Shopify theme all need stable access to the same fields, independent of a particular app installation. They cannot be declared as merchant-owned definitions in `shopify.app.toml`.
+## Contract: definitions first, then values, then verification
 
-Owner type: `SHOP`. Namespace: `rizo_ops`. Fields:
+All definitions are **merchant-owned**, owner type `SHOP`, namespace `rizo_ops`. Do not use `$app`, `app`, or a second namespace. Merchant ownership intentionally survives changes to the OPS app installation. Values are written only through server-side Admin GraphQL `metafieldsSet`, API `2026-10`.
 
-| Key | Shopify metafield type | Theme consumer | Missing/disabled behavior |
+Admin access was re-read as `PUBLIC_READ_WRITE`. The create inputs omit `access.admin`, which is not a mechanism for restricting merchant-owned fields. Storefront API access is `NONE`; this does not restrict Liquid, which can still read `.value`. No private data belongs in these fields.
+
+| Key | Shopify type | Definition GID suffix | Consumer / missing behavior |
 | --- | --- | --- | --- |
-| `theme_enabled` | `boolean` | all bridge sections | Missing/false leaves legacy theme behavior unchanged |
-| `hero_heading` | `single_line_text_field` | `sections/rizo-world-gate.liquid` | Use existing section heading |
-| `hero_intro` | `multi_line_text_field` | `sections/rizo-world-gate.liquid` | Use existing rich text section setting |
-| `hero_shop_label` | `single_line_text_field` | `sections/rizo-world-gate.liquid` | Use existing section CTA label; destination unchanged |
-| `announcement_text` | `single_line_text_field` | `sections/rizo-header.liquid` | Use existing world-state/manual text; seasonal event overlay retains its priority |
-| `home_collection` | `collection_reference` | `sections/rizo-live-products.liquid` | Use existing collection setting |
-| `featured_product` | `product_reference` | `sections/rizo-live-hero.liquid` (optional section, not the current homepage world gate) | Use existing theme-editor featured product |
+| `theme_enabled` | `boolean` | `553641345102` | All bridge consumers; absent/false preserves theme settings |
+| `hero_heading` | `single_line_text_field` | `553641377870` | `rizo-world-gate`; existing heading |
+| `hero_intro` | `multi_line_text_field` | `553641410638` | `rizo-world-gate`; existing rich text intro |
+| `hero_shop_label` | `single_line_text_field` | `553641443406` | `rizo-world-gate`; existing shop label and destination |
+| `announcement_text` | `single_line_text_field` | `553641476174` | `rizo-header`; existing world-state/manual message |
+| `home_collection` | `collection_reference` | `553641508942` | `rizo-live-products`; existing collection |
+| `featured_product` | `product_reference` | `553641541710` | `rizo-live-products` native home feature; optional `rizo-live-hero` also consumes it |
 
-`theme_enabled` is **not** a storefront feature flag that anyone can flip with a URL. Liquid reads only the Shopify SHOP metafield. The local preview harness supports `?ops.*` purely as a mock test control.
+Each complete definition ID is `gid://shopify/MetafieldDefinition/<suffix>`. `shop { id }` supplies the owner ID for value writes, not a definition ID. Reference values use `gid://shopify/Product/...` or `gid://shopify/Collection/...`; Liquid receives resource objects through `.value`, not handles.
 
-### Contract details
+`tools/ops/contract.mjs` is the executable source for exact definitions and operations. `tools/ops/setup.mjs` inspects before creating, refuses definition/type mismatches and unstructured merchant values, creates only missing definitions, and re-queries them. It never changes products, inventory or themes.
 
-- Treat empty override values as “fall back to theme setting”, not “erase storefront content.” Later, use an explicit `null`/clear action or a per-field override mode if intentionally blank content is needed.
-- Escape OPS-provided plain-text fields in Liquid. `hero_intro` is plain text with safe newlines, **not** raw HTML.
-- Use Shopify native `collection_reference` and `product_reference` values, not string handles that can drift. The API writes the matching GID as the metafield value and Liquid receives an actual object via `.value`.
-- The homepage world gate uses its own established layout. No theme structure, event behavior, pricing or product tiles should change with `theme_enabled=false`.
-- The optional `rizo-live-hero` uses `featured_product` only when the section appears in a template. It does not magically add a new section to the homepage.
-- Never write counts like “only 2 left” into static marketing text unless derived from currently tracked sellable inventory; rely on Shopify variant availability and inventory policy for checkout decisions.
+## Rendering and precedence
 
-### Safe definition creation
+1. Unless `shop.metafields.rizo_ops.theme_enabled.value == true`, bridge values are ignored.
+2. A nonblank valid override replaces only its corresponding content field. Missing/blank text falls back; valid empty collections deliberately show an empty state.
+3. OPS text is escaped. Intro text uses `escape` then `newline_to_br`; HTML/script tags are displayed as text. No browser credentials or query-string overrides exist in production Liquid.
+4. A nonempty active seasonal announcement outranks the OPS announcement. When the event ends, OPS/default text returns. Header visibility remains controlled by its existing theme setting.
+5. The homepage now renders a native product-card feature for a resolved product with `id`, `url` and `published_at`; missing/unpublished references do not render an empty card. Shopify availability governs purchase controls, including sold-out states and variant selection. The feature is omitted from the following collection grid to prevent duplication. The collection candidate limit remains unchanged, so deduplication may reduce that grid by one card; an out-of-collection feature adds one card.
+6. The optional live hero only reads the product reference when the section is actually rendered. It keeps the existing theme-editor feature as its fallback. The homepage integration does not depend on this optional section.
+7. A missing/invalid collection reference falls back to the configured collection. `.value.id` and `.value.url` are checked. Shopify handles deleted/unpublished reference resolution; OPS must validate publication/status before writing.
 
-1. Authenticate to the **specific** shop (verify `rizo.store` maps to the expected Shopify shop and use the canonical `.myshopify.com` domain for Admin API); fetch `shop { id }` for the metafield owner GID.
-2. Inspect `metafieldDefinitions(ownerType: SHOP)` for existing `rizo_ops` keys; don't blindly recreate or change types.
-3. Create only missing merchant-owned definitions via `metafieldDefinitionCreate` with `ownerType: SHOP` and the types above. Choose storefront access consistent with Shopify Liquid/the actual app requirements. The theme should never contain private information.
-4. Query each definition and existing value before using `metafieldsSet`; for updates, use `compareDigest` compare-and-set to avoid overwriting newer changes. Store original values in an audit log.
-5. Test a staged value while `theme_enabled=false`; then enable on an unpublished theme only in a controlled preview/staging setup. **Warning:** the SHOP-level flag is storewide, not theme-specific. If the bridge is already deployed to the live theme, switching the flag changes the live theme too.
-6. Roll back by setting `theme_enabled=false`; existing theme settings remain intact. Clearing a value should never delete the underlying definitions or published products.
+OFF homepage screenshots match `main` at 320, 390 and 1440 pixels. The intentional unrelated differences are narrow product-gallery and collection-toolbar fixes, safe title escaping and removal of three pre-existing Theme Check offenses. No working theme JS was rewritten.
 
-Reference: https://shopify.dev/docs/apps/build/metafields/definitions and https://shopify.dev/docs/api/admin-graphql/2026-10/mutations/metafieldsSet .
+## Evidence-backed gap matrix
 
-## Inventory and merchandising boundaries
+| Surface | Existing source | Gap / owner | Fix or boundary | Verification |
+| --- | --- | --- | --- | --- |
+| Home headline, intro, shop CTA | `rizo-world-gate` settings | App cannot edit theme-specific copy / theme | Three typed text overrides; destination remains existing anchor/link | ON, OFF, blank and hostile-copy browser cases |
+| Announcement | `rizo-header` state settings + Event Layer | Need safe override without seasonal precedence regression / theme | Single plain-text field below active seasonal copy | Active → expired event test |
+| Home collection | Section collection setting | Handle/settings coupling / Shopify + theme | Collection reference; canonical collection editing stays Admin GraphQL | Valid, missing and intentionally empty collections |
+| Featured product | Optional `rizo-live-hero`, absent from index | Original PR control did not affect homepage / theme | Native feature inside rendered `rizo-live-products`; no redesign | Native media, duplicate prevention, sold-out, cart and no-JS tests |
+| Product price/title/description/media/status/options | Shopify Product/Variant/Media | App/backend work, not theme CMS | Native GraphQL edits only; no duplicate metafields | Canonical mappings and acceptance tests in app handoff |
+| Stock | Shopify InventoryItem + Location | Uncounted, inconsistent historical data / merchant + OPS | Read-only audit and reviewed reconciliation proposals | All 28 products / 123 variants, no truncated pages |
+| CTA destination / feature visibility | Existing section link / absent reference | No demonstrated additional bridge requirement | Existing destination; feature presence derives from reference + master flag | Link target/no-JS checks |
+| Drop schedule/status | Event Layer settings + optional hero/world state | Separate seasonal controls / theme | No additional remote scheduler or timers | Start/end, hidden tab, reload, governor, accessibility tests |
+| Pittsburgh/412 | Live-only `rizo-feature-world`, missing from this main | Source divergence / release owner | Preserve live source during reconciliation; do not add a second 412 CMS | Published manifest + actual index read |
+| Published source | Shopify current theme vs Git main | Releasing this tree would replace current live implementation / release owner | NO-GO until real source imported/ported on existing PR | 146-file checksum comparison |
 
-The theme **is not** an inventory ledger. Do not mirror available quantities in a public metafield, hidden browser state or a second storefront database.
+## Safe setup and sandbox flow
 
-- Shopify variant/inventory-item/location IDs are canonical. SKUs are human-readable identifiers: standardize and make unique, but do not treat SKUs as primary keys.
-- Maintain separate private counts for blanks (style × color × size × condition × physical location), finished garments (Shopify variant/location), reserved material, transfers and work in progress.
-- Producing an item moves blank material and transfers through an atomic, append-only production ledger. Only after successful production should the OPS backend adjust Shopify's **finished** inventory for the mapped inventory item/location; if Shopify fails, keep a retriable pending sync record and flag the discrepancy.
-- 2026-10 Admin GraphQL `inventoryAdjustQuantities` requires an `@idempotent(key: ...)` directive. Use a durable unique operation key per production/sale; never generate a new key when retrying the same event. Use `changeFromQuantity` where appropriate, handle stale conflicts and reconcile rather than silently overwriting counts.
-- Online Shopify order webhook events are signed/verified, stored idempotently, and reconciled against API snapshots. They must not blindly decrease Shopify stock again if Shopify has already deducted it.
-- A vending sale must choose a Shopify inventory location and document when/where stock transfers occur. Don't deduct from two locations or from both a local mirror and Shopify for the same sale.
-- Stock reconciliation starts with a **physical count** and a mismatch report. Do not mass-fix historical negative quantities or missing SKUs without review.
+Use Node `22.23.4`. Set `SHOPIFY_SHOP` to the verified canonical `.myshopify.com` domain and supply `SHOPIFY_ADMIN_TOKEN` only through a secret environment variable. Never commit `.env`, snapshot or plan files. From `tools/`:
 
-### Current preflight findings (read-only inspection, November 2026)
+```bash
+node ops/setup.mjs --help
+node ops/setup.mjs inspect --out ops/snapshot.local.json
+node ops/setup.mjs definitions
+node ops/setup.mjs definitions --apply --expect-shop gid://shopify/Shop/27906474062
+```
 
-- Skeleton Crewneck was observed with five Shopify size variants at one reported unit each. **Not physical verification.**
-- Some legacy products have negative variant quantity values; many SKUs are blank. Production app should expose these as actionable reconciliation tasks before accepting inventory changes.
-- Size labeling across old products is inconsistent (`S` versus `Small`; `2XL` versus `2 XL`). Do not alter old variant option values or variant identities automatically.
+The last command is a no-op when the seven observed definitions still exist. It must stop if the shop or definitions differ. Creating a definition can validate/retype an existing unstructured value, so the script refuses that case instead of assuming creation is harmless.
 
-## Checks before merge
+For an actual **development shop**, set that shop's credentials, create definitions there, and prepare a values object such as `{"theme_enabled":true,"hero_heading":"RIZO TEST","featured_product":"<development Product GID>"}` in `ops/values.local.json`. Replace the placeholder with a real published development product; do not copy production IDs into a dev store.
 
-1. `cd tools && npm install && npm run check && npm test`; browsers may need Playwright installation.
-2. The test harness has mock `?ops.theme_enabled=true&ops.hero_heading=...&ops.home_collection=limited` for local-only override tests. Test both flag OFF and flag ON; check desktop and iPhone widths, empty reference fallbacks, same home markup when flag is missing.
-3. Preview on a **duplicate/unpublished Shopify theme** using actual SHOP metafield values and an opt-in plan that won't impact the currently published theme. Compare screenshots.
-4. Ensure old Halloween/Event Layer scheduling, announcement priority, checkout/cart, product variants, images and Lighthouse performance are unchanged.
-5. Review the GitHub diff and release/publish separately. No live product mutations or credential exposure in this PR.
+```bash
+node ops/setup.mjs plan --values ops/values.local.json --out ops/plan.local.json
+node ops/setup.mjs apply --plan ops/plan.local.json --sandbox --expect-shop <development-Shop-GID>
+node ops/setup.mjs inspect --out ops/verified.local.json
+```
 
-## OPS app handoff: initial API endpoints (illustrative, not live)
+The script always includes `compareDigest`, using explicit null for a missing value and the reviewed digest for an existing value. It rejects stale plans, re-validates types/identity, writes atomically, checks Shopify userErrors, and re-reads actual values. It refuses value writes to the production Rizo shop even with `--sandbox`. It does not delete overrides or retry uncertain mutations automatically.
 
-- `GET /api/storefront-controls` -> resolved values with Shopify object IDs, types, `compareDigest` and last refresh.
-- `PATCH /api/storefront-controls` -> validate permissions and input types, write Shopify metafields through server-side `metafieldsSet`, return changed fields and exact Shopify userErrors on failure.
-- `GET /api/inventory/reconciliation` -> read-only product/variant/location inventory with unlinked SKU and negative-quantity warnings.
-- `POST /api/production/batches` -> private blank-to-finished ledger and idempotent outbox intent; no client-side Shopify access tokens.
-- `POST /api/shopify/webhooks` -> signed HMAC verification, durable deduplication and response under Shopify timeout expectations.
+**SHOP values are storewide, including on unpublished themes.** An unpublished theme is not a separate namespace. Do not turn the flag on merely to preview staging while any published bridged theme exists. Dedicated dev-store round trips are the safe default. ON local mock behavior is not native Shopify ON verification. `?ops.*` exists only inside `tools/preview/server.mjs`, which is excluded from theme upload.
 
-**Scope is purposely tiny:** the theme bridge solves content ownership; Claude's new OPS repository solves authenticated mutations, source-of-truth inventory, vendor blanks, production and people. Keep them separate.
+## Rollback and release
+
+Rollback of the bridge is an authorized `metafieldsSet` of `theme_enabled=false` with the current digest, then read-back and actual storefront verification. Existing section settings stay in place. It does not undo native product/inventory edits, which need separately reviewed inverse operations. Do not delete definitions or overwrite saved merchant copy as a rollback.
+
+Before any production enable:
+
+1. In Shopify Admin → Online Store → Themes, identify the **Current theme** and its actual ID; the “review only” name is not an indication of role.
+2. Download/export the current theme and reconcile it into this same PR, preserving merchant JSON settings, 412 content, Skeleton media and working runtime. Port the seven consumers into the real rendered sections. Do not publish the older Portal tree.
+3. Verify the theme's GitHub connection/branch in Admin. Keep this PR unmerged while the relationship is unknown.
+4. Deploy only an unpublished candidate, complete native preview and sandbox value/rollback checks, record evidence, then obtain the required release authorization.
+
+The complete private app boundary, canonical GraphQL operations, REST routes, auth, webhooks, idempotency rules and launch tests are in `docs/RIZO_OPS_APP_HANDOFF.md`. Test evidence and limitations are in `docs/OPS_THEME_QA.md`; merchant reconciliation candidates are in `docs/SHOPIFY_DATA_AUDIT.md`.
+
+## Official references
+
+- [Metafield ownership, permissions and Liquid access](https://shopify.dev/docs/apps/build/metafields)
+- [Liquid metafield reference values](https://shopify.dev/docs/api/liquid/objects/metafield)
+- [Create definitions](https://shopify.dev/docs/api/admin-graphql/2026-10/mutations/metafieldDefinitionCreate)
+- [Atomic writes and compareDigest](https://shopify.dev/docs/api/admin-graphql/2026-10/mutations/metafieldsSet)
+- [Theme performance practices](https://shopify.dev/docs/storefronts/themes/best-practices/performance)
