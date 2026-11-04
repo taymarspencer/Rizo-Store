@@ -18,6 +18,12 @@
         assign state_message = section.settings.quiet_message
     endcase
   endif
+  if shop.metafields.rizo_ops.theme_enabled.value == true
+    assign ops_message = shop.metafields.rizo_ops.announcement_text.value
+    if ops_message != blank
+      assign state_message = ops_message
+    endif
+  endif
 %}
 {%- capture event_message -%}{% render 'rizo-event-value', key: 'announcement' %}{%- endcapture -%}
 {%- assign event_message = event_message | strip -%}
@@ -32,7 +38,7 @@
     <a class="announcement announcement--{{ state }}{% if state_message == blank %} rizo-event-only{% endif %}" href="{{ section.settings.announcement_link | default: routes.all_products_collection_url }}">
       <span class="announcement-state"><i aria-hidden="true"></i>{{ state_label }}</span>
       {%- if state_message != blank %}
-      <span class="announcement-copy"{% if event_message != blank %} data-rizo-event-default{% endif %}>{{ state_message }}</span>
+      <span class="announcement-copy"{% if event_message != blank %} data-rizo-event-default{% endif %}>{{ state_message | escape }}</span>
       {%- endif %}
       {%- if event_message != blank %}
       <span class="announcement-copy rizo-event-only">{{ event_message }}</span>
