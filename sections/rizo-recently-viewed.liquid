@@ -1,12 +1,21 @@
-{% liquid
+{%- liquid
   assign trail_image = blank
   if product.featured_image != blank
     assign trail_image = product.featured_image | image_url: width: 720
   endif
-%}
-<section class="recently-viewed page-width" data-recently-viewed hidden>
+-%}
+<section class="s" data-surface="solid" data-space="s" data-fog="0" data-rizo-event-quiet data-recently-viewed hidden>
   <script type="application/json" data-current-product>{"id":{{ product.id | json }},"title":{{ product.title | json }},"url":{{ product.url | json }},"image":{{ trail_image | json }},"price":{{ product.price | money | json }}}</script>
-  <header class="section-heading"><div><p class="eyebrow">YOUR TRAIL</p><h2>{{ section.settings.heading }}</h2><p class="section-intro">{{ section.settings.text }}</p></div></header>
-  <div class="recent-trail" data-recent-trail></div>
+  <div class="wrap wrap--wide">
+    <div class="s-head"><h2 class="v-label">{{ section.settings.heading | escape }}</h2></div>
+    <div class="shelf-track" data-recent-trail></div>
+  </div>
 </section>
-{% schema %}{"name":"Recently viewed trail","settings":[{"type":"text","id":"heading","label":"Heading","default":"PIECES YOU PASSED ON THE WAY HERE"},{"type":"textarea","id":"text","label":"Text","default":"Saved only on this device so you can find your way back."}]}{% endschema %}
+{% schema %}
+{
+  "name": "Recently viewed",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "You looked at" }
+  ]
+}
+{% endschema %}

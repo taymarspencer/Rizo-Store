@@ -1,14 +1,36 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "contact": {
-      "type": "rizo-contact-signal",
+    "head": {
+      "type": "rizo-page-head",
       "settings": {
-        "eyebrow": "CONTACT / OPEN CHANNEL",
-        "heading": "SEND IT TO RIZO.",
-        "intro": "Order help, sizing questions, collaborations, events, press, or something that does not fit a box. Send a real message through the channel below.",
-        "note": "No fake chatbot. No invented response time. Your message goes through Shopify’s contact system to the store inbox."
+        "label": "",
+        "title": "Contact",
+        "voice": "say",
+        "lead": "",
+        "align": "left",
+        "crumbs": false,
+        "fog": 45
+      }
+    },
+    "contact": {
+      "type": "rizo-contact",
+      "settings": {
+        "text": "<p>Orders, sizing, working together, or just something you need to say. It goes straight to Rizo.</p>",
+        "instagram_url": "https://www.instagram.com/rizoapparel/"
       }
     }
   },
-  "order": ["contact"]
+  "order": [
+    "head",
+    "contact"
+  ]
 }

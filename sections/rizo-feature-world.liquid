@@ -1,0 +1,470 @@
+{{ 'rizo-worlds.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign s = section.settings
+  assign load = 'lazy'
+  if section.index == 1
+    assign load = 'eager'
+  endif
+  assign has_mark = false
+  if s.heading_art != blank or s.builtin_mark != 'none'
+    assign has_mark = true
+  endif
+-%}
+<section class="s world-portal world-portal--{{ s.text_position }} world-portal--{{ s.phone_layout }} world-visible--{{ s.visibility }}" data-surface="{{ s.surface }}" data-space="{{ s.space }}" data-fog="0" style="--world-accent: {{ s.accent }}; --world-x: {{ s.crop_x }}%; --world-y: {{ s.crop_y }}%; --world-mobile-x: {{ s.phone_crop_x }}%; --world-mobile-y: {{ s.phone_crop_y }}%;" aria-labelledby="WorldTitle-{{ section.id }}">
+  {% render 'rizo-art', section: section %}
+  <div class="wrap wrap--wide world-grid">
+    <div class="world-copy">
+      {%- if s.eyebrow != blank -%}<p class="v-label world-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+      {%- if s.page_heading -%}<h1 id="WorldTitle-{{ section.id }}" class="world-title{% if has_mark %} visually-hidden{% endif %}">{{ s.heading | escape }}</h1>
+      {%- else -%}<h2 id="WorldTitle-{{ section.id }}" class="world-title{% if has_mark %} visually-hidden{% endif %}">{{ s.heading | escape }}</h2>{%- endif -%}
+      {%- if has_mark -%}<div class="world-heading-art" aria-hidden="true">{% render 'rizo-image', image: s.heading_art, builtin: s.builtin_mark, alt: '', sizes: '(min-width: 750px) 300px, 180px', loading: load %}</div>{%- endif -%}
+      {%- if s.body != blank -%}<div class="world-body rte">{{ s.body }}</div>{%- endif -%}
+      {%- if s.link != blank and s.link_label != blank -%}<a class="link world-link" href="{{ s.link }}"><span>{{ s.link_label | escape }}</span>{% render 'icon', name: 'arrow' %}</a>{%- endif -%}
+    </div>
+    <figure class="world-primary world-crop--{{ s.crop }}">
+      {% render 'rizo-image', image: s.image, mobile_image: s.image_mobile, builtin: s.builtin_image, alt: s.image_alt, sizes: '(min-width: 750px) 52vw, 100vw', loading: load %}
+      {%- if s.caption != blank -%}<figcaption>{{ s.caption | escape }}</figcaption>{%- endif -%}
+    </figure>
+    {%- if s.secondary_image != blank or s.secondary_builtin != 'none' -%}
+      <figure class="world-secondary">
+        {% render 'rizo-image', image: s.secondary_image, mobile_image: s.secondary_mobile, builtin: s.secondary_builtin, alt: s.secondary_alt, sizes: '(min-width: 750px) 240px, 42vw' %}
+        {%- if s.secondary_caption != blank -%}<figcaption>{{ s.secondary_caption | escape }}</figcaption>{%- endif -%}
+      </figure>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Feature world",
+  "tag": "div",
+  "class": "section-feature-world",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "A Rizo world"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A place of our own."
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Enter"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Destination"
+    },
+    {
+      "type": "checkbox",
+      "id": "page_heading",
+      "label": "Use as page title (H1)",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "heading_art",
+      "label": "Heading artwork",
+      "info": "Optional. Heading remains available to screen readers."
+    },
+    {
+      "type": "select",
+      "id": "builtin_mark",
+      "label": "Included heading artwork",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "mark_412",
+          "label": "Original 412 drawing"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Primary photograph"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Primary photograph on phones"
+    },
+    {
+      "type": "select",
+      "id": "builtin_image",
+      "label": "Included primary photograph",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "underpass",
+          "label": "Underpass"
+        },
+        {
+          "value": "circle_night",
+          "label": "Friends at night"
+        },
+        {
+          "value": "stadium",
+          "label": "Stadium at night"
+        },
+        {
+          "value": "wpsd_portrait",
+          "label": "412, at the block party"
+        },
+        {
+          "value": "wpsd_hands",
+          "label": "Tie-dye, hands at work"
+        },
+        {
+          "value": "wpsd_table",
+          "label": "Around the tie-dye table"
+        },
+        {
+          "value": "wpsd_making",
+          "label": "Making a shirt"
+        },
+        {
+          "value": "wpsd_yellow",
+          "label": "Yellow Rizo, outside"
+        },
+        {
+          "value": "wpsd_together",
+          "label": "Together at the block party"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Primary image description"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Primary caption"
+    },
+    {
+      "type": "select",
+      "id": "crop",
+      "label": "Primary framing",
+      "options": [
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        },
+        {
+          "value": "natural",
+          "label": "Full photograph"
+        }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "crop_x",
+      "label": "Crop across",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "info": "Uploaded images use their own Shopify focal point."
+    },
+    {
+      "type": "range",
+      "id": "crop_y",
+      "label": "Crop down",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "info": "Uploaded images use their own Shopify focal point."
+    },
+    {
+      "type": "range",
+      "id": "phone_crop_x",
+      "label": "Phone crop across",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "info": "Uploaded images use their own Shopify focal point."
+    },
+    {
+      "type": "range",
+      "id": "phone_crop_y",
+      "label": "Phone crop down",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "info": "Uploaded images use their own Shopify focal point."
+    },
+    {
+      "type": "image_picker",
+      "id": "secondary_image",
+      "label": "Secondary photograph"
+    },
+    {
+      "type": "image_picker",
+      "id": "secondary_mobile",
+      "label": "Secondary on phones"
+    },
+    {
+      "type": "select",
+      "id": "secondary_builtin",
+      "label": "Included secondary photograph",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "underpass",
+          "label": "Underpass"
+        },
+        {
+          "value": "circle_night",
+          "label": "Friends at night"
+        },
+        {
+          "value": "stadium",
+          "label": "Stadium at night"
+        },
+        {
+          "value": "wpsd_portrait",
+          "label": "412, at the block party"
+        },
+        {
+          "value": "wpsd_hands",
+          "label": "Tie-dye, hands at work"
+        },
+        {
+          "value": "wpsd_table",
+          "label": "Around the tie-dye table"
+        },
+        {
+          "value": "wpsd_making",
+          "label": "Making a shirt"
+        },
+        {
+          "value": "wpsd_yellow",
+          "label": "Yellow Rizo, outside"
+        },
+        {
+          "value": "wpsd_together",
+          "label": "Together at the block party"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "secondary_alt",
+      "label": "Secondary description"
+    },
+    {
+      "type": "text",
+      "id": "secondary_caption",
+      "label": "Secondary caption"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Composition",
+      "options": [
+        {
+          "value": "left",
+          "label": "Words left"
+        },
+        {
+          "value": "right",
+          "label": "Words right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "phone_layout",
+      "label": "Phone composition",
+      "options": [
+        {
+          "value": "words-first",
+          "label": "Words first"
+        },
+        {
+          "value": "photo-first",
+          "label": "Photograph first"
+        }
+      ],
+      "default": "words-first"
+    },
+    {
+      "type": "select",
+      "id": "surface",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "raised",
+          "label": "Raised"
+        },
+        {
+          "value": "open",
+          "label": "Open sky"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Accent",
+      "default": "#edc34e"
+    },
+    {
+      "type": "select",
+      "id": "space",
+      "label": "Spacing",
+      "options": [
+        {
+          "value": "s",
+          "label": "Tight"
+        },
+        {
+          "value": "m",
+          "label": "Normal"
+        },
+        {
+          "value": "l",
+          "label": "Loose"
+        }
+      ],
+      "default": "m"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Visible on",
+      "options": [
+        {
+          "value": "all",
+          "label": "Everywhere"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "phone",
+          "label": "Phones"
+        }
+      ],
+      "default": "all"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "art",
+      "name": "Art",
+      "limit": 8,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Artwork", "info": "Transparent PNG or WebP works best. Later blocks sit on top of earlier ones." },
+        { "type": "image_picker", "id": "image_mobile", "label": "Phone version", "info": "Optional: a different crop, or a different piece, for phones." },
+        { "type": "select", "id": "builtin_art", "label": "Included artwork", "default": "none", "info": "Used when Artwork is empty. Uploads take priority. Included art needs no Files upload.", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "event-rizo-pumpkin-ember", "label": "Ember pumpkin" },
+          { "value": "event-rizo-pumpkin-coal", "label": "Coal pumpkin" },
+          { "value": "event-rizo-apparition", "label": "Linen apparition" },
+          { "value": "rizo-face-scrawl", "label": "Face scrawl" }
+        ] },
+        { "type": "header", "content": "Placement" },
+        { "type": "range", "id": "x", "label": "Across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80, "info": "Where the centre of the piece sits, as a share of the section." },
+        { "type": "range", "id": "y", "label": "Down", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 30, "info": "Below 0 or above 100 hangs over the edge of the section." },
+        { "type": "range", "id": "size", "label": "Size", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 22, "info": "Width, as a share of the section's width." },
+        { "type": "range", "id": "rotate", "label": "Turn", "min": -180, "max": 180, "step": 5, "unit": "°", "default": 0 },
+        { "type": "range", "id": "opacity", "label": "Opacity", "min": 5, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "select", "id": "layer", "label": "Layer", "default": "back", "options": [
+          { "value": "back", "label": "Behind the content" },
+          { "value": "front", "label": "In front of the content" },
+          { "value": "back-front", "label": "Behind on desktop, in front on phones" },
+          { "value": "front-back", "label": "In front on desktop, behind on phones" }
+        ] },
+        { "type": "select", "id": "blend", "label": "Blend", "default": "normal", "options": [
+          { "value": "normal", "label": "Normal" },
+          { "value": "screen", "label": "Screen (only lightens)" },
+          { "value": "multiply", "label": "Multiply (only darkens)" },
+          { "value": "overlay", "label": "Overlay" },
+          { "value": "soft-light", "label": "Soft light" },
+          { "value": "difference", "label": "Difference" },
+          { "value": "luminosity", "label": "Luminosity" }
+        ] },
+        { "type": "header", "content": "Phones" },
+        { "type": "select", "id": "show", "label": "Show on", "default": "all", "options": [
+          { "value": "all", "label": "Desktop and phones" },
+          { "value": "desktop", "label": "Desktop only" },
+          { "value": "phone", "label": "Phones only" }
+        ] },
+        { "type": "range", "id": "mobile_x", "label": "Across on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80 },
+        { "type": "range", "id": "mobile_y", "label": "Down on phones", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 20 },
+        { "type": "range", "id": "mobile_size", "label": "Size on phones", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 40 },
+        { "type": "header", "content": "Movement" },
+        { "type": "select", "id": "motion", "label": "Movement", "default": "none", "options": [
+          { "value": "none", "label": "Still" },
+          { "value": "float", "label": "Floats" },
+          { "value": "sway", "label": "Sways from its top edge" },
+          { "value": "depth", "label": "Depth: drifts as the page scrolls" },
+          { "value": "settle", "label": "Settles into place when it appears" },
+          { "value": "shy", "label": "Moves away from the pointer or finger" },
+          { "value": "wobble", "label": "Wobbles when touched" },
+          { "value": "spin", "label": "Spins when touched" }
+        ] },
+        { "type": "range", "id": "strength", "label": "How much", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 50 },
+        { "type": "select", "id": "when", "label": "When", "default": "always", "options": [
+          { "value": "always", "label": "Always" },
+          { "value": "event", "label": "Only while a seasonal event is on" },
+          { "value": "normal", "label": "Only when no event is on" }
+        ] },
+        { "type": "text", "id": "name", "label": "Name for custom CSS", "info": "Optional. Adds data-art=\"name\" to the piece." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature world"
+    }
+  ]
+}
+{% endschema %}

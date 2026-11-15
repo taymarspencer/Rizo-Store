@@ -1,0 +1,222 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "head": {
+      "type": "rizo-feature-world",
+      "settings": {
+        "eyebrow": "Home territory",
+        "heading": "412",
+        "builtin_mark": "mark_412",
+        "body": "<p>Pittsburgh, the way we see it.</p>",
+        "link_label": "Shop the pieces",
+        "link": "#Shop-pieces",
+        "builtin_image": "underpass",
+        "image_alt": "Two people wearing black Rizo 412 sets beneath a Pittsburgh overpass",
+        "caption": "Rizo, Pittsburgh.",
+        "crop": "natural",
+        "secondary_builtin": "none",
+        "secondary_alt": "A smiling person wearing a black Rizo 412 hoodie at the community block party",
+        "secondary_caption": "Out at the block party. 2026.",
+        "space": "s",
+        "surface": "solid",
+        "page_heading": true
+      }
+    },
+    "pieces": {
+      "type": "rizo-products",
+      "settings": {
+        "selected_products": [
+          "412-rizo-hoodie",
+          "gold-rizo-hoodie"
+        ],
+        "collection": "all",
+        "products_to_show": 4,
+        "layout": "grid",
+        "label": "The 412 edit",
+        "heading": "From here.",
+        "show_count": false,
+        "link_label": "All pieces",
+        "show_quick_add": true,
+        "surface": "solid",
+        "space": "s",
+        "use_selected_products": true,
+        "anchor": "pieces"
+      }
+    },
+    "city": {
+      "type": "rizo-story",
+      "settings": {
+        "builtin_image": "stadium",
+        "image_alt": "Two people wearing black and yellow Rizo 412 pieces near a Pittsburgh stadium at night",
+        "caption": "Pittsburgh, after dark.",
+        "label": "412 / Pittsburgh",
+        "heading": "Proud to come from here.",
+        "body": "<p>I grew up not liking Pittsburgh. I wasn’t proud to be from here. Now, at 26, I’m proud to come from Pittsburgh, proud to represent the black and gold, and proud to try to be a spark for my city.</p><p>Anyone who knows what those numbers mean can make it their own.</p>",
+        "link_label": "",
+        "flip": false,
+        "show_pocket": false,
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "daylight": {
+      "type": "rizo-gallery",
+      "settings": {
+        "heading": "The kids had fun. That was enough.",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "label": "Pittsburgh / In the daylight",
+        "text": "<p>Same city. More color.</p><p>At the Western Pennsylvania School for the Deaf Community Block Party, the table was chaos in the best way. Kids, parents, dye everywhere, everybody helping somebody.</p>",
+        "link_label": "RIZO, OUTSIDE.",
+        "link": "/pages/outside"
+      },
+      "blocks": {
+        "portrait": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "wpsd_portrait",
+            "alt": "A person smiling in a black Rizo 412 hoodie at the block party",
+            "caption": "WPSD Community Block Party",
+            "caption_right": "2026"
+          }
+        },
+        "yellow": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "wpsd_yellow",
+            "alt": "A person holding up a yellow Rizo shirt at the block party",
+            "caption": "",
+            "caption_right": ""
+          }
+        }
+      },
+      "block_order": [
+        "portrait",
+        "yellow"
+      ]
+    },
+    "signup": {
+      "type": "rizo-signup",
+      "settings": {
+        "heading": "We still outside.",
+        "text": "New pieces, pop-ups and whatever comes next in Pittsburgh.",
+        "button": "Sign up",
+        "surface": "raised",
+        "space": "s",
+        "fog": 0
+      }
+    },
+    "street": {
+      "type": "rizo-gallery",
+      "settings": {
+        "heading": "We went outside anyway.",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "label": "Out selling / Pittsburgh",
+        "text": "<p>Walking the streets trying to sell Rizo is scary, intimidating and sometimes embarrassing. Steelers games. Pop-ups. Cold days. Rainy days. Rejection. We still showed up.</p>"
+      },
+      "blocks": {
+        "handoff": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "412_handoff",
+            "alt": "Two people looking over a yellow Rizo hoodie beneath a yellow-painted Pittsburgh structure",
+            "caption": "A closer look.",
+            "caption_right": ""
+          }
+        },
+        "people": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "412_people",
+            "alt": "Three people taking a selfie while one wears a black and yellow Rizo 412 shirt",
+            "caption": "Out here together.",
+            "caption_right": ""
+          }
+        }
+      },
+      "block_order": [
+        "handoff",
+        "people"
+      ]
+    },
+    "why": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "body",
+        "label": "Why 412",
+        "heading": "I thought 412 was corny.",
+        "body": "<p>I thought the dads would love it. I wanted to take something everybody already knew and make it cool. Artistic, symbolic, unmistakably Pittsburgh.</p><p>Then people started reacting to it differently than I expected. They got excited. They complimented it. They wore it. By the second year, 412 had grown on me too.</p><p><strong>I never changed it. I just started seeing what everybody else saw in it.</strong></p>",
+        "align": "offset",
+        "surface": "raised",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "night": {
+      "type": "rizo-gallery",
+      "settings": {
+        "label": "412 / After dark",
+        "heading": "",
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "open_photos": true
+      },
+      "blocks": {
+        "night-walk": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-412-night-walk-5034.webp",
+            "builtin_image": "none",
+            "alt": "A person walking down a street at night wearing a black hoodie with yellow 412, XXX and Rizo lettering on the back",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "red-couch": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-412-red-couch-5010.webp",
+            "builtin_image": "none",
+            "alt": "Knoah wearing a black and yellow Rizo 412 hoodie and sweats while seated on a red leather couch",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true,
+            "person": "Knoah",
+            "piece": "412"
+          }
+        }
+      },
+      "block_order": [
+        "red-couch",
+        "night-walk"
+      ]
+    }
+  },
+  "order": [
+    "head",
+    "why",
+    "pieces",
+    "night",
+    "city",
+    "street",
+    "daylight",
+    "signup"
+  ]
+}

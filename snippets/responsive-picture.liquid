@@ -1,6 +1,0 @@
-{% if image != blank %}
-  <picture>
-    {% if mobile_image != blank %}<source media="(max-width: 749px)" srcset="{{ mobile_image | image_url: width: 900 }}">{% endif %}
-    {{ image | image_url: width: 2200 | image_tag: loading: loading | default: 'lazy', fetchpriority: fetchpriority | default: 'auto', widths: '480,720,960,1200,1600,2200', sizes: sizes | default: '100vw', alt: alt | default: image.alt }}
-  </picture>
-{% endif %}

@@ -1,66 +1,211 @@
 <!doctype html>
-<html class="no-js" lang="{{ request.locale.iso_code }}" data-motion="{{ settings.motion_level }}">
+{%- liquid
+  assign route = template.name
+  if template.suffix != blank
+    assign route = template.name | append: '.' | append: template.suffix
+  endif
+
+  comment
+    A stable per-page number (0-6). Routes use it to vary the sky a little
+    so pages feel related without looking copied.
+  endcomment
+  assign page_seed = 0
+  assign rizo_brand = 'general.brand_name' | t
+  assign rizo_page_title = page_title | replace: 'Rizo Apperal', rizo_brand | strip
+  case template.name
+    when 'page'
+      assign page_seed = page.id | modulo: 7
+    when 'product'
+      assign page_seed = product.id | modulo: 7
+    when 'collection'
+      assign page_seed = collection.id | modulo: 7
+    when 'article', 'blog'
+      assign page_seed = blog.id | modulo: 7
+  endcase
+-%}
+<html class="no-js" lang="{{ request.locale.iso_code }}" data-motion="{{ settings.motion_level | default: 'balanced' }}">
   <head>
+  {% include 'shop-sheriff-amp' %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="{{ settings.color_ink }}">
-    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#07090c">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no">
     <link rel="canonical" href="{{ canonical_url }}">
 
     {% if settings.favicon != blank %}
-      <link rel="icon" href="{{ settings.favicon | image_url: width: 64, height: 64 }}" type="image/png">
+      <link rel="icon" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="icon" sizes="64x64" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
     {% else %}
-      <link rel="icon" href="{{ 'favicon.png' | asset_url }}" type="image/png">
+      <link rel="icon" href="{{ 'favicon.ico' | asset_url }}" sizes="16x16 32x32 48x48">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32.png' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="64x64" href="{{ 'favicon.png' | asset_url }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png' | asset_url }}">
     {% endif %}
-    <link rel="apple-touch-icon" href="{{ 'apple-touch-icon.png' | asset_url }}">
+    <meta name="apple-mobile-web-app-title" content="{{ rizo_brand | escape }}">
 
-    <title>
-      {{ page_title }}
-      {%- if current_tags %} · {{ current_tags | join: ', ' }}{% endif -%}
-      {%- if current_page != 1 %} · Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} · {{ shop.name }}{% endunless -%}
-    </title>
-    {% if page_description != blank %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+    {%- capture rizo_title -%}
+      {%- if template.name == 'index' -%}
+        {{ 'general.share_title' | t }}
+      {%- else -%}
+        {{ rizo_page_title }}
+        {%- if current_tags %} · {{ current_tags | join: ', ' }}{% endif -%}
+        {%- if current_page > 1 %} · Page {{ current_page }}{% endif -%}
+        {%- unless rizo_page_title contains rizo_brand %} · {{ rizo_brand }}{% endunless -%}
+      {%- endif -%}
+    {%- endcapture -%}
+    <title>{{ rizo_title | strip | strip_newlines | escape_once }}</title>
+    {%- liquid
+      assign rizo_meta_description = page_description
+      if template.name == 'index'
+        assign rizo_meta_description = 'general.share_description' | t
+      elsif rizo_meta_description == blank
+        case route
+          when 'page.about'
+            assign rizo_meta_description = 'Rizo is a statement. The story of Taymar Spencer, the first Rizo flame face, and the people who changed what the brand became.'
+          when 'page.412'
+            assign rizo_meta_description = '412 is Rizo’s Pittsburgh: black and gold pieces, real city moments, pop-ups, community events, and the story behind the numbers.'
+          when 'page.outside'
+            assign rizo_meta_description = 'RIZO, OUTSIDE. The photographs, people, tie-dye tables and everyday moments that make it real.'
+          when 'page.circle'
+            assign rizo_meta_description = 'The people who showed up. Friends at the table, out selling and wearing Rizo into the world.'
+          when 'page.world'
+            assign rizo_meta_description = 'Inside Rizo’s world: the first drawing, original artwork, 412 and things to take with you.'
+          when 'page.contact'
+            assign rizo_meta_description = 'Orders, sizing, working together, or something you need to say. Get in touch with Rizo Apparel.'
+          when 'product'
+            assign rizo_meta_description = product.description | strip_html | strip | truncate: 160
+          when 'collection'
+            assign rizo_meta_description = collection.description | strip_html | strip | truncate: 160
+          when 'page'
+            assign rizo_meta_description = page.content | strip_html | strip | truncate: 160
+          when 'article'
+            assign rizo_meta_description = article.excerpt_or_content | strip_html | strip | truncate: 160
+        endcase
+      endif
+      if rizo_meta_description == blank
+        assign rizo_meta_description = 'general.share_description' | t
+      endif
+      assign rizo_share_object = settings.social_image
+      case template.name
+        when 'product'
+          assign rizo_share_object = product.featured_image | default: rizo_share_object
+          if product.id == 8164322508878 and settings.skeleton_social_image != blank
+            assign rizo_share_object = settings.skeleton_social_image
+          endif
+        when 'collection'
+          assign rizo_share_object = collection.image | default: collection.products.first.featured_image | default: rizo_share_object
+        when 'article'
+          assign rizo_share_object = article.image | default: rizo_share_object
+      endcase
+      assign rizo_share_alt = 'general.share_image_alt' | t
+      assign rizo_share_width = 1200
+      assign rizo_share_height = 630
+      if rizo_share_object != blank
+        assign rizo_share_image = rizo_share_object | image_url: width: 1200
+        assign rizo_share_width = rizo_share_object.width | at_most: 1200
+        assign rizo_share_height = rizo_share_width | divided_by: rizo_share_object.aspect_ratio | round
+        assign rizo_share_alt = rizo_share_object.alt | default: rizo_page_title
+      else
+        assign rizo_share_image = 'rizo-share.jpg' | asset_url
+      endif
+      assign image_prefix = rizo_share_image | slice: 0, 2
+      if image_prefix == '//'
+        assign rizo_share_image = rizo_share_image | prepend: 'https:'
+      else
+        assign image_prefix = rizo_share_image | slice: 0, 1
+        if image_prefix == '/'
+          assign rizo_share_image = shop.url | append: rizo_share_image
+        endif
+      endif
+    -%}
+    <meta name="description" content="{{ rizo_meta_description | strip_newlines | escape_once }}">
+    <meta property="og:site_name" content="{{ rizo_brand | escape }}">
+    <meta property="og:title" content="{{ rizo_title | strip | strip_newlines | escape_once }}">
+    <meta property="og:url" content="{{ canonical_url | escape }}">
+    <meta property="og:type" content="{% if template.name == 'product' %}product{% elsif template.name == 'article' %}article{% else %}website{% endif %}">
+    <meta property="og:description" content="{{ rizo_meta_description | strip_newlines | escape_once }}">
+    <meta property="og:image" content="{{ rizo_share_image | escape }}">
+    <meta property="og:image:secure_url" content="{{ rizo_share_image | escape }}">
+    <meta property="og:image:width" content="{{ rizo_share_width }}">
+    <meta property="og:image:height" content="{{ rizo_share_height }}">
+    <meta property="og:image:alt" content="{{ rizo_share_alt | escape_once }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ rizo_title | strip | strip_newlines | escape_once }}">
+    <meta name="twitter:description" content="{{ rizo_meta_description | strip_newlines | escape_once }}">
+    <meta name="twitter:image" content="{{ rizo_share_image | escape }}">
+    <meta name="twitter:image:alt" content="{{ rizo_share_alt | escape_once }}">
 
     {{ content_for_header }}
 
+    {{ 'rizo-grotesque.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    {{ 'rizo-display.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
     <style>
+      @font-face { font-family: 'Rizo Grotesque'; src: url('{{ 'rizo-grotesque.woff2' | asset_url }}') format('woff2'); font-weight: 200 800; font-stretch: 75% 100%; font-display: swap; }
+      @font-face { font-family: 'Rizo Display'; src: url('{{ 'rizo-display.woff2' | asset_url }}') format('woff2'); font-weight: 400; font-display: swap; }
       :root {
-        --ink: {{ settings.color_ink }};
-        --paper: {{ settings.color_paper }};
-        --accent: {{ settings.color_accent }};
-        --heat: {{ settings.color_accent_2 }};
-        --muted: {{ settings.color_muted }};
-        --radius: {{ settings.radius }}px;
-        --page-width: {{ settings.page_width }}px;
+        --night: {{ settings.color_ink }};
+        --bone: {{ settings.color_paper }};
+        --blue: {{ settings.color_accent }};
+        --blue-2: {{ settings.color_accent_2 }};
+        --radius: {{ settings.radius | at_most: 12 }}px;
+        --page: {{ settings.page_width }}px;
       }
     </style>
-    <meta name="format-detection" content="telephone=no">
-    {{ 'rizo-theme.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'rizo.css' | asset_url | stylesheet_tag: preload: true }}
+    <script>
+      document.documentElement.classList.replace('no-js', 'js');
+      /* Weak device or Save-Data: the event layer starts at its lite tier and
+         art layers skip scroll/pointer-driven movement. One definition. */
+      (function (nav, root) {
+        var connection = nav.connection || nav.mozConnection || nav.webkitConnection;
+        if ((connection && connection.saveData) || (nav.deviceMemory && nav.deviceMemory <= 2) || (nav.hardwareConcurrency && nav.hardwareConcurrency <= 2)) root.setAttribute('data-low-power', 'true');
+      })(navigator, document.documentElement);
+      /* One requestAnimationFrame per frame for the whole theme: the event
+         layer, art layers and the header all queue here. Callbacks are
+         isolated, so one failing never stops the others. */
+      (function (win) {
+        var queue = [], frame = 0;
+        function flush(now) {
+          var list = queue; queue = []; frame = 0;
+          for (var i = 0; i < list.length; i += 1) {
+            if (!list[i].fn) continue;
+            try { list[i].fn(now); } catch (error) { win.setTimeout(function () { throw error; }); }
+          }
+        }
+        win.RizoFrame = {
+          request: function (fn) { var entry = { fn: fn }; queue.push(entry); if (!frame) frame = win.requestAnimationFrame(flush); return entry; },
+          cancel: function (entry) { if (entry) entry.fn = null; }
+        };
+      })(window);
+    </script>
     {% render 'rizo-event-head' %}
-    <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
-    <script src="{{ 'rizo-theme.js' | asset_url }}" defer></script>
+    <script src="{{ 'rizo.js' | asset_url }}" defer></script>
+    <script src="{{ 'rizo-art.js' | asset_url }}" defer></script>
   </head>
 
-  <body class="template-{{ template.name | handle }}{% if template.suffix != blank %} template-{{ template.name | handle }}--{{ template.suffix | handle }}{% endif %}{% if customer %} customer-logged-in{% endif %}" data-world-state="{{ settings.world_state | default: 'quiet' }}" data-texture="{{ settings.texture_level | default: 'balanced' }}" data-heritage="{% if settings.heritage_mode %}on{% else %}off{% endif %}" style="--header-stack-height:{% if settings.heritage_mode %}150px{% else %}78px{% endif %}">
+  <body class="route-{{ template.name | handle }}{% if template.suffix != blank %} route-{{ template.name | handle }}--{{ template.suffix | handle }}{% endif %}" data-route="{{ route }}" style="--seed: {{ page_seed }}">
     <a class="skip-link" href="#MainContent">Skip to content</a>
-    {% render 'rizo-event-stage' %}
+    {% render 'rizo-sky' %}
 
     {% sections 'header-group' %}
 
-    <main id="MainContent" tabindex="-1">
+    <main id="MainContent" class="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
     {% sections 'footer-group' %}
 
+    {% render 'rizo-event-stage', layer: 'front' %}
     {% render 'cart-drawer' %}
     {% render 'search-dialog' %}
     {% render 'quick-add-dialog' %}
-    {% render 'install-guide' %}
-    <div class="rizo-toast" id="RizoToast" role="status" aria-live="polite" aria-atomic="true"></div>
-    <div class="rizo-live-region visually-hidden" data-rizo-live-region aria-live="polite" aria-atomic="true"></div>
+    {% render 'rizo-photo-viewer' %}
+    <div class="toast" id="RizoToast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div class="visually-hidden" data-rizo-live-region aria-live="polite" aria-atomic="true"></div>
     <div class="visually-hidden" data-cart-count-live aria-live="polite" aria-atomic="true"></div>
     <div class="visually-hidden" data-rizo-alert-region role="alert" aria-live="assertive" aria-atomic="true"></div>
   </body>
 </html>
+

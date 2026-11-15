@@ -1,0 +1,33 @@
+<section class="s" data-surface="{{ section.settings.surface }}" data-space="{{ section.settings.space }}" data-fog="0">
+  <div class="faq">
+    {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading | escape }}</h2>{%- endif -%}
+    <div class="details-list">
+      {%- for block in section.blocks -%}
+        <details class="detail" {{ block.shopify_attributes }}>
+          <summary>{{ block.settings.question | escape }}<i aria-hidden="true"></i></summary>
+          <div class="rte">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Questions",
+  "tag": "div",
+  "class": "section-faq",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "select", "id": "surface", "label": "Surface", "default": "solid", "options": [{ "value": "solid", "label": "Solid" }, { "value": "raised", "label": "Raised" }, { "value": "open", "label": "Open sky" }] },
+    { "type": "select", "id": "space", "label": "Space", "default": "m", "options": [{ "value": "s", "label": "Tight" }, { "value": "m", "label": "Normal" }, { "value": "l", "label": "Loose" }] }
+  ],
+  "blocks": [
+    { "type": "question", "name": "Question", "settings": [
+      { "type": "text", "id": "question", "label": "Question", "default": "How long does shipping take?" },
+      { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Most orders ship from Pittsburgh within a few business days.</p>" }
+    ] }
+  ],
+  "presets": [{ "name": "Questions", "blocks": [{ "type": "question" }] }]
+}
+{% endschema %}

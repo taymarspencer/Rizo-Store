@@ -1,0 +1,16 @@
+{%- comment -%}
+  Moves the moon for this page when a section asks to place it by hand
+  (Hero and Page title: "Moon on this page"). It overrides the route's
+  position from assets/rizo.css §6, separately on phones, and also moves
+  the Rizo mark that stands in for the moon when no event is on.
+
+    {% render 'rizo-moon-place', s: section.settings %}
+{%- endcomment -%}
+{%- if s.moon_custom -%}
+  {%- style -%}
+    body[data-route][data-route] { --moon-x: {{ s.moon_x }}%; --moon-y: {{ s.moon_y }}%; --moon-size: min({{ s.moon_size }}vw, {{ s.moon_size | times: 15.6 | round }}px); }
+    @media (max-width: 749px) {
+      body[data-route][data-route] { --moon-x: {{ s.moon_mobile_x }}%; --moon-y: {{ s.moon_mobile_y }}%; --moon-size: {{ s.moon_mobile_size }}vw; }
+    }
+  {%- endstyle -%}
+{%- endif -%}

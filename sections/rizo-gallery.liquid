@@ -1,0 +1,395 @@
+{{ 'rizo-worlds.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Real photographs, laid out with unequal weight. "Spread" places them on
+  a 12-column grid in a fixed, considered rhythm (no random offsets).
+{%- endcomment -%}
+<section class="s" data-surface="{{ section.settings.surface }}" data-space="{{ section.settings.space }}" data-fog="{{ section.settings.fog | divided_by: 100.0 }}" id="{{ section.settings.anchor | default: section.id | handle }}">
+  {% render 'rizo-art', section: section %}
+  <div class="wrap wrap--wide">
+    {%- if section.settings.heading != blank or section.settings.text != blank or section.settings.label != blank -%}
+      <div class="gallery-head">
+        <div>
+          {%- if section.settings.label != blank -%}<p class="v-label muted">{{ section.settings.label | escape }}</p>{%- endif -%}
+          {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading | escape }}</h2>{%- endif -%}
+        </div>
+        {%- if section.settings.text != blank -%}<div class="rte">{{ section.settings.text }}</div>{%- endif -%}
+      </div>
+    {%- endif -%}
+    <div class="gallery gallery--{{ section.settings.layout }}">
+      {%- assign photos = section.blocks | where: 'type', 'photo' -%}
+      {%- for block in photos -%}
+        <figure class="gallery-item{% if block.settings.full_frame %} gallery-item--full{% endif %}" {{ block.shopify_attributes }}>
+          {% render 'rizo-image', image: block.settings.image, mobile_image: block.settings.image_mobile, builtin: block.settings.builtin_image, sizes: '(min-width: 750px) 60vw, 100vw', alt: block.settings.alt, enlarge: section.settings.open_photos %}
+          {%- if block.settings.caption != blank or block.settings.caption_right != blank -%}
+            <figcaption class="gallery-cap"><span>{{ block.settings.caption | escape }}</span><span>{{ block.settings.caption_right | escape }}</span></figcaption>
+          {%- endif -%}
+          {%- if block.settings.person != blank or block.settings.place != blank or block.settings.year != blank or block.settings.piece != blank or block.settings.credit != blank -%}
+            <div class="archive-meta">
+              {%- if block.settings.person != blank -%}<strong>{{ block.settings.person | escape }}</strong>{%- endif -%}
+              {%- if block.settings.place != blank -%}<span>{{ block.settings.place | escape }}</span>{%- endif -%}
+              {%- if block.settings.piece != blank or block.settings.year != blank -%}<span>{{ block.settings.piece | escape }}{% if block.settings.piece != blank and block.settings.year != blank %} · {% endif %}{{ block.settings.year | escape }}</span>{%- endif -%}
+              {%- if block.settings.credit != blank -%}{% if block.settings.credit_link != blank %}<a href="{{ block.settings.credit_link }}">{{ block.settings.credit | escape }}</a>{% else %}<span>{{ block.settings.credit | escape }}</span>{% endif %}{%- endif -%}
+            </div>
+          {%- endif -%}
+        </figure>
+      {%- endfor -%}
+    </div>
+    {%- if section.settings.link_label != blank -%}
+      <div class="gallery-foot"><a class="link" href="{{ section.settings.link | default: '/pages/circle' }}"><span>{{ section.settings.link_label | escape }}</span>{% render 'icon', name: 'arrow' %}</a></div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Photographs",
+  "tag": "div",
+  "class": "section-gallery",
+  "settings": [
+    { "type": "checkbox", "id": "open_photos", "label": "Let people open photographs", "default": true },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Small label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "spread",
+      "options": [
+        {
+          "value": "spread",
+          "label": "Spread (unequal)"
+        },
+        {
+          "value": "strip",
+          "label": "Strip (equal)"
+        },
+        {
+          "value": "archive",
+          "label": "Archive (full photographs)"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link destination"
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Anchor",
+      "info": "Lets other links jump here, e.g. circle for /#circle."
+    },
+    {
+      "type": "select",
+      "id": "surface",
+      "label": "Surface",
+      "default": "solid",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "raised",
+          "label": "Raised"
+        },
+        {
+          "value": "open",
+          "label": "Open sky"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "space",
+      "label": "Space",
+      "default": "l",
+      "options": [
+        {
+          "value": "s",
+          "label": "Tight"
+        },
+        {
+          "value": "m",
+          "label": "Normal"
+        },
+        {
+          "value": "l",
+          "label": "Loose"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "fog",
+      "label": "Fog",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Photo on phones",
+          "info": "Optional: a different crop or photo under 750px wide."
+        },
+        {
+          "type": "select",
+          "id": "builtin_image",
+          "label": "Photo when none is uploaded",
+          "default": "underpass",
+          "options": [
+            {
+              "value": "underpass",
+              "label": "Underpass"
+            },
+            {
+              "value": "circle_night",
+              "label": "Friends at night"
+            },
+            {
+              "value": "stadium",
+              "label": "Stadium at night"
+            },
+            {
+              "value": "circle_gym",
+              "label": "Gym"
+            },
+            {
+              "value": "circle_pink",
+              "label": "Pink hoodie"
+            },
+            {
+              "value": "table",
+              "label": "Event table"
+            },
+            {
+              "value": "making",
+              "label": "Making"
+            },
+            {
+              "value": "founder",
+              "label": "Taymar, full fit"
+            },
+            {
+              "value": "founder_mural",
+              "label": "Taymar at the mural"
+            },
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "wpsd_portrait",
+              "label": "412, at the block party"
+            },
+            {
+              "value": "wpsd_hands",
+              "label": "Tie-dye, hands at work"
+            },
+            {
+              "value": "wpsd_table",
+              "label": "Around the tie-dye table"
+            },
+            {
+              "value": "wpsd_making",
+              "label": "Making a shirt"
+            },
+            {
+              "value": "wpsd_yellow",
+              "label": "Yellow Rizo, outside"
+            },
+            {
+              "value": "wpsd_together",
+              "label": "Together at the block party"
+            },
+            {
+              "value": "412_handoff",
+              "label": "412 hoodie handoff"
+            },
+            {
+              "value": "412_people",
+              "label": "412, with people"
+            },
+            {
+              "value": "popup_table",
+              "label": "Rizo pop-up table"
+            },
+            {
+              "value": "outside_777_green",
+              "label": "777 green hoodie, worn"
+            },
+            {
+              "value": "outside_black_tee",
+              "label": "Black Rizo tee, worn"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "text",
+          "id": "caption_right",
+          "label": "Caption, right side"
+        },
+        {
+          "type": "checkbox",
+          "id": "full_frame",
+          "label": "Keep the entire photograph",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "person",
+          "label": "Name"
+        },
+        {
+          "type": "text",
+          "id": "place",
+          "label": "Place"
+        },
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year"
+        },
+        {
+          "type": "text",
+          "id": "piece",
+          "label": "Piece"
+        },
+        {
+          "type": "text",
+          "id": "credit",
+          "label": "Credit or handle"
+        },
+        {
+          "type": "url",
+          "id": "credit_link",
+          "label": "Credit link"
+        }
+      ]
+    },
+    {
+      "type": "art",
+      "name": "Art",
+      "limit": 8,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Artwork", "info": "Transparent PNG or WebP works best. Later blocks sit on top of earlier ones." },
+        { "type": "image_picker", "id": "image_mobile", "label": "Phone version", "info": "Optional: a different crop, or a different piece, for phones." },
+        { "type": "select", "id": "builtin_art", "label": "Included artwork", "default": "none", "info": "Used when Artwork is empty. Uploads take priority. Included art needs no Files upload.", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "event-rizo-pumpkin-ember", "label": "Ember pumpkin" },
+          { "value": "event-rizo-pumpkin-coal", "label": "Coal pumpkin" },
+          { "value": "event-rizo-apparition", "label": "Linen apparition" },
+          { "value": "rizo-face-scrawl", "label": "Face scrawl" }
+        ] },
+        { "type": "header", "content": "Placement" },
+        { "type": "range", "id": "x", "label": "Across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80, "info": "Where the centre of the piece sits, as a share of the section." },
+        { "type": "range", "id": "y", "label": "Down", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 30, "info": "Below 0 or above 100 hangs over the edge of the section." },
+        { "type": "range", "id": "size", "label": "Size", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 22, "info": "Width, as a share of the section's width." },
+        { "type": "range", "id": "rotate", "label": "Turn", "min": -180, "max": 180, "step": 5, "unit": "°", "default": 0 },
+        { "type": "range", "id": "opacity", "label": "Opacity", "min": 5, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "select", "id": "layer", "label": "Layer", "default": "back", "options": [
+          { "value": "back", "label": "Behind the content" },
+          { "value": "front", "label": "In front of the content" },
+          { "value": "back-front", "label": "Behind on desktop, in front on phones" },
+          { "value": "front-back", "label": "In front on desktop, behind on phones" }
+        ] },
+        { "type": "select", "id": "blend", "label": "Blend", "default": "normal", "options": [
+          { "value": "normal", "label": "Normal" },
+          { "value": "screen", "label": "Screen (only lightens)" },
+          { "value": "multiply", "label": "Multiply (only darkens)" },
+          { "value": "overlay", "label": "Overlay" },
+          { "value": "soft-light", "label": "Soft light" },
+          { "value": "difference", "label": "Difference" },
+          { "value": "luminosity", "label": "Luminosity" }
+        ] },
+        { "type": "header", "content": "Phones" },
+        { "type": "select", "id": "show", "label": "Show on", "default": "all", "options": [
+          { "value": "all", "label": "Desktop and phones" },
+          { "value": "desktop", "label": "Desktop only" },
+          { "value": "phone", "label": "Phones only" }
+        ] },
+        { "type": "range", "id": "mobile_x", "label": "Across on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80 },
+        { "type": "range", "id": "mobile_y", "label": "Down on phones", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 20 },
+        { "type": "range", "id": "mobile_size", "label": "Size on phones", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 40 },
+        { "type": "header", "content": "Movement" },
+        { "type": "select", "id": "motion", "label": "Movement", "default": "none", "options": [
+          { "value": "none", "label": "Still" },
+          { "value": "float", "label": "Floats" },
+          { "value": "sway", "label": "Sways from its top edge" },
+          { "value": "depth", "label": "Depth: drifts as the page scrolls" },
+          { "value": "settle", "label": "Settles into place when it appears" },
+          { "value": "shy", "label": "Moves away from the pointer or finger" },
+          { "value": "wobble", "label": "Wobbles when touched" },
+          { "value": "spin", "label": "Spins when touched" }
+        ] },
+        { "type": "range", "id": "strength", "label": "How much", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 50 },
+        { "type": "select", "id": "when", "label": "When", "default": "always", "options": [
+          { "value": "always", "label": "Always" },
+          { "value": "event", "label": "Only while a seasonal event is on" },
+          { "value": "normal", "label": "Only when no event is on" }
+        ] },
+        { "type": "text", "id": "name", "label": "Name for custom CSS", "info": "Optional. Adds data-art=\"name\" to the piece." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Photographs",
+      "blocks": [
+        {
+          "type": "photo"
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_night"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

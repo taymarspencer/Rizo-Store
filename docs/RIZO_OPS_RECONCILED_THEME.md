@@ -1,0 +1,7 @@
+# RIZO OPS development theme snapshot
+
+This branch records the complete 146-file export from Shopify's unpublished theme 156093349966. The source preserves the Skeleton and Pittsburgh/412 changes present on published theme 155243118670. The two Shopify manifests share 141 file checksums. The remaining five files are the OPS integration changes in `assets/rizo.css`, `sections/rizo-header.liquid`, `sections/rizo-hero.liquid`, `sections/rizo-products.liquid` and `snippets/product-card.liquid`. Shopify's API formats some generated JSON during export. The snapshot contains those returned JSON bodies.
+
+PR #5 records the original integration contract against the earlier repo baseline. The large diff on this branch reflects the newer Shopify theme export. Use this snapshot as the source for an unpublished theme on `rizo-ops-staging.myshopify.com`. The development store will need its own seven `rizo_ops` shop metafield definitions and development-store product or collection references. Check the master flag off and on, copy, featured products, missing references, mobile layout and Pittsburgh/412 isolation in the native Shopify preview.
+
+Native development preview is pending. The Shopify Admin ZIP modal opened, but its embedded file chooser was unavailable to the browser automation. The approved theme CLI workflow can upload this branch as an unpublished theme after signing in to the development store.

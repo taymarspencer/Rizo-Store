@@ -1,29 +1,41 @@
 {%- comment -%}
-  RIZO EVENT LAYER — page-level stage. Rendered once, right after <body>.
+  RIZO EVENT LAYER — stage layers. Rendered twice from layout/theme.liquid:
 
-  Fixed, decorative, pointer-events: none layers that are not tied to a section:
-    .rizo-event-backdrop   night gradient painted *behind* page content
-    .rizo-event-page-fog   low fog band at the bottom of the viewport
-    .rizo-event-flock      container the flock runtime fills with a bounded pool
+    layer: 'back'   inside the fixed sky, behind every section:
+                    moon, far fog, bats that fly behind the page
+    layer: 'front'  fixed above the sections, below header and drawers:
+                    near fog, bats that cross in front of the page
 
-  Hidden by CSS unless html.rizo-event is active. Renders nothing when the
+  Everything is decorative: aria-hidden, pointer-events: none, never
+  focusable. Hidden by CSS until html.rizo-event. Renders nothing when the
   Event layer is Off.
 {%- endcomment -%}
 {%- if settings.event_layer != blank and settings.event_layer != 'off' -%}
-  {%- capture ev_night -%}{% render 'rizo-event-value', key: 'feature', feature: 'night' %}{%- endcapture -%}
-  {%- capture ev_page_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'page_fog' %}{%- endcapture -%}
+  {%- capture ev_moon -%}{% render 'rizo-event-value', key: 'feature', feature: 'moon' %}{%- endcapture -%}
+  {%- capture ev_fog -%}{% render 'rizo-event-value', key: 'feature', feature: 'fog' %}{%- endcapture -%}
   {%- capture ev_flock -%}{% render 'rizo-event-value', key: 'feature', feature: 'flock' %}{%- endcapture -%}
-  {%- capture ev_page_fog_layers -%}{% render 'rizo-event-value', key: 'page_fog_layers' %}{%- endcapture -%}
-  {%- assign ev_page_fog_layers = ev_page_fog_layers | strip | default: 1 | plus: 0 | at_most: 3 -%}
-  <div class="rizo-event-stage" data-rizo-event-stage aria-hidden="true">
-    {%- if ev_night == 'true' -%}<div class="rizo-event-backdrop"></div>{%- endif -%}
-    {%- if ev_page_fog == 'true' and ev_page_fog_layers > 0 -%}
-      <div class="rizo-event-page-fog" data-rizo-event-page-fog>
-        {%- for i in (1..ev_page_fog_layers) -%}
-          <div class="rizo-event-fog rizo-event-fog--page rizo-event-fog--l{{ i }}"><div class="rizo-event-fog-strip"></div></div>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
-    {%- if ev_flock == 'true' -%}<div class="rizo-event-flock" data-rizo-event-flock></div>{%- endif -%}
-  </div>
+  {%- if layer == 'back' -%}
+    <div class="rizo-event-stage rizo-event-stage--back" data-rizo-event-stage="back" aria-hidden="true">
+      {%- if ev_moon == 'true' -%}
+        {%- capture ev_moon_src -%}{% render 'rizo-event-value', key: 'moon_src' %}{%- endcapture -%}
+        {%- assign ev_moon_src = ev_moon_src | strip -%}
+        {%- if ev_moon_src != blank -%}
+          <div class="rizo-event-moon" data-rizo-event-moon{% unless settings.event_moon_motion %} data-static{% endunless %} data-phase="{{ settings.event_moon_phase | default: 'real' }}">
+            <span class="rizo-event-moon-halo"></span>
+            <div class="rizo-event-moon-body">
+              <img class="rizo-event-moon-art" src="{{ ev_moon_src }}" width="1000" height="1000" alt="" loading="eager" decoding="async" fetchpriority="low" draggable="false">
+              <img class="rizo-event-moon-art rizo-event-moon-art--low" src="{{ ev_moon_src }}" width="1000" height="1000" alt="" loading="lazy" decoding="async" draggable="false">
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+      {%- if ev_fog == 'true' -%}<div class="rizo-event-fog rizo-event-fog--back" data-rizo-event-fog="back"></div>{%- endif -%}
+      {%- if ev_flock == 'true' -%}<div class="rizo-event-flock rizo-event-flock--back" data-rizo-event-flock="back"></div>{%- endif -%}
+    </div>
+  {%- else -%}
+    <div class="rizo-event-stage rizo-event-stage--front" data-rizo-event-stage="front" aria-hidden="true">
+      {%- if ev_fog == 'true' -%}<div class="rizo-event-fog rizo-event-fog--front" data-rizo-event-fog="front"></div>{%- endif -%}
+      {%- if ev_flock == 'true' -%}<div class="rizo-event-flock rizo-event-flock--front" data-rizo-event-flock="front"></div>{%- endif -%}
+    </div>
+  {%- endif -%}
 {%- endif -%}
