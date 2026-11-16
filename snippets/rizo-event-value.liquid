@@ -8,7 +8,7 @@
     {%- capture moon_on -%}{% render 'rizo-event-value', key: 'feature', feature: 'moon' %}{%- endcapture -%}
 
   key: 'feature' returns "true" when the preset supports the capability AND
-  its theme setting is on (night, moon, fog, page_fog, flock, countdown).
+  its theme setting is on (night, moon, fog, flock, countdown).
 
   Adding a preset: create snippets/event-<id>.liquid, add a `when` below and
   add the option to "Active event" in config/settings_schema.json.
@@ -42,10 +42,9 @@
           when 'moon'
             assign ev_toggle = settings.event_moon
           when 'fog'
-            assign ev_toggle = settings.event_fog
-          when 'page_fog'
-            assign ev_toggle = settings.event_fog_page
-            assign ev_module = 'fog'
+            if settings.event_fog and settings.event_fog_intensity > 0
+              assign ev_toggle = true
+            endif
           when 'flock'
             if settings.event_flock and settings.event_flock_density > 0
               assign ev_toggle = true
@@ -72,18 +71,6 @@
       when 'moon_src'
         if settings.event_moon_image != blank
           assign ev_override = settings.event_moon_image | image_url: width: 1600
-        endif
-      when 'moon_ratio'
-        if settings.event_moon_image != blank
-          assign ev_override = settings.event_moon_image.aspect_ratio
-        endif
-      when 'fog_src'
-        if settings.event_fog_texture != blank
-          assign ev_override = settings.event_fog_texture | image_url: width: 2400
-        endif
-      when 'fog_ratio'
-        if settings.event_fog_texture != blank
-          assign ev_override = settings.event_fog_texture.aspect_ratio
         endif
     endcase
     if ev_override != blank

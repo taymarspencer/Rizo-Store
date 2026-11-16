@@ -1,0 +1,157 @@
+{%- comment -%}
+  Home hero. Open sky: the moon (or, with no event live, the mark) sits
+  in the sky layer behind it. The headline is set line by line; a final
+  full stop is kept as its own element because something may hang off it.
+{%- endcomment -%}
+{%- liquid
+  assign lines = section.settings.heading | strip | newline_to_br | split: '<br />'
+  assign shop_label = section.settings.shop_label
+  assign ops = shop.metafields.rizo_ops
+  if request.page_type == 'index' and ops.theme_enabled.value == true
+    assign ops_heading = ops.hero_heading.value | strip
+    assign ops_intro = ops.hero_intro.value | strip
+    assign ops_shop_label = ops.hero_shop_label.value | strip
+    if ops_heading != blank
+      assign lines = ops_heading | escape | newline_to_br | split: '<br />'
+    endif
+    if ops_shop_label != blank
+      assign shop_label = ops_shop_label
+    endif
+  endif
+  assign line_count = lines.size
+-%}
+{% render 'rizo-moon-place', s: section.settings %}
+<section class="hero s"{% if ops_heading != blank or ops_intro != blank or ops_shop_label != blank %} data-rizo-ops-copy{% endif %} data-surface="open" data-fog="{{ section.settings.fog | divided_by: 100.0 }}" data-fog-bias="ground">
+  {% render 'rizo-art', section: section %}
+  <span data-rizo-event-hero hidden></span>
+  <div class="hero-mark" data-rizo-signal aria-hidden="true">{% render 'rizo-mark' %}</div>
+
+  <div class="hero-copy">
+    {% render 'rizo-event-countdown', placement: 'before_heading', id: section.id %}
+    {%- if line_count > 0 -%}
+      <h1 class="hero-title">
+        {%- for line in lines -%}
+          {%- assign text = line | strip -%}
+          {%- if ops_heading == blank -%}
+            {%- assign text = text | escape -%}
+          {%- endif -%}
+          {%- if forloop.last -%}
+            {%- assign last_char = text | slice: -1 -%}
+            {%- if last_char == '.' -%}
+              {%- assign keep = text.size | minus: 1 -%}
+              <span>{{ text | slice: 0, keep }}<span class="hero-stop" data-roost="hang">.</span></span>
+            {%- else -%}
+              <span>{{ text }}</span>
+            {%- endif -%}
+          {%- else -%}
+            <span>{{ text }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </h1>
+    {%- endif -%}
+    {%- if ops_intro != blank -%}
+      <p class="hero-sub">{{ ops_intro | escape | newline_to_br }}</p>
+    {%- elsif section.settings.text != blank -%}<p class="hero-sub">{{ section.settings.text | escape }}</p>{%- endif -%}
+    <div class="hero-actions cluster">
+      {%- if shop_label != blank -%}
+        <a class="btn btn--solid" href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}">{% if ops_shop_label != blank %}<span>{{ shop_label | escape }}</span>{% else %}{{ shop_label | escape }}{% endif %}{% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+      {%- if section.settings.second_label != blank -%}
+        <a class="link" href="{{ section.settings.second_link | default: '/pages/about' }}"><span>{{ section.settings.second_label | escape }}</span>{% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+    {% render 'rizo-event-countdown', placement: 'after_actions', id: section.id %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "div",
+  "class": "section-hero",
+  "settings": [
+    { "type": "textarea", "id": "heading", "label": "Headline", "default": "Pittsburgh’s\npersonal flame.", "info": "One line per row. A full stop at the end is kept." },
+    { "type": "text", "id": "text", "label": "Line under the headline", "default": "Drawn and printed in Pittsburgh." },
+    { "type": "text", "id": "shop_label", "label": "Button", "default": "Shop" },
+    { "type": "url", "id": "shop_link", "label": "Button link" },
+    { "type": "text", "id": "second_label", "label": "Second link", "default": "How it started" },
+    { "type": "url", "id": "second_link", "label": "Second link destination" },
+    { "type": "range", "id": "fog", "label": "Fog in this section", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 85, "info": "Only while an event with fog is live." },
+    { "type": "header", "content": "Moon on this page" },
+    { "type": "checkbox", "id": "moon_custom", "label": "Place the moon by hand", "default": false, "info": "Overrides where the moon hangs on this page. With no event on, it moves the Rizo mark instead." },
+    { "type": "range", "id": "moon_x", "label": "Across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 73 },
+    { "type": "range", "id": "moon_y", "label": "Down", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 40 },
+    { "type": "range", "id": "moon_size", "label": "Size", "min": 4, "max": 70, "step": 1, "unit": "%", "default": 40, "info": "A share of the screen's width." },
+    { "type": "range", "id": "moon_mobile_x", "label": "Across on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 76 },
+    { "type": "range", "id": "moon_mobile_y", "label": "Down on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 25 },
+    { "type": "range", "id": "moon_mobile_size", "label": "Size on phones", "min": 10, "max": 120, "step": 2, "unit": "%", "default": 68 }
+  ],
+  "blocks": [
+    {
+      "type": "art",
+      "name": "Art",
+      "limit": 8,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Artwork", "info": "Transparent PNG or WebP works best. Later blocks sit on top of earlier ones." },
+        { "type": "image_picker", "id": "image_mobile", "label": "Phone version", "info": "Optional: a different crop, or a different piece, for phones." },
+        { "type": "select", "id": "builtin_art", "label": "Included artwork", "default": "none", "info": "Used when Artwork is empty. Uploads take priority. Included art needs no Files upload.", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "event-rizo-pumpkin-ember", "label": "Ember pumpkin" },
+          { "value": "event-rizo-pumpkin-coal", "label": "Coal pumpkin" },
+          { "value": "event-rizo-apparition", "label": "Linen apparition" },
+          { "value": "rizo-face-scrawl", "label": "Face scrawl" }
+        ] },
+        { "type": "header", "content": "Placement" },
+        { "type": "range", "id": "x", "label": "Across", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80, "info": "Where the centre of the piece sits, as a share of the section." },
+        { "type": "range", "id": "y", "label": "Down", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 30, "info": "Below 0 or above 100 hangs over the edge of the section." },
+        { "type": "range", "id": "size", "label": "Size", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 22, "info": "Width, as a share of the section's width." },
+        { "type": "range", "id": "rotate", "label": "Turn", "min": -180, "max": 180, "step": 5, "unit": "°", "default": 0 },
+        { "type": "range", "id": "opacity", "label": "Opacity", "min": 5, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "select", "id": "layer", "label": "Layer", "default": "back", "options": [
+          { "value": "back", "label": "Behind the content" },
+          { "value": "front", "label": "In front of the content" },
+          { "value": "back-front", "label": "Behind on desktop, in front on phones" },
+          { "value": "front-back", "label": "In front on desktop, behind on phones" }
+        ] },
+        { "type": "select", "id": "blend", "label": "Blend", "default": "normal", "options": [
+          { "value": "normal", "label": "Normal" },
+          { "value": "screen", "label": "Screen (only lightens)" },
+          { "value": "multiply", "label": "Multiply (only darkens)" },
+          { "value": "overlay", "label": "Overlay" },
+          { "value": "soft-light", "label": "Soft light" },
+          { "value": "difference", "label": "Difference" },
+          { "value": "luminosity", "label": "Luminosity" }
+        ] },
+        { "type": "header", "content": "Phones" },
+        { "type": "select", "id": "show", "label": "Show on", "default": "all", "options": [
+          { "value": "all", "label": "Desktop and phones" },
+          { "value": "desktop", "label": "Desktop only" },
+          { "value": "phone", "label": "Phones only" }
+        ] },
+        { "type": "range", "id": "mobile_x", "label": "Across on phones", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 80 },
+        { "type": "range", "id": "mobile_y", "label": "Down on phones", "min": -20, "max": 120, "step": 2, "unit": "%", "default": 20 },
+        { "type": "range", "id": "mobile_size", "label": "Size on phones", "min": 4, "max": 140, "step": 2, "unit": "%", "default": 40 },
+        { "type": "header", "content": "Movement" },
+        { "type": "select", "id": "motion", "label": "Movement", "default": "none", "options": [
+          { "value": "none", "label": "Still" },
+          { "value": "float", "label": "Floats" },
+          { "value": "sway", "label": "Sways from its top edge" },
+          { "value": "depth", "label": "Depth: drifts as the page scrolls" },
+          { "value": "settle", "label": "Settles into place when it appears" },
+          { "value": "shy", "label": "Moves away from the pointer or finger" },
+          { "value": "wobble", "label": "Wobbles when touched" },
+          { "value": "spin", "label": "Spins when touched" }
+        ] },
+        { "type": "range", "id": "strength", "label": "How much", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 50 },
+        { "type": "select", "id": "when", "label": "When", "default": "always", "options": [
+          { "value": "always", "label": "Always" },
+          { "value": "event", "label": "Only while a seasonal event is on" },
+          { "value": "normal", "label": "Only when no event is on" }
+        ] },
+        { "type": "text", "id": "name", "label": "Name for custom CSS", "info": "Optional. Adds data-art=\"name\" to the piece." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

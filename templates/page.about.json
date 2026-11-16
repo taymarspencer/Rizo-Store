@@ -1,77 +1,198 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "about": {
-      "type": "rizo-about",
+    "head": {
+      "type": "rizo-page-head",
+      "settings": {
+        "label": "Origin",
+        "title": "Rizo is a statement.",
+        "voice": "say",
+        "lead": "<p>You believe in Rizo?</p>",
+        "align": "offset",
+        "crumbs": false,
+        "fog": 45,
+        "moon_custom": true,
+        "moon_x": 88,
+        "moon_y": 25,
+        "moon_size": 20,
+        "moon_mobile_x": 100,
+        "moon_mobile_y": 24,
+        "moon_mobile_size": 26
+      }
+    },
+    "story": {
+      "type": "rizo-story",
+      "settings": {
+        "builtin_image": "founder_mural",
+        "image_alt": "Taymar Spencer in front of a Pittsburgh mural, wearing Rizo",
+        "caption": "Taymar Spencer",
+        "label": "",
+        "heading": "",
+        "body": "<p>Rizo didn’t start with some perfect mission. I started it because I wanted to prove something to myself. I needed something I could offer people, and I wanted to see if I could build it.</p><p>Then people started holding me accountable. A print peeled. Somebody was disappointed. I made bad choices. I learned. Somebody would support me harder than I expected and I’d want to surprise them with something extra.</p><p>Somewhere in there, the reason changed. What started as me trying to get value from people turned into me trying to give value back. Rizo became my passion without me deciding it would.</p>",
+        "link_label": "",
+        "flip": true,
+        "show_pocket": false,
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "quote": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "quote",
+        "label": "",
+        "body": "<p>Rizo is like a child you raise, but somehow end up getting raised by.</p>",
+        "cite": "Taymar Spencer",
+        "align": "offset",
+        "surface": "open",
+        "space": "l",
+        "fog": 70
+      },
       "blocks": {
-        "limits": {
-          "type": "point",
+        "origin-face-scrawl": {
+          "type": "art",
           "settings": {
-            "title": "LIMITATIONS WERE THE FIRST MATERIAL",
-            "text": "The lack of a perfect setup forced Rizo to invent its own process, language and way forward."
-          }
-        },
-        "craft": {
-          "type": "point",
-          "settings": {
-            "title": "FOUNDER-LED FROM IDEA TO GARMENT",
-            "text": "Taymar develops the designs and makes the clothes himself, keeping the work close to the original intent."
-          }
-        },
-        "outlet": {
-          "type": "point",
-          "settings": {
-            "title": "CREATIVITY NEEDS AN OUTLET",
-            "text": "Rizo exists to help people show more of who they are, not disappear into what everyone else is wearing."
-          }
-        },
-        "help": {
-          "type": "point",
-          "settings": {
-            "title": "HELP MATTERED ALONG THE WAY",
-            "text": "Friends, supporters and people who showed up helped the world move forward before there were formal titles."
-          }
-        },
-        "becoming": {
-          "type": "point",
-          "settings": {
-            "title": "STILL BECOMING",
-            "text": "Growth is not hidden behind a polished story. Learning, rebuilding and getting better are part of the design."
+            "builtin_art": "rizo-face-scrawl",
+            "x": 86,
+            "y": 54,
+            "size": 34,
+            "mobile_x": 92,
+            "mobile_y": 62,
+            "mobile_size": 72,
+            "rotate": -5,
+            "opacity": 20,
+            "layer": "back",
+            "blend": "normal",
+            "show": "all",
+            "motion": "depth",
+            "strength": 10,
+            "when": "always",
+            "name": "origin-face-scrawl"
           }
         }
       },
       "block_order": [
-        "limits",
-        "craft",
-        "outlet",
-        "help",
-        "becoming"
+        "origin-face-scrawl"
+      ]
+    },
+    "marks": {
+      "type": "rizo-artifacts",
+      "blocks": {
+        "sketch": {
+          "type": "object",
+          "settings": {
+            "builtin_image": "sketch",
+            "alt": "Pencil sketch of the first flame face",
+            "material": "paper",
+            "span": 4,
+            "place": "left",
+            "offset": "none",
+            "tilt": -2,
+            "title": "First drawing",
+            "mobile_span": "5"
+          }
+        },
+        "face": {
+          "type": "object",
+          "settings": {
+            "builtin_image": "face_white",
+            "alt": "Two dot eyes over a row of five hand-drawn Xs",
+            "material": "paper",
+            "span": 3,
+            "place": "auto",
+            "offset": "down",
+            "tilt": 0,
+            "title": "The face",
+            "mobile_span": "3"
+          }
+        },
+        "flame": {
+          "type": "object",
+          "settings": {
+            "builtin_image": "mark_blue",
+            "alt": "The blue Rizo flame with the face",
+            "material": "object",
+            "span": 3,
+            "place": "right",
+            "offset": "up",
+            "tilt": 4,
+            "title": "The flame",
+            "mobile_span": "3"
+          }
+        }
+      },
+      "block_order": [
+        "sketch",
+        "face",
+        "flame"
       ],
       "settings": {
-        "dateline_label": "RIZO STORY / ORIGIN FILE",
-        "eyebrow": "ORIGIN FILE / TAYMAR SPENCER",
-        "heading": "BUILT WITHOUT A BLUEPRINT.",
-        "body": "<p>Rizo did not begin with unlimited resources, industry connections, or a perfect plan. It began with Taymar Spencer wanting a real way to express himself—and refusing to let limitations decide what he could create.</p><p>Taymar learned by making, experimenting, rebuilding, and accepting help from people who believed in the vision. He continues to develop the designs and make the clothes himself.</p><p>At first, the goal was simply to become great and keep improving. Clothing became the passion through people: seeing someone receive a piece, put it on, and feel confidence, excitement or recognition.</p><p>What began as one person’s outlet became a mission to give other people room to express themselves. The goal is bigger than garments. It is to create something that moves people and use that energy to change the world around it.</p>",
-        "quote": "Rizo started through limitations. I was in a box, and I broke out.",
-        "quote_attribution": "TAYMAR SPENCER / FOUNDER & BRAND OWNER",
-        "show_origin_art": true,
-        "link_label": "",
-        "theme": "paper"
+        "heading": "",
+        "surface": "solid",
+        "space": "s",
+        "fog": 0
       }
     },
-    "team": {
-      "type": "rizo-team",
+    "circle": {
+      "type": "rizo-text",
       "settings": {
-        "mode": "circle",
-        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
-        "eyebrow": "THE RIZO CIRCLE",
-        "heading": "ONE VISION. MANY HANDS ALONG THE WAY.",
-        "text": "<p>Rizo is founder-led. Taymar designs and makes the pieces, but the world has never moved alone. Friends, models, event help, supporters and people who believed early have helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>",
-        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+        "style": "body",
+        "label": "The Circle",
+        "heading": "The people who carried it.",
+        "body": "<p>Everybody who has touched Rizo left a little bit of themselves in it.</p><p>The Circle is for the people who showed up, put in the work and deserve the credit.</p>",
+        "link_label": "About the Circle",
+        "link": "/pages/circle",
+        "align": "left",
+        "surface": "raised",
+        "space": "m",
+        "fog": 0
+      }
+    },
+    "mark_story": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "body",
+        "label": "The first drawing",
+        "heading": "It started with death and fire.",
+        "body": "<p>The first Rizo face came from combining death and fire. I wanted death to feel more palatable. Something people used to acknowledge and even celebrate. Fire was the other half because humans grew with it. We cook with it, build with it, gather around it, survive because of it.</p><p>I put them together. Then I made the face cute.</p>",
+        "align": "left",
+        "surface": "solid",
+        "space": "s",
+        "fog": 0
+      }
+    },
+    "trust": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "body",
+        "label": "If Rizo gets big",
+        "heading": "The small conversations matter.",
+        "body": "<p>I want Rizo to grow. I just don’t want to grow disconnected from my own brand. The trust matters. Knowing the people matters.</p><p>If people can support me, I want Rizo to be able to support them back.</p>",
+        "align": "offset",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "link_label": "See Rizo outside",
+        "link": "/pages/outside"
       }
     }
   },
   "order": [
-    "about",
-    "team"
+    "head",
+    "story",
+    "quote",
+    "mark_story",
+    "marks",
+    "trust",
+    "circle"
   ]
 }

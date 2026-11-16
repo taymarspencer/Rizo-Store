@@ -1,0 +1,13 @@
+{% doc %}
+Renders the shared full-size photograph and artwork viewer.
+{% enddoc %}
+<div class="overlay-shell photo-overlay" data-overlay="photograph" hidden>
+  <button class="overlay-backdrop" type="button" data-overlay-close tabindex="-1" aria-hidden="true" aria-label="{{ 'general.close_image' | t }}"></button>
+  <section class="photo-viewer" role="dialog" tabindex="-1" data-overlay-focus aria-modal="true" aria-label="{{ 'general.image_viewer' | t }}">
+    <button class="icon-btn photo-viewer-close" type="button" data-overlay-close aria-label="{{ 'general.close_image' | t }}">{% render 'icon', name: 'close' %}</button>
+    <figure class="photo-viewer-media">
+      <img data-photo-viewer-image src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" width="1152" height="1536" alt="">
+      <figcaption data-photo-viewer-caption hidden></figcaption>
+    </figure>
+  </section>
+</div>

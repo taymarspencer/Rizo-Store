@@ -1,22 +1,25 @@
-{% liquid
-  assign icon_name = name | default: 'spark'
+{%- liquid
+  assign icon_name = name | default: 'arrow'
   assign icon_class = class | default: ''
-%}
-<svg class="icon {{ icon_class }}" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  {% case icon_name %}
-    {% when 'menu' %}<path d="M4 7h16M4 12h16M4 17h16"/>
-    {% when 'close' %}<path d="m6 6 12 12M18 6 6 18"/>
-    {% when 'search' %}<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>
-    {% when 'bag' %}<path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>
-    {% when 'home' %}<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>
-    {% when 'shop' %}<path d="M4 9h16l-1 11H5L4 9Z"/><path d="m7 9 1-5h8l1 5"/>
-    {% when 'arrow' %}<path d="M5 12h14M14 7l5 5-5 5"/>
-    {% when 'plus' %}<path d="M12 5v14M5 12h14"/>
-    {% when 'minus' %}<path d="M5 12h14"/>
-    {% when 'sound' %}<path d="M5 10v4h3l4 3V7L8 10H5Z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>
-    {% when 'pin' %}<path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/>
-    {% when 'heart' %}<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8Z"/>
-    {% when 'check' %}<path d="m5 12 4 4L19 6"/>
-    {% else %}<path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/>
-  {% endcase %}
+-%}
+<svg class="icon icon--{{ icon_name }}{% if icon_class != blank %} {{ icon_class }}{% endif %}" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  {%- case icon_name -%}
+    {%- when 'menu' -%}<path d="M4 8h16M4 15.5h10"/>
+    {%- when 'close' -%}<path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/>
+    {%- when 'search' -%}<circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.6 15.6 4.4 4.4"/>
+    {%- when 'bag' -%}<path d="M5.2 8.5h13.6l-1 11.5H6.2l-1-11.5Z"/><path d="M9 9V6.8a3 3 0 0 1 6 0V9"/>
+    {%- when 'home' -%}<path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/>
+    {%- when 'shop' -%}<path d="M4.5 9h15l-1.2 11H5.7L4.5 9Z"/><path d="m8 9 1.2-4.5h5.6L16 9"/>
+    {%- when 'arrow' -%}<path d="M5 12h14M13.5 6.5 19 12l-5.5 5.5"/>
+    {%- when 'arrow-down' -%}<path d="M12 5v14M6.5 13.5 12 19l5.5-5.5"/>
+    {%- when 'plus' -%}<path d="M12 5v14M5 12h14"/>
+    {%- when 'minus' -%}<path d="M5 12h14"/>
+    {%- when 'check' -%}<path d="m5 12.5 4.2 4L19 7"/>
+    {%- when 'pin' -%}<path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/>
+    {%- when 'return' -%}<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>
+    {%- when 'lock' -%}<rect x="5" y="10.5" width="14" height="9.5" rx="1.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>
+    {%- when 'truck' -%}<path d="M3.5 6.5h10v10h-10zM13.5 10h4l3 3.2v3.3h-7"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>
+    {%- when 'expand' -%}<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>
+    {%- else -%}<path d="M5 12h14M13.5 6.5 19 12l-5.5 5.5"/>
+  {%- endcase -%}
 </svg>

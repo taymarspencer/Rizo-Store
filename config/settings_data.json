@@ -1,28 +1,58 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
-    "color_ink": "#090909",
-    "color_paper": "#f4f0e8",
+    "color_ink": "#07090c",
+    "color_paper": "#ece8df",
     "color_accent": "#20bdf2",
-    "color_accent_2": "#ff5d21",
-    "color_muted": "#8d8d8d",
-    "radius": 18,
+    "color_accent_2": "#a7d8e8",
+    "radius": 3,
     "page_width": 1240,
     "motion_level": "balanced",
-    "enable_sound": false,
-    "enable_install_guide": false,
-    "world_state": "quiet",
-    "show_world_state_in_header": false,
+    "low_stock_threshold": 5,
     "enable_mobile_shop_utility": true,
     "free_shipping_threshold": 0,
-    "texture_level": "balanced",
-    "heritage_mode": true,
-    "signal_clock_mode": "archive",
-    "archive_date": "02/22/2023",
-    "archive_time": "2:22 PM",
-    "signal_timezone": "America/New_York",
-    "catalog_prefix": "RZ",
     "event_layer": "halloween",
-    "event_activation": "scheduled"
+    "event_activation": "scheduled",
+    "event_editor_preview": true,
+    "event_night": true,
+    "event_night_intensity": 60,
+    "event_motion": 60,
+    "event_reduced_motion": "still",
+    "event_moon": true,
+    "event_moon_phase": "real",
+    "event_moon_motion": true,
+    "event_fog": true,
+    "event_fog_intensity": 75,
+    "event_fog_speed": 55,
+    "event_fog_clock": true,
+    "event_flock": true,
+    "event_flock_density": 50,
+    "event_flock_activity": 40,
+    "event_flock_roost": true,
+    "event_flock_scroll": true,
+    "event_flock_tap": true,
+    "event_countdown": true,
+    "event_countdown_position": "after_actions",
+    "event_countdown_seconds": false,
+    "event_countdown_expired": "message",
+    "event_phone": "lighter",
+    "event_accent": "#D9681E",
+    "event_accent_pale": "#E8B987",
+    "world_circle_label": "The Circle",
+    "world_circle_link": "/pages/circle",
+    "world_412_link": "/pages/412",
+    "world_outside_link": "/pages/outside",
+    "skeleton_feature_enabled": true,
+    "skeleton_launch_enabled": true,
+    "skeleton_social_image": "shopify://shop_images/rizo-skeleton-crewneck-lifestyle-editorial_b09ca610-e77d-4013-a3bc-337d1f7ec842.jpg"
   },
   "presets": {}
 }

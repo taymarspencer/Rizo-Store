@@ -1,0 +1,40 @@
+{% doc %}
+Renders a shared page title, optional artwork and chapter links.
+@param {string} title - Page heading
+@param {string} [lead] - Supporting rich text
+@param {string} [label] - Small label
+@param {string} [voice] - Type voice
+@param {string} [align] - Composition alignment
+@param {boolean} [crumbs] - Show breadcrumbs
+@param {string} [crumb_parent_url] - Parent breadcrumb URL
+@param {string} [crumb_parent] - Parent breadcrumb label
+@param {number} [fog] - Fog density
+@param {boolean} [moon_phase] - Show the moon phase
+@param {section} [section] - Section with art or chapter blocks
+{% enddoc %}
+{%- assign head_voice = voice | default: 'say' -%}
+<header class="s page-head" data-surface="open" data-fog="{{ fog | default: 0.45 }}" data-fog-bias="ground" data-align="{{ align | default: 'left' }}">
+  {%- if section -%}{% render 'rizo-art', section: section %}{%- endif -%}
+  <div class="wrap wrap--wide page-head-inner">
+    {%- if crumbs -%}
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">Rizo</a><span aria-hidden="true">/</span>{% if crumb_parent_url != blank %}<a href="{{ crumb_parent_url }}">{{ crumb_parent }}</a><span aria-hidden="true">/</span>{% endif %}<span aria-current="page">{{ title }}</span></nav>
+    {%- elsif label != blank -%}
+      <p class="v-label muted">{{ label }}</p>
+    {%- endif -%}
+    <h1 class="page-head-title{% if head_voice == 'sign' %} v-sign{% endif %}">{{ title }}</h1>
+    {%- if lead != blank -%}<div class="page-head-lead">{{ lead }}</div>{%- endif -%}
+    {%- if moon_phase -%}<p class="v-note" data-rizo-moon-phase hidden></p>{%- endif -%}
+    {%- if section -%}
+      {%- assign chapters = section.blocks | where: 'type', 'chapter' -%}
+      {%- if chapters.size > 0 -%}
+        <nav class="page-path" aria-label="{{ 'general.page_sections' | t }}">
+          {%- for block in chapters -%}
+            {%- if block.settings.label != blank and block.settings.link != blank -%}
+              <a class="link" href="{{ block.settings.link }}" {{ block.shopify_attributes }}><span>{{ block.settings.label | escape }}</span>{% render 'icon', name: 'arrow' %}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</header>

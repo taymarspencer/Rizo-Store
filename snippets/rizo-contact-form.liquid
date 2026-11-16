@@ -1,87 +1,28 @@
-{% liquid
-  assign contact_form_id = form_id | default: 'RizoContactForm'
-  assign contact_eyebrow = eyebrow | default: 'CONTACT / OPEN CHANNEL'
-  assign contact_heading = heading | default: 'SEND IT TO RIZO.'
-  assign contact_intro = intro | default: 'Order help, sizing questions, collaborations, events, press, or something that does not fit a box. Send a real message through the channel below.'
-  assign contact_note = note | default: 'No fake chatbot. No invented response time. Your message goes through Shopify’s contact system to the store inbox.'
-%}
-
-<div class="contact-signal" id="RizoContactChannel">
-  <div class="contact-signal-copy">
-    {% render 'rizo-dateline', label: 'RIZO CHANNEL / PITTSBURGH 412' %}
-    <img class="contact-secondary-mark" src="{{ 'rizo-secondary-face.png' | asset_url }}" width="317" height="178" alt="" aria-hidden="true">
-    <p class="eyebrow">{{ contact_eyebrow }}</p>
-    <h1>{{ contact_heading }}</h1>
-    <p class="contact-signal-intro">{{ contact_intro }}</p>
-
-    <div class="contact-signal-routes" role="list" aria-label="Reasons to contact Rizo">
-      <span role="listitem">ORDER HELP</span>
-      <span role="listitem">SIZING / PRODUCT</span>
-      <span role="listitem">COLLABS / EVENTS</span>
-      <span role="listitem">PRESS / CREATIVE</span>
+{%- assign contact_form_id = form_id | default: 'RizoContactForm' -%}
+{%- form 'contact', id: contact_form_id, class: 'contact-form' -%}
+  <input type="hidden" name="contact[tags]" value="rizo-contact, storefront-contact">
+  {%- if form.posted_successfully? -%}
+    <div role="status" tabindex="-1" data-form-feedback class="stack">
+      <h2 class="t-3">Sent.</h2>
+      <p class="muted">It went to the Rizo inbox. We answer from there.</p>
     </div>
-
-    <p class="contact-signal-note">{{ contact_note }}</p>
-  </div>
-
-  <div class="contact-form-panel">
-    {% form 'contact', id: contact_form_id, class: 'rizo-contact-form' %}
-      <input type="hidden" name="contact[tags]" value="rizo-contact, storefront-contact">
-
-      {% if form.posted_successfully? %}
-        <div class="contact-success" role="status" tabindex="-1" data-form-feedback>
-          {% render 'rizo-brand-stamp', variant: 'logo', class: 'contact-success-primary-mark' %}
-          <p class="eyebrow">SIGNAL RECEIVED</p>
-          <h2>Your message reached Rizo.</h2>
-          <p>Keep this page open only when you need it. The message has already been submitted.</p>
-        </div>
-      {% else %}
-        {% if form.errors %}
-          <div id="{{ contact_form_id }}-errors" class="form-message form-message--error" role="alert" tabindex="-1" data-form-feedback>
-            <strong>THE SIGNAL DID NOT SEND.</strong>
-            {{ form.errors | default_errors }}
-          </div>
-        {% endif %}
-
-        <div class="contact-form-grid">
-          <label class="contact-field">
-            <span>Name</span>
-            <input type="text" name="contact[name]" value="{% if form.name %}{{ form.name | escape }}{% endif %}" autocomplete="name" required>
-          </label>
-
-          <label class="contact-field">
-            <span>Email</span>
-            <input type="email" name="contact[email]" value="{% if form.email %}{{ form.email | escape }}{% endif %}" autocomplete="email" autocapitalize="off" spellcheck="false" required{% if form.errors %} aria-invalid="true" aria-describedby="{{ contact_form_id }}-errors"{% endif %}>
-          </label>
-
-          <label class="contact-field">
-            <span>Order number <small>optional</small></span>
-            <input type="text" name="contact[order_number]" value="{% if form.order_number %}{{ form.order_number | escape }}{% endif %}" autocomplete="off" inputmode="text" placeholder="#0000">
-          </label>
-
-          <label class="contact-field">
-            <span>What is this about?</span>
-            <select name="contact[reason]" required>
-              <option value="" selected disabled>Choose a channel</option>
-              <option value="Order help">Order help</option>
-              <option value="Sizing or product question">Sizing or product question</option>
-              <option value="Collaboration or event">Collaboration or event</option>
-              <option value="Press or creative">Press or creative</option>
-              <option value="Something else">Something else</option>
-            </select>
-          </label>
-        </div>
-
-        <label class="contact-field contact-field--message">
-          <span>Message</span>
-          <textarea name="contact[body]" rows="7" required>{% if form.body %}{{ form.body | escape }}{% endif %}</textarea>
-        </label>
-
-        <div class="contact-submit-row">
-          <button class="button button-hot" type="submit">SEND TO RIZO {% render 'icon', name: 'arrow' %}</button>
-          <small>Required fields stay simple: name, email, reason, message.</small>
-        </div>
-      {% endif %}
-    {% endform %}
-  </div>
-</div>
+  {%- else -%}
+    {%- if form.errors -%}
+      <div id="{{ contact_form_id }}-errors" class="form-message form-message--error" role="alert" tabindex="-1" data-form-feedback>{{ form.errors | default_errors }}</div>
+    {%- endif -%}
+    <div class="two">
+      <label class="field"><span>Name</span><input type="text" name="contact[name]" value="{% if form.name %}{{ form.name | escape }}{% endif %}" autocomplete="name" required></label>
+      <label class="field"><span>Email</span><input type="email" name="contact[email]" value="{% if form.email %}{{ form.email | escape }}{% endif %}" autocomplete="email" autocapitalize="off" spellcheck="false" required{% if form.errors %} aria-invalid="true" aria-describedby="{{ contact_form_id }}-errors"{% endif %}></label>
+    </div>
+    <div class="two">
+      <label class="field"><span>Order number (if it’s about an order)</span><input type="text" name="contact[order_number]" value="{% if form.order_number %}{{ form.order_number | escape }}{% endif %}" autocomplete="off" placeholder="#1001"></label>
+      <label class="field"><span>About</span>
+        <select class="select" name="contact[topic]">
+          <option>An order</option><option>Sizing</option><option>Working together</option><option>Something else</option>
+        </select>
+      </label>
+    </div>
+    <label class="field"><span>Message</span><textarea name="contact[body]" rows="6" required>{% if form.body %}{{ form.body | escape }}{% endif %}</textarea></label>
+    <div><button class="btn btn--solid" type="submit">Send</button></div>
+  {%- endif -%}
+{%- endform -%}

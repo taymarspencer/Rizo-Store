@@ -1,30 +1,233 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "circle": {
-      "type": "rizo-team",
+    "head": {
+      "type": "rizo-page-head",
       "settings": {
-        "mode": "circle",
-        "display_style": "full",
-        "dateline_label": "RIZO PEOPLE / THE CIRCLE",
-        "eyebrow": "THE RIZO CIRCLE",
-        "heading": "ONE VISION. MANY HANDS ALONG THE WAY.",
-        "text": "<p>Rizo is founder-led, but the world has never moved alone. Friends, models, event help, supporters, and people who believed early helped carry it outside.</p><p>No inflated titles. No pretending a growing circle is a corporate team. Just real people showing up while the world takes shape.</p>",
-        "shoutout": "SHOUT OUT TO EVERY PERSON WHO MODELED, HELPED AT A TABLE, CARRIED PIECES, TOOK A PHOTO, GAVE FEEDBACK, OR SHOWED UP BEFORE THERE WAS A TITLE FOR IT."
+        "label": "Behind Rizo",
+        "title": "THE CIRCLE.",
+        "voice": "sign",
+        "lead": "<p>For the people who showed up.</p>",
+        "align": "left",
+        "crumbs": false,
+        "fog": 0
+      },
+      "blocks": {
+        "team-link": {
+          "type": "chapter",
+          "settings": {
+            "label": "The team",
+            "link": "#team"
+          }
+        },
+        "model-link": {
+          "type": "chapter",
+          "settings": {
+            "label": "Malzay",
+            "link": "#malzay"
+          }
+        },
+        "people-link": {
+          "type": "chapter",
+          "settings": {
+            "label": "Together",
+            "link": "#people"
+          }
+        }
+      },
+      "block_order": [
+        "team-link",
+        "model-link",
+        "people-link"
+      ]
+    },
+    "meaning": {
+      "type": "rizo-text",
+      "settings": {
+        "style": "body",
+        "label": "The people behind it",
+        "heading": "It takes a village to raise something.",
+        "body": "<p>The people who put Rizo on their backs and carried it. Who held down a table, made shirts, took photos, drove, set up, stayed late and kept showing up.</p><p>The Circle is where that work gets its credit.</p>",
+        "align": "offset",
+        "surface": "raised",
+        "space": "m",
+        "fog": 0,
+        "show_mark": true
       }
     },
-    "signup": {
-      "type": "rizo-signal-signup",
+    "outside": {
+      "type": "rizo-text",
       "settings": {
-        "eyebrow": "STAY IN THE CIRCLE",
-        "heading": "GET THE NEXT SIGNAL.",
-        "shop_label": "SHOP WHAT IS LIVE",
-        "shop_link": "shopify://collections/all",
-        "value": "Pieces, events, restocks, and where Rizo moves next."
+        "style": "body",
+        "label": "Out in the world",
+        "heading": "RIZO, OUTSIDE.",
+        "body": "<p>Then Rizo leaves our hands and becomes part of somebody else’s life.</p>",
+        "link_label": "Open the archive",
+        "link": "/pages/outside",
+        "align": "left",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0
       }
+    },
+    "people": {
+      "type": "rizo-gallery",
+      "settings": {
+        "layout": "strip",
+        "surface": "solid",
+        "space": "s",
+        "fog": 0,
+        "open_photos": true,
+        "anchor": "people"
+      },
+      "blocks": {
+        "showed-up": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "wpsd_together",
+            "alt": "Two friends, one in a red hoodie and one in green, standing together beside the tie-dye table.",
+            "caption": "The people who show up.",
+            "caption_right": "WPSD / 09.26.2026",
+            "full_frame": true
+          }
+        },
+        "after-dark": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_night",
+            "alt": "Friends together after dark in black and yellow Rizo 412 hoodies.",
+            "caption": "Still together after dark.",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "gym": {
+          "type": "photo",
+          "settings": {
+            "builtin_image": "circle_gym",
+            "alt": "Two people wearing Rizo shirts and flexing in a gym mirror",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "barbershop": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-circle-barbershop-3788.webp",
+            "builtin_image": "none",
+            "alt": "Two people standing together in a barbershop, one wearing a Rizo graphic hoodie and the other holding up black pants with yellow lettering",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "gym",
+        "barbershop",
+        "showed-up",
+        "after-dark"
+      ]
+    },
+    "team": {
+      "type": "rizo-gallery",
+      "settings": {
+        "layout": "spread",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "open_photos": true,
+        "label": "The team",
+        "heading": "Aiden & Christian",
+        "text": "<p>The twins. Aiden is Rizo’s intern.</p>",
+        "anchor": "team"
+      },
+      "blocks": {
+        "twins-color": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-team-aiden-christian-0844.webp",
+            "builtin_image": "none",
+            "alt": "Aiden and Christian together in pink and blue Rizo hoodies",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "twins-black": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-team-black-tees-0886.webp",
+            "builtin_image": "none",
+            "alt": "Aiden and Christian wearing black Rizo T-shirts outdoors",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "twins-color",
+        "twins-black"
+      ]
+    },
+    "malzay": {
+      "type": "rizo-gallery",
+      "settings": {
+        "layout": "archive",
+        "surface": "solid",
+        "space": "m",
+        "fog": 0,
+        "open_photos": true,
+        "label": "Rizo model",
+        "heading": "Malzay",
+        "anchor": "malzay"
+      },
+      "blocks": {
+        "portrait": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-malzay-red-hoodie-0452.webp",
+            "builtin_image": "none",
+            "alt": "Malzay wearing a red Rizo hoodie and black jeans",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        },
+        "hood-detail": {
+          "type": "photo",
+          "settings": {
+            "image": "shopify://shop_images/rizo-malzay-hood-detail-0461.webp",
+            "builtin_image": "none",
+            "alt": "Malzay pulling up the hood of his red Rizo hoodie, showing the Rizo lettering",
+            "caption": "",
+            "caption_right": "",
+            "full_frame": true
+          }
+        }
+      },
+      "block_order": [
+        "portrait",
+        "hood-detail"
+      ]
     }
   },
   "order": [
-    "circle",
-    "signup"
+    "head",
+    "team",
+    "malzay",
+    "meaning",
+    "people",
+    "outside"
   ]
 }

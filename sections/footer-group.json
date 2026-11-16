@@ -1,11 +1,55 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "footer",
   "name": "Footer group",
   "sections": {
     "footer": {
       "type": "rizo-footer",
-      "settings": {}
+      "settings": {
+        "tagline": "Independent clothing from Pittsburgh.",
+        "instagram_url": "https://www.instagram.com/rizoapparel/",
+        "bottom_note": "I don’t know what I’m doing.",
+        "newsletter_note": "New pieces, restocks and Pittsburgh pop-ups.",
+        "menu": "rizo-store",
+        "secondary_menu": "footer"
+      },
+      "blocks": {
+        "october-footer-ember": {
+          "type": "art",
+          "settings": {
+            "builtin_art": "event-rizo-pumpkin-ember",
+            "x": 88,
+            "y": 90,
+            "size": 10,
+            "mobile_x": 86,
+            "mobile_y": 86,
+            "mobile_size": 26,
+            "rotate": 0,
+            "opacity": 100,
+            "layer": "front",
+            "blend": "normal",
+            "show": "all",
+            "motion": "wobble",
+            "strength": 15,
+            "when": "event",
+            "name": "october-footer-ember"
+          }
+        }
+      },
+      "block_order": [
+        "october-footer-ember"
+      ]
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

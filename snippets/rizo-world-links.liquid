@@ -1,0 +1,6 @@
+{% doc %}
+Renders the permanent, merchant-configurable world links.
+{% enddoc %}
+{%- if settings.world_412_link != blank and settings.world_412_label != blank -%}<a href="{{ settings.world_412_link }}"{% if request.path == settings.world_412_link %} aria-current="page"{% endif %}>{{ settings.world_412_label | escape }}</a>{%- endif -%}
+{%- if settings.world_outside_link != blank and settings.world_outside_label != blank -%}<a href="{{ settings.world_outside_link }}"{% if request.path == settings.world_outside_link %} aria-current="page"{% endif %}>{{ settings.world_outside_label | escape }}</a>{%- endif -%}
+{%- if settings.world_circle_link != blank and settings.world_circle_label != blank -%}<a href="{{ settings.world_circle_link }}"{% if request.path == settings.world_circle_link %} aria-current="page"{% endif %}>{{ settings.world_circle_label | escape }}</a>{%- endif -%}

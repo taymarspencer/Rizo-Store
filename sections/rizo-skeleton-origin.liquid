@@ -1,0 +1,25 @@
+{%- if section.settings.drawing != blank -%}
+{{ 'rizo-skeleton.css' | asset_url | stylesheet_tag }}
+<article id="skeleton-origin" class="skeleton-origin-story s" data-surface="solid" data-space="m" aria-labelledby="OriginTitle-{{ section.id }}">
+  <div class="wrap wrap--wide skeleton-origin-grid">
+    <figure>
+      {{ section.settings.drawing | image_url: width: 1440 | image_tag: loading: 'lazy', widths: '360,540,720,1080,1440', sizes: '(min-width: 750px) 45vw, 92vw' }}
+      <figcaption class="v-note">{{ 'skeleton.origin.caption' | t }}</figcaption>
+    </figure>
+    <div class="skeleton-origin-prose">
+      <p class="v-label">{{ 'skeleton.origin.label' | t }}</p>
+      <h2 id="OriginTitle-{{ section.id }}">{{ 'skeleton.origin.heading' | t }}</h2>
+      <p class="v-note">{{ 'skeleton.origin.byline' | t }}</p>
+      <div class="rte"><p>{{ 'skeleton.origin.body' | t }}</p><p>{{ 'skeleton.origin.body_second' | t }}</p></div>
+      <a class="link" href="/products/raging-skeleton-crewneck-reworked">{{ 'skeleton.origin.return' | t }} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</article>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Skeleton archive note",
+  "settings": [{ "type": "image_picker", "id": "drawing", "label": "Original process photograph" }],
+  "presets": [{ "name": "Skeleton archive note" }]
+}
+{% endschema %}

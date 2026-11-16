@@ -1,1 +1,46 @@
-{"sections":{"main":{"type":"main-404","settings":{}}},"order":["main"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-404",
+      "settings": {},
+      "blocks": {
+        "october-lost-coal": {
+          "type": "art",
+          "settings": {
+            "builtin_art": "event-rizo-pumpkin-coal",
+            "x": 85,
+            "y": 58,
+            "size": 36,
+            "mobile_x": 90,
+            "mobile_y": 80,
+            "mobile_size": 60,
+            "rotate": 0,
+            "opacity": 100,
+            "layer": "back",
+            "blend": "normal",
+            "show": "all",
+            "motion": "wobble",
+            "strength": 25,
+            "when": "event",
+            "name": "october-lost-coal"
+          }
+        }
+      },
+      "block_order": [
+        "october-lost-coal"
+      ]
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

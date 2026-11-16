@@ -6,16 +6,22 @@
   file is never requested.
 
   Owns the shared pieces every event uses:
-    loop      one requestAnimationFrame loop; runs only while a task needs it
-    input     passive scroll-velocity and tap observation (never blocks input)
-    state     device tier, motion scale, reduced motion, hero/quiet/overlay flags
-    modules   registry: countdown, moon, hero, quiet (here); flock (rizo-event-flock.js)
-    behaviors registry for event-specific motion (e.g. assets/event-halloween.js)
+    loop        one frame task on the theme's shared frame (window.RizoFrame);
+                runs only while a task needs it
+    governor    steps weak devices down (lite, then still), never up
+    input       passive scroll-velocity and tap observation (never blocks input)
+    state       device tier, motion scale, reduced motion, hero/quiet/overlay
+    atmosphere  reads data-fog / data-fog-bias from sections: how much fog
+                collects where, measured on layout changes, not on scroll
+    modules     hero, quiet, countdown, fog, moon (here); flock
+                (rizo-event-flock.js); anything a preset defines
+    behaviors   event-specific motion (e.g. assets/event-halloween.js)
 
   Modules are idempotent: they re-scan on shopify:section:load, dispose on
   shopify:section:unload, and never double-bind an element.
 
   Console / QA:  RizoEventLayer.stats()   RizoEventLayer.deactivate()
+                 RizoEventLayer.moonPhase  RizoEventLayer.module('moon')
 */
 (() => {
   'use strict';
@@ -23,7 +29,7 @@
   const boot = window.RizoEventBoot;
   if (!boot || !boot.active || window.RizoEventLayer) return;
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.3.0';
   const doc = document;
   const root = doc.documentElement;
   const config = boot.config;
@@ -51,11 +57,10 @@
   /* State                                                                   */
   /* ---------------------------------------------------------------------- */
 
+  // data-low-power is decided once in layout/theme.liquid (Save-Data, ≤2 GB,
+  // ≤2 cores) and shared with the art layers.
   const detectTier = () => {
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection?.saveData) return 'lite';
-    if (navigator.deviceMemory && navigator.deviceMemory <= 2) return 'lite';
-    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return 'lite';
+    if (root.dataset.lowPower === 'true') return 'lite';
     return smallQuery.matches || coarseQuery.matches ? 'mobile' : 'desktop';
   };
 
@@ -94,13 +99,12 @@
   };
 
   /* ---------------------------------------------------------------------- */
-  /* Loop: the only requestAnimationFrame in the event layer                  */
+  /* Loop: one frame task, queued on the theme's shared frame              */
   /* ---------------------------------------------------------------------- */
 
-  /* Frame-time governor. Sustained frames slower than ~30fps step the layer
-     down: level 1 → "lite" tier (one fog layer, fewer bats); level 2 → still
-     atmosphere (fog and moon drift freeze, bats halve again). It only ever
-     steps down. Disable for testing with ?rizo_event_governor=off. */
+  /* Sustained frames below ~24fps reduce detail. A steady 30fps is healthy.
+     Fog keeps drifting at every tier; reduced motion remains still.
+     Disable for testing with ?rizo_event_governor=off. */
   const governorEnabled = new URLSearchParams(window.location.search).get('rizo_event_governor') !== 'off';
   const governor = {
     average: 16.7,
@@ -109,7 +113,7 @@
       if (!governorEnabled || ms > 250) return; // a tab switch or long task is not a frame-rate signal
       this.average += (ms - this.average) * .05;
       this.samples += 1;
-      if (this.samples >= 90 && this.average > 34 && state.degrade < 2) this.step();
+      if (this.samples >= 90 && this.average > 42 && state.degrade < 2) this.step();
     },
     step() {
       state.degrade += 1;
@@ -139,11 +143,15 @@
       governor.sample(elapsed);
       request();
     };
+    // The theme's shared frame (layout/theme.liquid) when present, so the
+    // event layer, art layers and header never run separate loops.
+    const shared = window.RizoFrame;
     const request = () => {
-      if (!frame && tasks.size && state.running && !doc.hidden) frame = window.requestAnimationFrame(tick);
+      if (frame || !tasks.size || !state.running || doc.hidden) return;
+      frame = shared ? shared.request(tick) : window.requestAnimationFrame(tick);
     };
     const halt = () => {
-      if (frame) window.cancelAnimationFrame(frame);
+      if (frame) { if (shared) shared.cancel(frame); else window.cancelAnimationFrame(frame); }
       frame = 0;
       last = 0;
     };
@@ -498,133 +506,564 @@
     };
   });
 
-  /* Fog: the drift is a CSS animation; this module only swaps each strip's
-     full-resolution background for a low-resolution canvas copy of the
-     texture. Fog is soft, so ~1/3 resolution looks the same while the moving
-     composited layer needs a fraction of the GPU memory (tens of MB → ~1 MB
-     on a retina desktop). Redrawn only when a strip changes size. */
-  define('fog', () => {
-    const src = config.fog?.src;
-    const strips = new Map();
-    if (!src) return {};
-    const SCALE = .35; // backing pixels per CSS pixel, independent of devicePixelRatio
-    let image = null;
+  /* ---------------------------------------------------------------------- */
+  /* Sky helpers: Pittsburgh's clock and the real moon                        */
+  /* ---------------------------------------------------------------------- */
 
-    const paint = (strip, record) => {
-      const width = strip.offsetWidth;
-      const height = strip.offsetHeight;
-      if (!image || !width || !height) return; // dormant strips are display: none
-      const w = Math.max(2, Math.round((width * SCALE) / 2) * 2);
-      const h = Math.max(2, Math.round(height * SCALE));
-      if (record.w === w && record.h === h) return;
-      const { canvas } = record;
-      canvas.width = w;
-      canvas.height = h;
-      const context = canvas.getContext('2d');
-      if (!context) return;
-      context.imageSmoothingEnabled = true;
-      context.imageSmoothingQuality = 'high';
-      // Two tiles side by side: the CSS animation slides the strip by exactly one.
-      context.drawImage(image, 0, 0, w / 2, h);
-      context.drawImage(image, w / 2, 0, w / 2, h);
-      record.w = w;
-      record.h = h;
-      strip.classList.add('has-canvas');
+  /* Hour (0–24, fractional) in the event's timezone, not the visitor's. */
+  const localHour = (ms = Date.now()) => {
+    try {
+      const parts = {};
+      new Intl.DateTimeFormat('en-US', { timeZone: config.timezone || 'America/New_York', hourCycle: 'h23', hour: 'numeric', minute: 'numeric' })
+        .formatToParts(new Date(ms)).forEach((part) => { parts[part.type] = Number(part.value); });
+      return (parts.hour % 24) + parts.minute / 60;
+    } catch (error) { return new Date(ms).getHours(); }
+  };
+
+  /* Mean lunar phase from a known new moon (6 Jan 2000 18:14 UTC). Good to
+     a few hours, which is all a sky needs. */
+  const SYNODIC = 29.530588853;
+  const moonPhase = (ms = Date.now()) => {
+    const age = ((((ms - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % SYNODIC) + SYNODIC) % SYNODIC;
+    const illumination = (1 - Math.cos((age / SYNODIC) * Math.PI * 2)) / 2;
+    const waxing = age < SYNODIC / 2;
+    const name = age < 1.85 || age > 27.7 ? 'new moon'
+      : age < 6.4 ? 'waxing crescent' : age < 8.4 ? 'first quarter' : age < 13.8 ? 'waxing gibbous'
+      : age < 15.8 ? 'full moon' : age < 21.1 ? 'waning gibbous' : age < 23.1 ? 'last quarter' : 'waning crescent';
+    return { age, illumination, waxing, name };
+  };
+
+  /* Sections describe their own atmosphere: data-fog (0–1) and
+     data-fog-bias (ground | even | ceiling). Anything without data-fog is
+     clear, so commerce is clear by default. Measured on layout changes,
+     never inside the scroll path. */
+  const atmosphere = (() => {
+    let bands = [];
+    let clearBands = [];
+    let protectedRects = [];
+    let docHeight = 1;
+    let dirty = true;
+    let revision = 0;
+    const measure = () => {
+      dirty = false;
+      revision += 1;
+      const y = window.scrollY;
+      bands = [...doc.querySelectorAll('[data-fog]')].map((node) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          node,
+          top: rect.top + y,
+          bottom: rect.bottom + y,
+          fog: clamp(Number(node.dataset.fog) || 0, 0, 1),
+          bias: node.dataset.fogBias || 'even',
+          open: node.dataset.surface === 'open' || node.closest('[data-surface="open"]') === node
+        };
+      }).filter((band) => band.bottom > band.top);
+      clearBands = [...doc.querySelectorAll(config.quietSelectors || '[data-rizo-event-quiet]')].map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { top: rect.top + y, bottom: rect.bottom + y };
+      }).filter((band) => band.bottom > band.top);
+      protectedRects = [...doc.querySelectorAll('[data-fog] :is(.hero-title > span, .hero-sub, .hero-actions, h2, .rte, .gallery-item, .rizo-event-countdown)')].filter(node => Number(node.closest('[data-fog]')?.dataset.fog) > 0).map(node => {
+        const range = doc.createRange();
+        range.selectNodeContents(node);
+        const rect = range.getBoundingClientRect();
+        return { x: rect.left, y: rect.top + y, width: rect.width, height: rect.height };
+      }).filter(rect => rect.width > 20 && rect.height > 20);
+      docHeight = Math.max(1, doc.documentElement.scrollHeight);
     };
-    const paintAll = () => strips.forEach((record, strip) => {
-      if (!strip.isConnected) strips.delete(strip);
-      else paint(strip, record);
+    /* Density at a document y. Fog collects low in open sections ("ground")
+       and spills a little over the edge of whatever solid surface is below. */
+    const at = (docY) => {
+      if (dirty) measure();
+      let density = 0;
+      for (const band of bands) {
+        const pad = 70;
+        if (docY < band.top - pad || docY > band.bottom + pad) continue;
+        const height = band.bottom - band.top;
+        const t = clamp((docY - band.top) / height, 0, 1);
+        let shape = 1;
+        if (band.bias === 'ground') shape = .22 + .78 * Math.pow(t, 1.35);
+        else if (band.bias === 'ceiling') shape = 1 - .6 * t;
+        let edge = 1;
+        if (docY < band.top) edge = 1 - (band.top - docY) / pad;
+        else if (docY > band.bottom) edge = band.bias === 'ground' ? 1 - (docY - band.bottom) / pad : 1 - (docY - band.bottom) / (pad * .5);
+        density = Math.max(density, band.fog * shape * clamp(edge, 0, 1));
+      }
+      return density;
+    };
+    const invalidate = () => { dirty = true; };
+    let resizeObserver = null;
+    return {
+      at,
+      get revision() { if (dirty) measure(); return revision; },
+      clearAt(docY) { if (dirty) measure(); return clearBands.some((band) => docY >= band.top && docY <= band.bottom); },
+      protectedRects() { if (dirty) measure(); return protectedRects; },
+      invalidate,
+      get docHeight() { if (dirty) measure(); return docHeight; },
+      bands: () => { if (dirty) measure(); return bands; },
+      bind() {
+        if ('ResizeObserver' in window) { resizeObserver = new ResizeObserver(invalidate); resizeObserver.observe(doc.body); }
+        window.addEventListener('load', invalidate);
+      },
+      unbind() { resizeObserver?.disconnect(); window.removeEventListener('load', invalidate); }
+    };
+  })();
+
+  /* ---------------------------------------------------------------------- */
+  /* Fog                                                                      */
+  /* ---------------------------------------------------------------------- */
+
+  define('fog', () => {
+    if (!config.features.fog) return {};
+    if (state.reduced && config.motion?.reduced === 'minimal') return {};
+    const hosts = [...doc.querySelectorAll('[data-rizo-event-fog]')];
+    if (!hosts.length) return {};
+    const style = getComputedStyle(root);
+    const tone = (name, fallback) => (style.getPropertyValue(name).trim() || fallback).split(/[\s,]+/).map(Number);
+    const colours = { front: tone('--rizo-event-fog-rgb', '176 188 200'), back: tone('--rizo-event-fog-back-rgb', '96 108 122') };
+    const share = { back: Number(style.getPropertyValue('--rizo-event-fog-back')) || .7, front: Number(style.getPropertyValue('--rizo-event-fog-front')) || .55 };
+    const intensity = clamp(Number(config.fog?.intensity ?? .6) / .6, 0, 1.7);
+    if (!(intensity > 0)) return {};
+    const speed = clamp(Number(config.fog?.speed ?? .4), 0, 1);
+    const small = () => smallQuery.matches || coarseQuery.matches;
+    const moving = () => !state.reduced && state.motionScale > 0;
+    const seed = Math.floor(random() * 1e9);
+    const pad = 96;
+    let destroyed = false;
+    let ready = false;
+    let buildFrame = 0;
+    let buildTimer = 0;
+    let idleTimer = 0;
+    let clockTimer = 0;
+    let clearing = false;
+    let scrolling = false;
+    let touching = false;
+    let paints = 0;
+    let maskBuilds = 0;
+    let lastWakeAt = 0;
+    let lastScrollY = window.scrollY;
+    let clockFactor = 1;
+    let textures = null;
+
+    const texture = (w, h, cellsX, cellsY, octaves, gain, lo, hi, seed, rgb) => {
+      const rand = (() => { let t = seed >>> 0; return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; })();
+      const grids = [];
+      for (let o = 0; o < octaves; o += 1) {
+        const gx = cellsX << o; const gy = cellsY << o;
+        const grid = new Float32Array(gx * gy);
+        for (let i = 0; i < grid.length; i += 1) grid[i] = rand();
+        grids.push({ gx, gy, grid });
+      }
+      const canvas = doc.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const context = canvas.getContext('2d');
+      const image = context.createImageData(w, h);
+      const data = image.data;
+      const smooth = (t) => t * t * (3 - 2 * t);
+      const values = new Float32Array(w * h);
+      for (let y = 0; y < h; y += 1) {
+        for (let x = 0; x < w; x += 1) {
+          const nx = x / w;
+          const ny = y / h;
+          const wx = nx + .075 * Math.sin(ny * Math.PI * 2) + .025 * Math.sin((nx + ny) * Math.PI * 4);
+          const wy = ny + .09 * Math.sin(nx * Math.PI * 2) + .035 * Math.cos(ny * Math.PI * 2);
+          let value = 0; let amplitude = 1; let total = 0;
+          for (const { gx, gy, grid } of grids) {
+            const fx = ((wx % 1 + 1) % 1) * gx; const fy = ((wy % 1 + 1) % 1) * gy;
+            const x0 = Math.floor(fx); const y0 = Math.floor(fy);
+            const tx = smooth(fx - x0); const ty = smooth(fy - y0);
+            const x1 = (x0 + 1) % gx; const y1 = (y0 + 1) % gy;
+            const a = grid[y0 * gx + x0]; const b = grid[y0 * gx + x1];
+            const c = grid[y1 * gx + x0]; const d = grid[y1 * gx + x1];
+            value += amplitude * (a + (b - a) * tx + (c - a) * ty + (a - b - c + d) * tx * ty);
+            total += amplitude; amplitude *= gain;
+          }
+          values[y * w + x] = value / total;
+        }
+      }
+      for (let i = 0; i < values.length; i += 1) {
+        const v = clamp((values[i] - lo) / (hi - lo), 0, 1);
+        const alpha = v * v * (3 - 2 * v);
+        data[i * 4] = rgb[0]; data[i * 4 + 1] = rgb[1]; data[i * 4 + 2] = rgb[2]; data[i * 4 + 3] = Math.round(alpha * 255);
+      }
+      context.putImageData(image, 0, 0);
+      return canvas;
+    };
+
+    const layers = {
+      back: [['billow', 1.65, .08, .78, .84], ['wisp', 2.1, .18, .5, .65], ['roll', 1.35, .12, .48, .45]],
+      front: [['billow', 1.3, .38, .9, .48], ['wisp', 1.05, .62, .7, .28], ['roll', 1.65, .48, .8, .34]]
+    };
+    const stages = hosts.map(host => {
+      const kind = host.dataset.rizoEventFog === 'front' ? 'front' : 'back';
+      const mask = doc.createElement('canvas');
+      host.classList.add('rizo-event-fog--compositor');
+      const planes = layers[kind].slice(0, small() ? 2 : 3).map(([tex, tile, depth, weight, height], index) => {
+        const canvas = doc.createElement('canvas');
+        canvas.className = 'rizo-event-fog-plane';
+        canvas.setAttribute('aria-hidden', 'true');
+        const turn = index % 2 ? -1 : 1;
+        const span = (kind === 'front' ? 44 : 30) * (index ? .8 : 1);
+        canvas.style.setProperty('--fog-x-from', `${-span * turn}px`);
+        canvas.style.setProperty('--fog-x-to', `${span * turn}px`);
+        canvas.style.setProperty('--fog-y-from', `${index % 2 ? 7 : -7}px`);
+        canvas.style.setProperty('--fog-y-to', `${index % 2 ? -7 : 7}px`);
+        canvas.style.setProperty('--fog-delay', `${-16 - index * 19}s`);
+        host.append(canvas);
+        return { canvas, context: canvas.getContext('2d'), tex, tile, depth, weight, height, offset: random() * 1000, phase: random() * Math.PI * 2, index };
+      });
+      return { host, kind, mask, context: mask.getContext('2d'), planes, w: 0, h: 0, scale: 1, key: '' };
     });
 
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => { image = img; paintAll(); };
-    img.onerror = () => warn('fog texture failed to load; keeping the CSS background', src);
-    img.src = src;
+    const makeTextures = () => {
+      const w = small() ? 160 : 224;
+      textures = {};
+      ['back', 'front'].forEach(kind => {
+        textures[kind] = {
+          billow: texture(w, w / 2, 5, 3, 4, .52, .32, .69, seed, colours[kind]),
+          wisp: texture(w, w / 2, 3, 5, 4, .5, .43, .72, seed + 7, colours[kind]),
+          roll: texture(w, w / 2, 5, 3, 3, .48, .4, .69, seed + 19, colours[kind])
+        };
+      });
+    };
 
-    const offResize = on('resize', paintAll);
-    const offWake = on('hero-awake', paintAll);
+    const updateClock = () => {
+      if (!config.fog?.clock) { clockFactor = 1; return; }
+      const h = localHour();
+      const curve = [[0, 1.12], [4, 1.22], [6.5, 1.42], [9, 1.25], [11, .98], [14, .94], [17, .98], [19.5, 1.02], [22, 1.1], [24, 1.12]];
+      for (let i = 1; i < curve.length; i += 1) {
+        if (h <= curve[i][0]) {
+          const [h0, v0] = curve[i - 1]; const [h1, v1] = curve[i];
+          const t = (h - h0) / (h1 - h0);
+          clockFactor = v0 + (v1 - v0) * (t * t * (3 - 2 * t));
+          break;
+        }
+      }
+    };
 
+    const setMotion = () => {
+      const paused = !moving() || doc.hidden || state.overlayOpen;
+      const rate = (.45 + speed * .8) * Math.max(.1, state.motionScale);
+      stages.forEach(stage => {
+        stage.host.classList.toggle('rizo-event-fog--paused', paused || (stage.kind === 'front' && state.quiet));
+        stage.planes.forEach(plane => {
+          const duration = (stage.kind === 'front' ? 30 + plane.index * 12 : 48 + plane.index * 14) / rate;
+          plane.canvas.style.setProperty('--fog-duration', `${duration.toFixed(2)}s`);
+        });
+      });
+    };
+
+    const paintStage = stage => {
+      const { width, height } = state.viewport;
+      const scale = .22;
+      const w = Math.max(24, Math.ceil((width + pad * 2) * scale));
+      const h = Math.max(24, Math.ceil((height + pad * 2) * scale));
+      const scrollY = window.scrollY;
+      const phoneScale = config.phone === 'lighter' && smallQuery.matches ? .94 : 1;
+      const key = `${width}:${height}:${scrollY}:${atmosphere.revision}:${clockFactor}:${phoneScale}`;
+      if (key === stage.key) return;
+      stage.w = w; stage.h = h; stage.scale = scale;
+      const { context, kind, mask } = stage;
+      mask.width = w; mask.height = h;
+      const gradient = context.createLinearGradient(0, 0, 0, h);
+      const floor = kind === 'back' ? .1 : 0;
+      const k = clamp(share[kind] * intensity * phoneScale * clockFactor, 0, kind === 'front' ? .78 : 1);
+      for (let s = 0; s <= 64; s += 1) {
+        const y = s / 64 * (height + pad * 2) - pad;
+        const d = atmosphere.at(scrollY + y);
+        const clear = kind === 'front' && [-24, 0, 24].some(offset => atmosphere.clearAt(scrollY + y + offset));
+        const pool = kind === 'front' ? .72 + .28 * Math.pow(clamp(y / height, 0, 1), 1.4) : 1;
+        const alpha = clear ? 0 : clamp((floor + (1 - floor) * d) * k * pool, 0, 1);
+        gradient.addColorStop(s / 64, `rgba(0,0,0,${alpha.toFixed(3)})`);
+      }
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, w, h);
+      if (kind === 'front') {
+        context.globalCompositeOperation = 'destination-out';
+        for (const rect of atmosphere.protectedRects()) {
+          const top = (rect.y - scrollY + pad) * scale;
+          if (top > h || top + rect.height * scale < 0) continue;
+          const rx = (rect.width / 2 + 92) * scale;
+          const ry = (rect.height / 2 + 64) * scale;
+          context.save();
+          context.translate((rect.x + rect.width / 2 + pad) * scale, top + rect.height * scale / 2);
+          context.scale(rx, ry);
+          const clear = context.createRadialGradient(0, 0, 0, 0, 0, 1);
+          clear.addColorStop(0, 'rgba(0,0,0,.8)');
+          clear.addColorStop(.65, 'rgba(0,0,0,.7)');
+          clear.addColorStop(1, 'rgba(0,0,0,0)');
+          context.fillStyle = clear;
+          context.fillRect(-1, -1, 2, 2);
+          context.restore();
+        }
+      }
+      maskBuilds += 1;
+      stage.planes.forEach(plane => {
+        const { canvas, context: paint } = plane;
+        canvas.width = w; canvas.height = h;
+        canvas.style.left = `${-pad}px`;
+        canvas.style.top = `${-pad}px`;
+        canvas.style.width = `${width + pad * 2}px`;
+        canvas.style.height = `${height + pad * 2}px`;
+        const tex = textures[kind][plane.tex];
+        const tileW = width * scale * plane.tile;
+        const tileH = Math.max(height * scale * plane.height, tileW * .26);
+        const x = ((plane.offset * scale) % tileW + tileW) % tileW;
+        const y = ((scrollY * plane.depth * scale) % tileH + tileH) % tileH;
+        const pattern = paint.createPattern(tex, 'repeat');
+        pattern.setTransform(new DOMMatrix([tileW / tex.width, 0, 0, tileH / tex.height, -x + pad * scale, -y + pad * scale]));
+        paint.globalAlpha = plane.weight * (.76 + .24 * Math.sin(plane.phase)) * .88;
+        paint.fillStyle = pattern;
+        paint.fillRect(0, 0, w, h);
+        paint.globalAlpha = 1;
+        paint.globalCompositeOperation = 'destination-in';
+        paint.drawImage(mask, 0, 0);
+        paint.globalCompositeOperation = 'source-over';
+        paints += 1;
+      });
+      stage.key = key;
+    };
+
+    const build = () => {
+      buildFrame = 0;
+      if (destroyed || !ready || doc.hidden || state.overlayOpen) return;
+      stages.forEach(paintStage);
+      setMotion();
+    };
+    const scheduleBuild = () => {
+      if (buildFrame || destroyed || !ready || doc.hidden) return;
+      buildFrame = (window.RizoFrame || { request: window.requestAnimationFrame.bind(window) }).request(build);
+    };
+    const resetIdle = () => {
+      window.clearTimeout(idleTimer);
+      idleTimer = 0;
+      if (touching || destroyed || doc.hidden) return;
+      idleTimer = window.setTimeout(() => {
+        idleTimer = 0;
+        scheduleBuild();
+        clearing = false;
+        hosts.forEach(host => host.classList.remove('rizo-event-fog--clearing'));
+      }, 2600);
+    };
+    const clearFog = () => {
+      if (!moving() || state.overlayOpen || doc.hidden) return;
+      clearing = true;
+      hosts.forEach(host => host.classList.add('rizo-event-fog--clearing'));
+      resetIdle();
+    };
+    const onPointerDown = event => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      if (event.target.closest?.('[data-overlay], dialog')) return;
+      touching = event.pointerType !== 'mouse';
+      lastWakeAt = performance.now();
+      clearFog();
+    };
+    const release = () => { touching = false; if (clearing) resetIdle(); };
+    const onScroll = () => {
+      if (destroyed || doc.hidden) return;
+      const y = window.scrollY;
+      if (Math.abs(y - lastScrollY) < 1) return;
+      lastScrollY = y;
+      clearFog();
+      if (moving()) {
+        scrolling = true;
+        hosts.forEach(host => host.classList.add('rizo-event-fog--scrolling'));
+      }
+      window.clearTimeout(buildTimer);
+      buildTimer = window.setTimeout(() => {
+        buildTimer = 0;
+        scrolling = false;
+        scheduleBuild();
+        hosts.forEach(host => host.classList.remove('rizo-event-fog--scrolling'));
+      }, 180);
+    };
+    const resetInteraction = () => {
+      window.clearTimeout(idleTimer);
+      window.clearTimeout(buildTimer);
+      idleTimer = 0; buildTimer = 0;
+      clearing = false; scrolling = false; touching = false;
+      hosts.forEach(host => host.classList.remove('rizo-event-fog--clearing', 'rizo-event-fog--scrolling'));
+    };
+    const armClock = () => {
+      window.clearTimeout(clockTimer);
+      clockTimer = 0;
+      if (destroyed || doc.hidden || !config.fog?.clock) return;
+      clockTimer = window.setTimeout(() => { updateClock(); scheduleBuild(); armClock(); }, 300000);
+    };
+    let resizeObserver = null;
+    const start = () => {
+      if (destroyed) return;
+      makeTextures();
+      ready = true;
+      updateClock();
+      build();
+      armClock();
+      if ('ResizeObserver' in window) {
+        resizeObserver = new ResizeObserver(() => { atmosphere.invalidate(); scheduleBuild(); });
+        resizeObserver.observe(doc.body);
+      }
+      doc.fonts?.ready.then(() => { atmosphere.invalidate(); scheduleBuild(); });
+    };
+    const idleHandle = window.requestIdleCallback ? window.requestIdleCallback(start, { timeout: 900 }) : window.setTimeout(start, 60);
+    const cleanups = [
+      on('resize', scheduleBuild),
+      on('quiet', () => { setMotion(); scheduleBuild(); }),
+      on('motion', () => { resetInteraction(); setMotion(); scheduleBuild(); }),
+      on('overlay', open => { resetInteraction(); setMotion(); if (!open) scheduleBuild(); }),
+      on('visibility', visible => { resetInteraction(); setMotion(); armClock(); if (visible) { updateClock(); scheduleBuild(); } })
+    ];
+    const passive = { passive: true, capture: true };
+    doc.addEventListener('pointerdown', onPointerDown, passive);
+    doc.addEventListener('pointerup', release, passive);
+    doc.addEventListener('pointercancel', release, passive);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('load', scheduleBuild);
     return {
-      mount(container) {
-        container.querySelectorAll('.rizo-event-fog-strip').forEach((strip) => {
-          if (strips.has(strip)) return;
-          const canvas = doc.createElement('canvas');
-          canvas.setAttribute('aria-hidden', 'true');
-          strip.append(canvas);
-          const record = { canvas, w: 0, h: 0 };
-          strips.set(strip, record);
-          paint(strip, record);
+      mount() { atmosphere.invalidate(); scheduleBuild(); },
+      unmount() { atmosphere.invalidate(); scheduleBuild(); },
+      destroy() {
+        destroyed = true;
+        resetInteraction();
+        window.clearTimeout(clockTimer);
+        if (window.cancelIdleCallback) window.cancelIdleCallback(idleHandle); else window.clearTimeout(idleHandle);
+        if (buildFrame) (window.RizoFrame || { cancel: window.cancelAnimationFrame.bind(window) }).cancel(buildFrame);
+        resizeObserver?.disconnect();
+        cleanups.forEach(off => off());
+        doc.removeEventListener('pointerdown', onPointerDown, { capture: true });
+        doc.removeEventListener('pointerup', release, { capture: true });
+        doc.removeEventListener('pointercancel', release, { capture: true });
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('load', scheduleBuild);
+        stages.forEach(stage => {
+          stage.planes.forEach(plane => plane.canvas.remove());
+          stage.host.classList.remove('rizo-event-fog--compositor', 'rizo-event-fog--paused');
         });
       },
-      unmount(container) {
-        strips.forEach((record, strip) => { if (!strip.isConnected || container.contains(strip)) strips.delete(strip); });
-      },
-      destroy() {
-        offResize();
-        offWake();
-        strips.forEach((record, strip) => { record.canvas.remove(); strip.classList.remove('has-canvas'); });
-        strips.clear();
-      },
-      stats: () => ({ fogStrips: strips.size, fogCanvasPixels: [...strips.values()].reduce((sum, record) => sum + record.w * record.h, 0) })
+      stats: () => ({ fogRenderer: 'compositor', fogPaints: paints, fogMaskBuilds: maskBuilds, fogClearing: clearing, fogScrolling: scrolling, fogMoving: moving() && !doc.hidden && !state.overlayOpen, fogFrameTasks: 0, fogCanvases: stages.reduce((sum, stage) => sum + stage.planes.length, 0), fogCanvasPixels: stages.reduce((sum, stage) => sum + stage.w * stage.h * stage.planes.length, 0), fogClock: Number(clockFactor.toFixed(2)), fogLastWake: Math.round(lastWakeAt) })
     };
   });
 
-  /* Moon: scroll parallax only (drift is CSS; pointer parallax comes free
-     from the world gate's --world-* variables). Measures on mount/resize,
-     never inside the scroll path. */
-  define('moon', () => {
-    const moons = new Map();
-    let offScroll = null;
-    const enabled = () => config.moon?.motion && !state.reduced && state.motionScale > 0 && state.tier !== 'lite';
+  /* ---------------------------------------------------------------------- */
+  /* Moon                                                                     */
+  /* ---------------------------------------------------------------------- */
 
-    const measure = () => {
-      moons.forEach((record, moon) => {
-        if (!moon.isConnected) { moons.delete(moon); return; }
-        const rect = record.host.getBoundingClientRect();
-        record.top = rect.top + window.scrollY;
-        record.height = rect.height || 1;
-      });
-    };
-    const apply = () => {
-      const y = window.scrollY;
-      moons.forEach((record, moon) => {
-        const progress = clamp(y - record.top, 0, record.height);
-        const offset = Math.round(progress * .3 * state.motionScale * 10) / 10;
-        if (offset !== record.offset) {
-          record.offset = offset;
-          moon.style.setProperty('--rizo-event-moon-parallax', `${offset}px`);
-        }
-      });
-    };
-    const sync = () => {
-      if (enabled() && moons.size) {
-        if (!offScroll) offScroll = input.onScroll(apply);
-        measure();
-        apply();
-      } else {
-        offScroll?.();
-        offScroll = null;
-        moons.forEach((record, moon) => { moon.style.removeProperty('--rizo-event-moon-parallax'); record.offset = 0; });
+  /* The moon lives in the sky, not in a section, so it stays where it is
+     while the page scrolls over it (distant things do) and it can follow
+     the visitor from page to page (view-transition-name: rizo-moon).
+       phase   tonight's real phase: the unlit part is drawn over the art,
+               soft-edged, with earthshine left in it
+       set     scrolling toward the footer lowers it into the ground fog
+       drift   across a long visit it moves slowly across the sky, the way
+               the real one does; the drift carries across pages
+       touch   tapping it gives it weight, and whatever was behind it
+               leaves (moon-tap, used by the bats)                        */
+  define('moon', () => {
+    const moon = doc.querySelector('[data-rizo-event-moon]');
+    if (!moon) return {};
+    const body = moon.querySelector('.rizo-event-moon-body');
+    const phase = moonPhase();
+    api.moonPhase = phase;
+    const real = (config.moon?.phase || moon.dataset.phase) !== 'full';
+
+    /* The unlit part as a mask: soft terminator, a little earthshine. The
+       disc in the artwork is centred at 488 with radius 487 (of 1000). */
+    if (real && body && phase.illumination < .985) {
+      const cx = 488; const cy = 488; const r = 487; const n = 36;
+      const s = phase.waxing ? -1 : 1;
+      const limb = []; const edge = [];
+      for (let i = 0; i <= n; i += 1) {
+        const y = cy - r + (2 * r * i) / n;
+        const w = Math.sqrt(Math.max(0, r * r - (y - cy) ** 2));
+        limb.push(`${(cx + s * (w + 60)).toFixed(0)} ${y.toFixed(0)}`);
+        edge.unshift(`${(cx + s * (2 * phase.illumination - 1) * w).toFixed(0)} ${y.toFixed(0)}`);
       }
+      const d = `M${cx + s * 60} ${cy - r - 60}L${limb.join('L')}L${cx + s * 60} ${cy + r + 60}L${edge.join('L')}Z`;
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'><defs><filter id='b' x='-20%' y='-20%' width='140%' height='140%'><feGaussianBlur stdDeviation='15'/></filter><mask id='m'><rect width='1000' height='1000' fill='white'/><path d='${d}' transform='rotate(${phase.waxing ? -24 : 24} ${cx} ${cy})' fill='black' fill-opacity='.87' filter='url(%23b)'/></mask></defs><rect width='1000' height='1000' fill='white' mask='url(%23m)'/></svg>`;
+      body.style.setProperty('--rizo-moon-mask', `url("data:image/svg+xml,${svg.replace(/"/g, "'").replace(/</g, '%3C').replace(/>/g, '%3E')}")`);
+    }
+    const lit = real ? phase.illumination : 1;
+    moon.style.setProperty('--rizo-moon-halo', (.04 + lit * .16).toFixed(3));
+    moon.dataset.phaseName = phase.name;
+    doc.querySelectorAll('[data-rizo-moon-phase]').forEach((node) => {
+      if (!real) return;
+      node.textContent = `Tonight’s moon: ${phase.name}, ${Math.round(phase.illumination * 100)}% lit.`;
+      node.hidden = false;
+    });
+
+    const moves = () => config.moon?.motion !== false && !moon.hasAttribute('data-static') && !state.reduced && state.motionScale > 0;
+
+    /* Set: 0 at the top, 1 at the bottom of a long page. */
+    let lastSet = -1;
+    const applySet = () => {
+      if (!moves()) { if (lastSet !== 0) { moon.style.setProperty('--rizo-moon-set', '0'); lastSet = 0; } return; }
+      const vh = state.viewport.height;
+      const range = atmosphere.docHeight - vh;
+      const p = range > vh * .8 ? clamp(window.scrollY / range, 0, 1) : 0;
+      const set = Math.round(clamp((p - .12) / .88, 0, 1) ** 1.6 * 1000) / 1000;
+      if (set !== lastSet) { lastSet = set; moon.style.setProperty('--rizo-moon-set', String(set)); }
     };
-    const offResize = on('resize', sync);
-    const offMotion = on('motion', sync);
+
+    /* Drift across the sky over a visit (about 6% of the width in 40 minutes). */
+    let driftTimer = 0;
+    const drift = () => {
+      if (!moves()) { moon.style.removeProperty('--rizo-moon-dx'); moon.style.removeProperty('--rizo-moon-dy'); return; }
+      let started = Date.now();
+      try {
+        started = Number(window.sessionStorage.getItem('rizoSkyStart')) || started;
+        window.sessionStorage.setItem('rizoSkyStart', String(started));
+      } catch (error) {}
+      const minutes = Math.min(40, (Date.now() - started) / 60000);
+      moon.style.setProperty('--rizo-moon-dx', (minutes / 40 * state.viewport.width * .06).toFixed(1));
+      moon.style.setProperty('--rizo-moon-dy', (minutes / 40 * state.viewport.height * .03).toFixed(1));
+      /* First placement is instant (the page may have just arrived by view
+         transition); after that it glides between updates. */
+      if (!moon.style.transition) window.requestAnimationFrame(() => { moon.style.transition = 'translate 30s linear'; });
+    };
+    const startDrift = () => {
+      window.clearInterval(driftTimer);
+      drift();
+      if (moves()) driftTimer = window.setInterval(drift, 30000);
+    };
+
+    /* Touch. */
+    let wobble = null;
+    const onTap = (tap) => {
+      if (tap.kind !== 'down' || tap.interactive || tap.overlay || state.overlayOpen) return;
+      const rect = moon.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2; const cy = rect.top + rect.height / 2;
+      if (Math.hypot(tap.x - cx, tap.y - cy) > rect.width * .47) return;
+      if (!state.reduced && body?.animate && !wobble) {
+        wobble = body.animate([
+          { transform: 'rotate(0deg)' },
+          { transform: 'rotate(-2.2deg) translateY(2px)', offset: .16 },
+          { transform: 'rotate(1.1deg)', offset: .46 },
+          { transform: 'rotate(-.35deg)', offset: .76 },
+          { transform: 'rotate(0deg)' }
+        ], { duration: 2100, easing: 'cubic-bezier(.3,.6,.3,1)' });
+        wobble.onfinish = wobble.oncancel = () => { wobble = null; };
+      }
+      emit('moon-tap', { x: cx, y: cy, radius: rect.width / 2, tap });
+    };
+
+    const cleanups = [
+      input.onScroll(applySet),
+      on('resize', () => { atmosphere.invalidate(); applySet(); }),
+      on('motion', () => { applySet(); startDrift(); }),
+      input.onTap(onTap)
+    ];
+    applySet();
+    startDrift();
 
     return {
-      mount(container) {
-        container.querySelectorAll('[data-rizo-event-moon]:not([data-static])').forEach((moon) => {
-          if (moons.has(moon)) return;
-          moons.set(moon, { host: moon.closest('[data-rizo-event-hero]')?.parentElement || moon.parentElement, top: 0, height: 1, offset: 0 });
-        });
-        sync();
+      mount() { atmosphere.invalidate(); applySet(); },
+      destroy() {
+        cleanups.forEach((off) => off());
+        window.clearInterval(driftTimer);
+        wobble?.cancel();
+        moon.style.removeProperty('--rizo-moon-set');
       },
-      unmount(container) {
-        moons.forEach((record, moon) => { if (!moon.isConnected || container.contains(moon)) moons.delete(moon); });
-        sync();
-      },
-      destroy() { offScroll?.(); offResize(); offMotion(); moons.clear(); },
-      stats: () => ({ moons: moons.size, moonParallax: Boolean(offScroll) })
+      rect: () => moon.getBoundingClientRect(),
+      stats: () => ({ moons: 1, moonPhase: phase.name, moonLit: Math.round(phase.illumination * 100), moonSet: lastSet })
     };
   });
 
@@ -643,7 +1082,7 @@
   };
   const onResize = () => {
     if (resizeFrame) return;
-    resizeFrame = window.requestAnimationFrame(() => {
+    resizeFrame = (window.RizoFrame || { request: window.requestAnimationFrame.bind(window) }).request(() => {
       resizeFrame = 0;
       state.viewport = { width: window.innerWidth, height: window.innerHeight };
       updateTier();
@@ -674,6 +1113,7 @@
     state.running = true;
     setTierClass();
     input.bind();
+    atmosphere.bind();
     window.addEventListener('resize', onResize, { passive: true });
     window.visualViewport?.addEventListener('resize', onResize, { passive: true });
     doc.addEventListener('visibilitychange', onVisibility);
@@ -707,6 +1147,7 @@
 
     root.classList.add('rizo-event--ready');
     emit('start', state);
+    doc.dispatchEvent(new CustomEvent('rizo-event:start', { detail: { id: config.id, reason: boot.reason } }));
 
     // One short frame probe once the page has settled, so a weak device steps
     // down even if no bat has flown yet (CSS fog/moon drift is running).
@@ -729,6 +1170,7 @@
       modules.clear();
       loop.clear();
       input.unbind();
+      atmosphere.unbind();
       overlayObserver?.disconnect();
       window.removeEventListener('resize', onResize, { passive: true });
       window.visualViewport?.removeEventListener('resize', onResize, { passive: true });
@@ -763,6 +1205,10 @@
     defineBehavior,
     behaviors,
     deactivate,
+    atmosphere,
+    moonPhase,
+    localHour,
+    module: (name) => modules.get(name),
     stats() {
       const out = {
         id: config.id,
@@ -788,3 +1234,5 @@
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start, { once: true });
   else start();
 })();
+
+
